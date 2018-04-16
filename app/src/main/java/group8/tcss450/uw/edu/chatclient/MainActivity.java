@@ -1,5 +1,5 @@
 package group8.tcss450.uw.edu.chatclient;
-
+// TEST save
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
