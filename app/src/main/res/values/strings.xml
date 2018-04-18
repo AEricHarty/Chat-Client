@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">ChatClient</string>
+
+    <string name="login_prompt">Please log in or register</string>
+    <string name="success_announcement">Login Successful!</string>
+    <string name="email_field">Email</string>
+    <string name="password_field">Password</string>
+    <string name="nickname_field">Nickname</string>
+
+    <string name="welcome_announcement">Welcome!</string>
+    <string name="register_button">Register</string>
+    <string name="login_button">Login</string>
+    <string name="username_display">username</string>
+    <string name="password_display">password</string>
+    <string name="username_key">user_key</string>
+    <string name="password_key">pass_key</string>
+    <string name="register_prompt">Please register for an account</string>
+
 </resources>
