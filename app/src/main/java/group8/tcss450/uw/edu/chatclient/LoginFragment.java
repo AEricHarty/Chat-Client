@@ -46,19 +46,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (mListener != null) {
-            EditText userText = mView.findViewById(R.id.logUsernameText);
-            String name = userText.getText().toString();
+            EditText emailText = mView.findViewById(R.id.logEmailText);
+            String email = emailText.getText().toString();
             EditText passText = mView.findViewById(R.id.logPasswordText);
             Editable password = passText.getText();
             boolean good = true;
 
             //Client side checks here
-            if(name == null || password == null){
-                userText.setError("Both fields must be filled");
+            if(email.length() == 0 || password.length() == 0){
+                emailText.setError("Both fields must be filled");
                 good = false;
             }else{
-                if(name.length() < 4){
-                    userText.setError("Username must be more than 3 chars in length");
+                if(email.length() < 4){
+                    emailText.setError("Username must be more than 3 chars in length");
                     good = false;
                 }
                 if(password.length() < 4){
@@ -68,7 +68,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             }
 
             if(good){
-                Credentials cred = new Credentials.Builder(name, password)
+                Credentials cred = new Credentials.Builder(null, password)
+                        .addEmail(email)
                         .build();
                 mListener.onLoginAttempt(cred);
             }
@@ -106,7 +107,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void setError(String err) {
         //Log in unsuccessful for reason: err. Try again.
         //you may want to add error stuffs for the user here.
-        ((TextView) getView().findViewById(R.id.logUsernameText))
+        ((TextView) getView().findViewById(R.id.logEmailText))
                 .setError("Login Unsuccessful");
     }
 

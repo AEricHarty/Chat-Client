@@ -9,15 +9,15 @@
 
 
     <EditText
-        android:id="@+id/logUsernameText"
+        android:id="@+id/logEmailText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="120dp"
         android:ems="10"
-        android:hint="@string/username_field"
-        android:inputType="textPersonName"
+        android:hint="@string/email_hint"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,12 +31,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="@string/password_field"
+        android:hint="@string/password_hint"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logUsernameText" />
+        app:layout_constraintTop_toBottomOf="@+id/logEmailText" />
 
     <TextView
         android:id="@+id/welcomeText"

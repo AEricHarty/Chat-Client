@@ -31,9 +31,6 @@ public class SignInActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
-
         if(savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
                 SharedPreferences prefs =
@@ -105,11 +102,6 @@ public class SignInActivity extends AppCompatActivity implements
                 .build().execute();
     }
 
-    public void loadHome() {
-        //TBD
-
-    }
-
     /**
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
@@ -156,6 +148,11 @@ public class SignInActivity extends AppCompatActivity implements
                     true)
                     .apply();
         }
+    }
+
+    public void loadHome() {
+        //TBD
+
     }
 
     /**

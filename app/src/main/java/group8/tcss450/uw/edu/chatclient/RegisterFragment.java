@@ -62,8 +62,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
             boolean good = true;
 
             //Client side checks here
-            if(email == null || first == null || last == null || username == null ||
-                    password == null || passcopy == null ){
+            if(email.length() == 0 || first.length() == 0 || last.length() == 0 ||
+                    username.length() == 0 || password.length() == 0 || passcopy.length() == 0 ){
                 userText.setError("All fields must be filled");
                 good = false;
             }else{

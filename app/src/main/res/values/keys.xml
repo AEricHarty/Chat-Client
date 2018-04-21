@@ -8,4 +8,7 @@
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
 
+    <string name="username_key">user_key</string>
+    <string name="password_key">pass_key</string>
+
 </resources>

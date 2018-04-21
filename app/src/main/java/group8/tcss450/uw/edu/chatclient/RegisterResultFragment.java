@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
+ *
+ *  @author Eric Harty - hartye@uw.edu
  */
 public class RegisterResultFragment extends Fragment {
 
@@ -24,9 +26,10 @@ public class RegisterResultFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
-        TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
-        resultMsg.setText(getArguments().getString("result"));
-
+        if(getArguments() != null){
+            TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
+            resultMsg.setText(getArguments().getString("result"));
+        }
         return v;
     }
 
