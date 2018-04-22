@@ -18,6 +18,29 @@
     <string name="login_button">Login</string>
     <string name="stay_logged_check">Stay logged in</string>
     <string name="logout_button">Logout</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 
+
+    <string name="nav_header_welcome">Welcome!</string>
+    <string name="nav_header_options">Here are your options:</string>
+
+    <string name="options_menu_log_out">Log Out</string>
+
+    <string name="new_connection_enter_info_please">Please enter new connection information</string>
+    <string name="new_connection_email">Email</string>
+    <string name="new_connection_name">Name</string>
+    <string name="new_connection_nickname">Nickname</string>
+
+
+    <string name="home_info_user_information">Current User Information:</string>
+    <string name="home_info_user_email">Email: userEmail</string>
+    <string name="home_info_user_name">Username: userName</string>
+    <string name="home_info_user_nickname">Nickname: userNickname</string>
 
 </resources>

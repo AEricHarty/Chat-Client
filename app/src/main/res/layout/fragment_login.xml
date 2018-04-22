@@ -94,4 +94,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logPasswordText" />
 
+    <Button
+        android:id="@+id/jinTestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="jinTest"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="241dp" />
+
 </android.support.constraint.ConstraintLayout>

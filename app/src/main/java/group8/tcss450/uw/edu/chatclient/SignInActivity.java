@@ -29,7 +29,9 @@ public class SignInActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_sign_in);
+        //setContentView(R.layout.activity_home);
 
         if(savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
@@ -41,10 +43,12 @@ public class SignInActivity extends AppCompatActivity implements
                         false)) {
                     loadHome();
                 } else {
+
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragmentContainer, new LoginFragment(),
                                     getString(R.string.keys_fragment_login))
                             .commit();
+
                 }
             }
         }

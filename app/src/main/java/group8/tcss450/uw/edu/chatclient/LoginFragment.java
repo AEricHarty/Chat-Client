@@ -1,6 +1,7 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -40,7 +41,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         b = mView.findViewById(R.id.registerButton);
         b.setOnClickListener(this::onRegisterClick);
 
+        b = mView.findViewById((R.id.jinTestButton));
+        b.setOnClickListener(this::jinTestOnClick);
+
         return mView;
+    }
+
+    public void jinTestOnClick(View v) {
+        Intent myIntent = new Intent(getActivity(),   HomeActivity.class);
+        startActivity(myIntent);
     }
 
     @Override
