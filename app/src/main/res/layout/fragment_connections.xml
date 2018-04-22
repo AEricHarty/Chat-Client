@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ConnectionsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SearchView
+            android:focusable="false"
+            android:id="@+id/searchBox"
+            android:layout_width="294dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@android:string/search_go"
+            android:queryHint="Search.."
+            android:inputType="textPersonName"
+            android:paddingLeft="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse" >
+        </SearchView>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/connectionsList"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:scrollIndicators="none"
+        android:scrollbarFadeDuration="3"
+        android:scrollbarSize="10dp">
+
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/addConnectionTextBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Add New Connection"
+            android:inputType="textPersonName" />
+
+        <ImageButton
+            android:id="@+id/addConnectionButton"
+            style="@android:style/Widget.Holo.ImageButton"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_input_add" />
+    </LinearLayout>
+
+</LinearLayout>
