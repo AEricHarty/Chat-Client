@@ -99,8 +99,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:text="jinTest"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="241dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

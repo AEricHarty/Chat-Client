@@ -1,6 +1,7 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
@@ -155,8 +156,8 @@ public class SignInActivity extends AppCompatActivity implements
     }
 
     public void loadHome() {
-        //TBD
-
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     /**
