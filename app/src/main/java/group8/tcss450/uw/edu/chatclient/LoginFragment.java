@@ -36,17 +36,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         mView = inflater.inflate(R.layout.fragment_login, container, false);
 
         Button b = mView.findViewById(R.id.loginButton);
-        b.setOnClickListener(this);
+//        b.setOnClickListener(this);
+        b.setOnClickListener(this::jinTestOnClick);
 
         b = mView.findViewById(R.id.registerButton);
         b.setOnClickListener(this::onRegisterClick);
 
-        b = mView.findViewById((R.id.jinTestButton));
-        b.setOnClickListener(this::jinTestOnClick);
-
         return mView;
     }
 
+    //Remove later...
     public void jinTestOnClick(View v) {
         Intent myIntent = new Intent(getActivity(),   HomeActivity.class);
         startActivity(myIntent);
