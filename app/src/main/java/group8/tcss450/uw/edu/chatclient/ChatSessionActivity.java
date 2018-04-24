@@ -20,13 +20,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Activity for a single chat session.
+ *
+ * @author Phu Lam Pham
+ */
 public class ChatSessionActivity extends AppCompatActivity {
 
-
+    /* Adapter for populating the chat messages. */
     private ChatArrayAdapter chatArrayAdapter;
+    /* The list of chat messages. */
     private ListView listView;
+    /* User's input text message */
     private EditText chatText;
+    /* The send message button */
     private Button buttonSend;
+    /* MIGHT CHANGE LATER
+       For now use to find left or right display messages.
+     */
     private boolean side = false;
 
     @Override
@@ -132,7 +143,6 @@ public class ChatSessionActivity extends AppCompatActivity {
             chatText = (TextView) row.findViewById(R.id.senderInfo);
             chatText.setText(formatter.format(date));
             chatText = (TextView) row.findViewById(R.id.message);
-//            chatText.setText(chatMessageObj.message);
             chatText.setText(chatMessageObj.message);
             return row;
         }
