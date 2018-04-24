@@ -19,6 +19,11 @@ import android.widget.Toast;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 
+/**
+ * Home activity after logging in
+ *
+ * @author Jin Byoun - jinito@uw.edu
+ */
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -49,9 +54,6 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
-
-
 
     @Override
     public void onBackPressed() {
@@ -99,6 +101,7 @@ public class HomeActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_new_connections) {
             loadFragment(new NewConnectionFragment());
+
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_chat_list) {
@@ -110,10 +113,14 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+
+    
+    // Loads the fragments
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.HomeActivityLayout, frag)
+                .replace(R.id.HomeContainer, frag)
+                // maybe instead of replace
                 .addToBackStack(null);
         // Commit the transaction
         transaction.commit();
