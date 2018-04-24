@@ -98,14 +98,14 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_connections) {
-            // Handle the camera action
+            loadFragment(new ConnectionsFragment());
         } else if (id == R.id.nav_new_connections) {
             loadFragment(new NewConnectionFragment());
 
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_chat_list) {
-
+            loadFragment((new ChatListFragment()));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
@@ -114,7 +114,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    
+
     // Loads the fragments
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()

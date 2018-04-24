@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * information fragment from the nagivation drawer
+ *
+ * @author Eric Harty - hartye@uw.edu
  */
 public class HomeInformationFragment extends Fragment {
 

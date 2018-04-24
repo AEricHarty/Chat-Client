@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * make a new connection from the home screen navigation drawer
+ *
+ * @author Jin Byoun - jinito@uw.edu
  */
 public class NewConnectionFragment extends Fragment {
 
@@ -17,7 +19,6 @@ public class NewConnectionFragment extends Fragment {
     public NewConnectionFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
