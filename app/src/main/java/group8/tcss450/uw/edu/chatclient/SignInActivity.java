@@ -35,7 +35,7 @@ public class SignInActivity extends AppCompatActivity implements
         //setContentView(R.layout.activity_home);
 
         if(savedInstanceState == null) {
-            if (findViewById(R.id.fragmentContainer) != null) {
+            if (findViewById(R.id.signinActivity) != null) {
                 SharedPreferences prefs =
                         getSharedPreferences(
                                 getString(R.string.keys_shared_prefs),
@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements
                 } else {
 
                     getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragmentContainer, new LoginFragment(),
+                            .add(R.id.signinActivity, new LoginFragment(),
                                     getString(R.string.keys_fragment_login))
                             .commit();
 
@@ -55,6 +55,11 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Builds JSON and starts new AsyncTask to send Login post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onLoginAttempt(Credentials cred) {
 //        //build the web service URL
@@ -76,16 +81,26 @@ public class SignInActivity extends AppCompatActivity implements
 //                .build().execute();
     }
 
+    /**
+     * Transitions to the registerFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onRegisterClicked() {
         RegisterFragment registerFragment = new RegisterFragment();
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, registerFragment)
+                .replace(R.id.signinActivity, registerFragment)
                 .addToBackStack(null);
         transaction.commit();
     }
 
+    /**
+     * Builds JSON and starts new AsyncTask to send Registration post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onRegisterAttempt(Credentials cred) {
         //build the web service URL
@@ -136,6 +151,11 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Checks if Stay Logged In is selected and saves to SharedPreferences if needed.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     private void checkStayLoggedIn() {
         if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
             SharedPreferences prefs =
@@ -155,6 +175,11 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Transitions to the HomeActivity.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     public void loadHome() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
@@ -183,6 +208,11 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Loads the RegisterResultFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         RegisterResultFragment resultFragment;
@@ -199,7 +229,7 @@ public class SignInActivity extends AppCompatActivity implements
             resultFragment.setArguments(args);
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragmentContainer, resultFragment);
+                    .replace(R.id.signinActivity, resultFragment);
             if(!success){
                 transaction.addToBackStack(null);
             }

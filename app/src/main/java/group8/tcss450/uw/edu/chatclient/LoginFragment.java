@@ -51,6 +51,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         startActivity(myIntent);
     }
 
+    /**
+     * Performs client side checks on login information, if they pass fires onLoginAttempt.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onClick(View view) {
         if (mListener != null) {

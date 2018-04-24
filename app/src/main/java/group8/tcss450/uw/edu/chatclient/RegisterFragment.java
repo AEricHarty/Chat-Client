@@ -43,6 +43,11 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         return mView;
     }
 
+    /**
+     * Performs client side checks on registration information.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onClick(View view) {
         if (mListener != null) {
