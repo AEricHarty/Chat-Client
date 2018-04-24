@@ -57,23 +57,23 @@ public class SignInActivity extends AppCompatActivity implements
 
     @Override
     public void onLoginAttempt(Credentials cred) {
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_login))
-                .build();
-        //build the JSONObject
-        JSONObject msg = cred.asJSONObject();
-        mCredentials = cred;
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
-        new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleLoginOnPost)
-                .onCancelled(this::handleErrorsInTask)
-                .build().execute();
+//        //build the web service URL
+//        Uri uri = new Uri.Builder()
+//                .scheme("https")
+//                .appendPath(getString(R.string.ep_base_url))
+//                .appendPath(getString(R.string.ep_login))
+//                .build();
+//        //build the JSONObject
+//        JSONObject msg = cred.asJSONObject();
+//        mCredentials = cred;
+//        //instantiate and execute the AsyncTask.
+//        //Feel free to add a handler for onPreExecution so that a progress bar
+//        //is displayed or maybe disable buttons. You would need a method in
+//        //LoginFragment to perform this.
+//        new SendPostAsyncTask.Builder(uri.toString(), msg)
+//                .onPostExecute(this::handleLoginOnPost)
+//                .onCancelled(this::handleErrorsInTask)
+//                .build().execute();
     }
 
     @Override
