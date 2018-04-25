@@ -182,7 +182,9 @@ public class SignInActivity extends AppCompatActivity implements
      */
     public void loadHome() {
         Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 
     /**
