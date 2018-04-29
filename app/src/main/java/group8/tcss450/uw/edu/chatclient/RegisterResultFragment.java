@@ -27,8 +27,13 @@ public class RegisterResultFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
         if(getArguments() != null){
+            boolean success = getArguments().getBoolean("result");
             TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
-            resultMsg.setText(getArguments().getString("result"));
+            if(success){
+                resultMsg.setText(getString(R.string.register_succeed_msg));
+            } else{
+                resultMsg.setText(getString(R.string.register_fail_msg));
+            }
         }
         return v;
     }
