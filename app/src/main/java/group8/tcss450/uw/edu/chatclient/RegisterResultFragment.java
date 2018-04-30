@@ -28,18 +28,13 @@ public class RegisterResultFragment extends Fragment {
 
         if(getArguments() != null){
             boolean success = getArguments().getBoolean("result");
-            TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
-            if(success){
-                resultMsg.setText(getString(R.string.register_succeed_msg));
-            } else{
-                resultMsg.setText(getString(R.string.register_fail_msg));
-            }
+            updateContent(v, success);
         }
         return v;
     }
 
-    public void updateContent(boolean success) {
-        TextView resultMsg = getView().findViewById(R.id.resultDisplayMsg);
+    public void updateContent(View v, boolean success) {
+        TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
         if(success){
             resultMsg.setText(getString(R.string.register_succeed_msg));
         } else{

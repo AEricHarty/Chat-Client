@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,11 +138,13 @@ public class SignInActivity extends AppCompatActivity implements
                 loadHome();
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                LoginFragment frag =
+                /*LoginFragment frag =
                         (LoginFragment) getSupportFragmentManager()
                                 .findFragmentByTag(
                                         getString(R.string.keys_fragment_login));
-                frag.setError("Log in unsuccessful");
+                frag.setError("Log in unsuccessful");*/
+                TextView fail = findViewById(R.id.loginFailMsg);
+                fail.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -196,11 +200,7 @@ public class SignInActivity extends AppCompatActivity implements
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            if (success) {
-                loadRegisterResult(true);
-            } else {
-                loadRegisterResult(false);
-            }
+            loadRegisterResult(success);
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
             //or it didn’t have what we expected in it.
@@ -223,7 +223,7 @@ public class SignInActivity extends AppCompatActivity implements
                 findFragmentById(R.id.registerResult);
 
         if(resultFragment!= null) {
-            resultFragment.updateContent(success);
+            resultFragment.updateContent(resultFragment.getView(), success);
         } else {
             resultFragment = new RegisterResultFragment();
             Bundle args = new Bundle();
