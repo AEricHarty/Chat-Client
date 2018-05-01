@@ -31,6 +31,13 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        if(savedInstanceState == null) {
+            if (findViewById(R.id.HomeContainer) != null) {
+                getSupportFragmentManager().beginTransaction().add(R.id.HomeContainer, new HomeInformationFragment()).commit();
+            }
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
