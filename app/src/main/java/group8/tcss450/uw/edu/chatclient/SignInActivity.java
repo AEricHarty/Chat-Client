@@ -217,26 +217,18 @@ public class SignInActivity extends AppCompatActivity implements
      */
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        RegisterResultFragment resultFragment;
 
-        resultFragment = (RegisterResultFragment) getSupportFragmentManager().
-                findFragmentById(R.id.registerResult);
-
-        if(resultFragment!= null) {
-            resultFragment.updateContent(resultFragment.getView(), success);
-        } else {
-            resultFragment = new RegisterResultFragment();
-            Bundle args = new Bundle();
-            args.putBoolean("result", success);
-            resultFragment.setArguments(args);
-            FragmentTransaction transaction = getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.signinActivity, resultFragment);
-            if(!success){
-                transaction.addToBackStack(null);
-            }
-            transaction.commit();
+        RegisterResultFragment resultFragment = new RegisterResultFragment();
+        Bundle args = new Bundle();
+        args.putBoolean("result", success);
+        resultFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.signinActivity, resultFragment);
+        if(!success){
+            transaction.addToBackStack(null);
         }
+        transaction.commit();
     }
 
     /**

@@ -24,21 +24,18 @@ public class RegisterResultFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_login, container, false);
+        View v = inflater.inflate(R.layout.fragment_register_result, container, false);
 
         if(getArguments() != null){
             boolean success = getArguments().getBoolean("result");
-            updateContent(v, success);
+            TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
+            if(success){
+                resultMsg.setText(getString(R.string.register_succeed_msg));
+            } else{
+                resultMsg.setText(getString(R.string.register_fail_msg));
+            }
         }
         return v;
     }
 
-    public void updateContent(View v, boolean success) {
-        TextView resultMsg = v.findViewById(R.id.resultDisplayMsg);
-        if(success){
-            resultMsg.setText(getString(R.string.register_succeed_msg));
-        } else{
-            resultMsg.setText(getString(R.string.register_fail_msg));
-        }
-    }
 }
