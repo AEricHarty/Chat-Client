@@ -1,6 +1,8 @@
 package group8.tcss450.uw.edu.chatclient;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -81,19 +83,27 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        //Home setting
+
         if (id == R.id.logOutOption) {
+            SharedPreferences prefs =
+                    getSharedPreferences(
+                            getString(R.string.keys_shared_prefs),
+                            Context.MODE_PRIVATE);
+            prefs.edit().remove(getString(R.string.keys_prefs_username));
+            prefs.edit().putBoolean(
+                    getString(R.string.keys_prefs_stay_logged_in),
+                    false)
+                    .apply();
+
+            //noinspection SimplifiableIfStatement
+            //Home setting
             Intent myIntent = new Intent(this,   SignInActivity.class);
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(myIntent);
-
+            finish();
         }
-
 
         return super.onOptionsItemSelected(item);
     }

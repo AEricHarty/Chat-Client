@@ -51,7 +51,6 @@ public class SignInActivity extends AppCompatActivity implements
                             .add(R.id.signinActivity, new LoginFragment(),
                                     getString(R.string.keys_fragment_login))
                             .commit();
-
                 }
             }
         }
@@ -166,12 +165,10 @@ public class SignInActivity extends AppCompatActivity implements
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
                             Context.MODE_PRIVATE);
-            //save the username for later usage
             prefs.edit().putString(
                     getString(R.string.keys_prefs_username),
                     mCredentials.getUsername())
                     .apply();
-            //save the users “want” to stay logged in
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
                     true)
