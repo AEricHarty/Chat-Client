@@ -32,6 +32,14 @@
     <string name="nav_header_options">Here are your options:</string>
 
     <string name="options_menu_log_out">Log Out</string>
+    <string name="options_menu_settings">Settings</string>
+
+    <string name="settings_themes">Color Themes</string>
+    <string name="settings_blue_orange_theme">Blue and Orange</string>
+    <string name="settings_green_amber_theme">Green and Amber</string>
+    <string name="settings_red_blue_theme">Red and Blue</string>
+    <string name="settings_brown_pink_theme">Brown and Pink</string>
+
 
     <string name="new_connection_enter_info_please">Please enter new connection information</string>
     <string name="new_connection_email">Email</string>
@@ -43,6 +51,9 @@
     <string name="home_info_user_email">Email: userEmail</string>
     <string name="home_info_user_name">Username: userName</string>
     <string name="home_info_user_nickname">Nickname: userNickname</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

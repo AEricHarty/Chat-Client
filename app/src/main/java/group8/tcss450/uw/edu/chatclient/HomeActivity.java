@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,9 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import group8.tcss450.uw.edu.chatclient.model.Credentials;
+import android.widget.RadioButton;
 
 /**
  * Home activity after logging in
@@ -27,11 +26,13 @@ import group8.tcss450.uw.edu.chatclient.model.Credentials;
  * @author Jin Byoun - jinito@uw.edu
  */
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener
+        ,SettingsFragment.OnSettingsInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
         if(savedInstanceState == null) {
@@ -64,6 +65,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
@@ -77,7 +79,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
+        getMenuInflater().inflate(R.menu.home_options, menu);
         return true;
     }
 
@@ -103,6 +105,8 @@ public class HomeActivity extends AppCompatActivity
             myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(myIntent);
             finish();
+        }else if (id == R.id.settingOption){
+            loadFragment(new SettingsFragment());
         }
 
         return super.onOptionsItemSelected(item);
@@ -132,6 +136,8 @@ public class HomeActivity extends AppCompatActivity
 
 
 
+
+
     // Loads the fragments
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
@@ -144,4 +150,26 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onSettingsInteraction(int theme) {
+//        Intent restartIntent = new Intent(this, HomeActivity.class);
+        switch (theme) {
+            case 1:
+                setTheme(R.style.BlueAndOragneAppTheme);
+                Log.wtf("homeActivity", "applied blue and orange");
+                break;
+            case 2:
+                setTheme(R.style.GreenAndAmberAppTheme);
+                Log.wtf("homeActivity", "applied green and amber");
+                break;
+            case 3 :
+                setTheme(R.style.RedAndBlueAppTheme);
+                Log.wtf("homeActivity", "applied Red and blue");
+                break;
+            case 4:
+                setTheme(R.style.BrownAndPinkAppTheme);
+                Log.wtf("homeActivity", "applied brown and pink");
+                break;
+        }
+    }
 }
