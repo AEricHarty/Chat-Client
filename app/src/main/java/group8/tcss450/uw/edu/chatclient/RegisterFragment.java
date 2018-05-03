@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 
 
@@ -43,6 +46,11 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         return mView;
     }
 
+    /**
+     * Performs client side checks on registration information.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onClick(View view) {
         if (mListener != null) {
@@ -67,6 +75,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 userText.setError("All fields must be filled");
                 good = false;
             }else{
+                //Uses regex to check for <>@<>.XXX email addresses
+                Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+                Matcher mat = pattern.matcher(email);
+                if(!mat.matches()){
+                    emailText.setError("Must have valid email form");
+                    good = false;
+                }
                 if(username.length() < 3){
                     userText.setError("Username must be more than 2 chars in length");
                     good = false;

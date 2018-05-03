@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +37,7 @@ public class SignInActivity extends AppCompatActivity implements
         //setContentView(R.layout.activity_home);
 
         if(savedInstanceState == null) {
-            if (findViewById(R.id.fragmentContainer) != null) {
+            if (findViewById(R.id.signinActivity) != null) {
                 SharedPreferences prefs =
                         getSharedPreferences(
                                 getString(R.string.keys_shared_prefs),
@@ -46,46 +48,60 @@ public class SignInActivity extends AppCompatActivity implements
                 } else {
 
                     getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragmentContainer, new LoginFragment(),
+                            .add(R.id.signinActivity, new LoginFragment(),
                                     getString(R.string.keys_fragment_login))
                             .commit();
-
                 }
             }
         }
     }
 
+    /**
+     * Builds JSON and starts new AsyncTask to send Login post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onLoginAttempt(Credentials cred) {
-//        //build the web service URL
-//        Uri uri = new Uri.Builder()
-//                .scheme("https")
-//                .appendPath(getString(R.string.ep_base_url))
-//                .appendPath(getString(R.string.ep_login))
-//                .build();
-//        //build the JSONObject
-//        JSONObject msg = cred.asJSONObject();
-//        mCredentials = cred;
-//        //instantiate and execute the AsyncTask.
-//        //Feel free to add a handler for onPreExecution so that a progress bar
-//        //is displayed or maybe disable buttons. You would need a method in
-//        //LoginFragment to perform this.
-//        new SendPostAsyncTask.Builder(uri.toString(), msg)
-//                .onPostExecute(this::handleLoginOnPost)
-//                .onCancelled(this::handleErrorsInTask)
-//                .build().execute();
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_login))
+                .build();
+        //build the JSONObject
+        JSONObject msg = cred.asJSONObject();
+        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleLoginOnPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
     }
 
+    /**
+     * Transitions to the registerFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onRegisterClicked() {
         RegisterFragment registerFragment = new RegisterFragment();
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, registerFragment)
+                .replace(R.id.signinActivity, registerFragment)
                 .addToBackStack(null);
         transaction.commit();
     }
 
+    /**
+     * Builds JSON and starts new AsyncTask to send Registration post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onRegisterAttempt(Credentials cred) {
         //build the web service URL
@@ -121,11 +137,13 @@ public class SignInActivity extends AppCompatActivity implements
                 loadHome();
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                LoginFragment frag =
+                /*LoginFragment frag =
                         (LoginFragment) getSupportFragmentManager()
                                 .findFragmentByTag(
                                         getString(R.string.keys_fragment_login));
-                frag.setError("Log in unsuccessful");
+                frag.setError("Log in unsuccessful");*/
+                TextView fail = findViewById(R.id.loginFailMsg);
+                fail.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -136,18 +154,21 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Checks if Stay Logged In is selected and saves to SharedPreferences if needed.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     private void checkStayLoggedIn() {
         if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
             SharedPreferences prefs =
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
                             Context.MODE_PRIVATE);
-            //save the username for later usage
             prefs.edit().putString(
                     getString(R.string.keys_prefs_username),
                     mCredentials.getUsername())
                     .apply();
-            //save the users “want” to stay logged in
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
                     true)
@@ -155,9 +176,16 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Transitions to the HomeActivity.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     public void loadHome() {
         Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 
     /**
@@ -169,11 +197,7 @@ public class SignInActivity extends AppCompatActivity implements
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            if (success) {
-                loadRegisterResult(true);
-            } else {
-                loadRegisterResult(false);
-            }
+            loadRegisterResult(success);
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
             //or it didn’t have what we expected in it.
@@ -183,28 +207,25 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Loads the RegisterResultFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        RegisterResultFragment resultFragment;
 
-        resultFragment = (RegisterResultFragment) getSupportFragmentManager().
-                findFragmentById(R.id.registerResult);
-
-        if(resultFragment!= null) {
-            resultFragment.updateContent(success);
-        } else {
-            resultFragment = new RegisterResultFragment();
-            Bundle args = new Bundle();
-            args.putBoolean("result", success);
-            resultFragment.setArguments(args);
-            FragmentTransaction transaction = getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, resultFragment);
-            if(!success){
-                transaction.addToBackStack(null);
-            }
-            transaction.commit();
+        RegisterResultFragment resultFragment = new RegisterResultFragment();
+        Bundle args = new Bundle();
+        args.putBoolean("result", success);
+        resultFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.signinActivity, resultFragment);
+        if(!success){
+            transaction.addToBackStack(null);
         }
+        transaction.commit();
     }
 
     /**

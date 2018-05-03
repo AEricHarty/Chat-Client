@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 
 /**
@@ -36,8 +39,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         mView = inflater.inflate(R.layout.fragment_login, container, false);
 
         Button b = mView.findViewById(R.id.loginButton);
-//        b.setOnClickListener(this);
-        b.setOnClickListener(this::jinTestOnClick);
+        b.setOnClickListener(this);
 
         b = mView.findViewById(R.id.registerButton);
         b.setOnClickListener(this::onRegisterClick);
@@ -45,12 +47,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         return mView;
     }
 
-    //Remove later...
-    public void jinTestOnClick(View v) {
-        Intent myIntent = new Intent(getActivity(),   HomeActivity.class);
-        startActivity(myIntent);
-    }
-
+    /**
+     * Performs client side checks on login information, if they pass fires onLoginAttempt.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     @Override
     public void onClick(View view) {
         if (mListener != null) {
@@ -65,9 +66,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 emailText.setError("Both fields must be filled");
                 good = false;
             }else{
-                if(email.length() < 4){
-                    emailText.setError("Username must be more than 3 chars in length");
+                //Uses regex to check for <>@<>.XXX email addresses
+                Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+                Matcher mat = pattern.matcher(email);
+                if(!mat.matches()){
+                    emailText.setError("Must have valid email form");
                     good = false;
+                }
+                if(email.length() < 4){
+                    emailText.setError("Email must be more than 3 chars in length");
+                    good = false;
+
                 }
                 if(password.length() < 4){
                     passText.setError("Password must be more than 3 chars in length");

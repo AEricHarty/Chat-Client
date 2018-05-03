@@ -3,6 +3,7 @@
 
     <string name="login_prompt">Please log in or register</string>
     <string name="success_announcement">Login Successful</string>
+    <string name="login_failed_msg">Login failed: check email and password or register</string>
     <string name="welcome_announcement">Welcome!</string>
     <string name="register_prompt">Please register for an account</string>
     <string name="register_fail_msg">Sorry, registration failed!</string>
@@ -42,5 +43,6 @@
     <string name="home_info_user_email">Email: userEmail</string>
     <string name="home_info_user_name">Username: userName</string>
     <string name="home_info_user_nickname">Nickname: userNickname</string>
+
 
 </resources>
