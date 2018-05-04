@@ -25,4 +25,5 @@
     <color name="colorBrownDark">#4b2c20</color>
     <color name="colorPinkAccent">#ff4081</color>
 
+    <color name="colorWhite">#ffffffff</color>
 </resources>
