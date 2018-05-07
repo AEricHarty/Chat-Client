@@ -1,9 +1,11 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,23 @@ public class ChatSessionActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //get app color theme
+        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        int theme = themePrefs.getInt("colorTheme", 1);
+        // apply app theme to activity
+        if( theme == 1) {
+            setTheme(R.style.BlueAndOragneAppTheme);
+        } else if (theme == 2) {
+            setTheme(R.style.GreenAndAmberAppTheme);
+        } else if (theme == 3) {
+            setTheme(R.style.RedAndBlueAppTheme);
+        } else if (theme == 4) {
+            setTheme(R.style.BrownAndPinkAppTheme);
+        } else {
+            Log.wtf("SignInActivity", "Why is the theme option set to " + Integer.toString(theme)+ "?!?!");
+        }
 
         setContentView(R.layout.activity_chat_session);
 

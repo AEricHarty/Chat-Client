@@ -31,7 +31,25 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        //get app color theme
+        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        int theme = themePrefs.getInt("colorTheme", 1);
+        // apply app theme to activity
+        if( theme == 1) {
+            setTheme(R.style.BlueAndOragneAppTheme);
+        } else if (theme == 2) {
+            setTheme(R.style.GreenAndAmberAppTheme);
+        } else if (theme == 3) {
+            setTheme(R.style.RedAndBlueAppTheme);
+        } else if (theme == 4) {
+            setTheme(R.style.BrownAndPinkAppTheme);
+        } else {
+            Log.wtf("SignInActivity", "Why is the theme option set to " + Integer.toString(theme)+ "?!?!");
+        }
 
         setContentView(R.layout.activity_home);
 
@@ -56,6 +74,7 @@ public class HomeActivity extends AppCompatActivity
         getSupportActionBar().setTitle("You are now logged in!");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -153,23 +172,13 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onSettingsInteraction(int theme) {
 //        Intent restartIntent = new Intent(this, HomeActivity.class);
-        switch (theme) {
-            case 1:
-                setTheme(R.style.BlueAndOragneAppTheme);
-                Log.wtf("homeActivity", "applied blue and orange");
-                break;
-            case 2:
-                setTheme(R.style.GreenAndAmberAppTheme);
-                Log.wtf("homeActivity", "applied green and amber");
-                break;
-            case 3 :
-                setTheme(R.style.RedAndBlueAppTheme);
-                Log.wtf("homeActivity", "applied Red and blue");
-                break;
-            case 4:
-                setTheme(R.style.BrownAndPinkAppTheme);
-                Log.wtf("homeActivity", "applied brown and pink");
-                break;
-        }
+        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor themeEditor = themePrefs.edit();
+        themeEditor.putInt("colorTheme", theme);
+        themeEditor.apply();
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 }

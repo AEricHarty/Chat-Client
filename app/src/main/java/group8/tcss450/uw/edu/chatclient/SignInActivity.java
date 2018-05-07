@@ -33,6 +33,24 @@ public class SignInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //get app color theme
+        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        int theme = themePrefs.getInt("colorTheme", 1);
+        // apply app theme to activity
+        if( theme == 1) {
+            setTheme(R.style.BlueAndOragneAppTheme);
+        } else if (theme == 2) {
+            setTheme(R.style.GreenAndAmberAppTheme);
+        } else if (theme == 3) {
+            setTheme(R.style.RedAndBlueAppTheme);
+        } else if (theme == 4) {
+            setTheme(R.style.BrownAndPinkAppTheme);
+        } else {
+            Log.wtf("SignInActivity", "Why is the theme option set to " + Integer.toString(theme)+ "?!?!");
+        }
+
+
         setContentView(R.layout.activity_sign_in);
         //setContentView(R.layout.activity_home);
 
@@ -174,6 +192,8 @@ public class SignInActivity extends AppCompatActivity implements
                     true)
                     .apply();
         }
+
+
     }
 
     /**
