@@ -1,7 +1,6 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -36,6 +35,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         mView = inflater.inflate(R.layout.fragment_login, container, false);
 
         Button b = mView.findViewById(R.id.loginButton);
@@ -55,38 +55,37 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (mListener != null) {
-            EditText emailText = mView.findViewById(R.id.logEmailText);
-            String email = emailText.getText().toString();
+            EditText usernameText = mView.findViewById(R.id.logUsernnameText);
+            String username = usernameText.getText().toString();
             EditText passText = mView.findViewById(R.id.logPasswordText);
             Editable password = passText.getText();
             boolean good = true;
 
             //Client side checks here
-            if(email.length() == 0 || password.length() == 0){
-                emailText.setError("Both fields must be filled");
+            if(username.length() == 0 || password.length() == 0){
+                usernameText.setError("Both fields must be filled");
                 good = false;
             }else{
-                //Uses regex to check for <>@<>.XXX email addresses
-                Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
-                Matcher mat = pattern.matcher(email);
-                if(!mat.matches()){
-                    emailText.setError("Must have valid email form");
-                    good = false;
-                }
-                if(email.length() < 4){
-                    emailText.setError("Email must be more than 3 chars in length");
+//                //Uses regex to check for <>@<>.XXX username
+//                Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+//                Matcher mat = pattern.matcher(username);
+//                if(!mat.matches()){
+//                    usernameText.setError("Must have valid email form");
+//                    good = false;
+//                }
+                if(username.length() < 3){
+                    usernameText.setError("Username must be at least 3 characters.");
                     good = false;
 
                 }
-                if(password.length() < 4){
-                    passText.setError("Password must be more than 3 chars in length");
-                    good = false;
-                }
+//                if(password.length() < 4){
+//                    passText.setError("Password must be more than 3 chars in length");
+//                    good = false;
+//                }
             }
 
             if(good){
-                Credentials cred = new Credentials.Builder(null, password)
-                        .addEmail(email)
+                Credentials cred = new Credentials.Builder(username, password)
                         .build();
                 mListener.onLoginAttempt(cred);
             }
@@ -124,7 +123,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void setError(String err) {
         //Log in unsuccessful for reason: err. Try again.
         //you may want to add error stuffs for the user here.
-        ((TextView) getView().findViewById(R.id.logEmailText))
+        ((TextView) getView().findViewById(R.id.logUsernnameText))
                 .setError("Login Unsuccessful");
     }
 
