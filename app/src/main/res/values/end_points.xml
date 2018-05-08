@@ -5,5 +5,6 @@
     <string name="ep_base_url">chat-server-450.herokuapp.com</string>
     <string name="ep_login">login</string>
     <string name="ep_register">register</string>
+    <string name="ep_verify">verify</string>
 
 </resources>

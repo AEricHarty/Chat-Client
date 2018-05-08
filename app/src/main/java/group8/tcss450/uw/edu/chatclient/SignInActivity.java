@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -25,7 +29,8 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  */
 public class SignInActivity extends AppCompatActivity implements
         LoginFragment.OnLoginFragmentInteractionListener,
-        RegisterFragment.OnRegisterFragmentInteractionListener {
+        RegisterFragment.OnRegisterFragmentInteractionListener,
+        RegisterResultFragment.OnVerifyFragmentInteractionListener {
 
     private Credentials mCredentials;
 
@@ -231,6 +236,8 @@ public class SignInActivity extends AppCompatActivity implements
      * Loads the RegisterResultFragment.
      *
      * @author Eric Harty - hartye@uw.edu
+     *
+     * @editor Phu-Lam Pham - ppham95@uw.edu
      */
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -238,6 +245,8 @@ public class SignInActivity extends AppCompatActivity implements
         RegisterResultFragment resultFragment = new RegisterResultFragment();
         Bundle args = new Bundle();
         args.putBoolean("result", success);
+        args.putString("username", mCredentials.getUsername());
+        args.putString("email", mCredentials.getEmail());
         resultFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
@@ -254,5 +263,76 @@ public class SignInActivity extends AppCompatActivity implements
      */
     private void handleErrorsInTask(String result) {
         Log.e("ASYNCT_TASK_ERROR", result);
+    }
+
+    @Override
+    public void onVerifyAttempt(String userName, String userEmail, String code) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_verify))
+                .build();
+        //build the JSONObject
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("username", userName);
+            msg.put("email", userEmail);
+            msg.put("code", code);
+        } catch (JSONException e) {
+            Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
+        }
+//        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleVerifyOnPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    private void handleVerifyOnPost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            loadVerificationResult(success);
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    private void loadVerificationResult(boolean success) {
+        if(findViewById(R.id.verifyButton) != null
+                && findViewById(R.id.verificationCodeInput) != null
+                && findViewById(R.id.resendVerificationButton) != null) {
+            EditText verificationInput = (EditText) findViewById(R.id.verificationCodeInput);
+            Button verifyButton = (Button) findViewById(R.id.verifyButton);
+            Button resendButton = (Button) findViewById(R.id.resendVerificationButton);
+            verificationInput.setEnabled(false);
+            verifyButton.setText("Account Verified");
+            verifyButton.setEnabled(false);
+            resendButton.setText("Go to Login");
+            resendButton.setOnClickListener(this::goBackToLogin);
+        }
+    }
+
+    private void goBackToLogin(View view) {
+        for (Fragment fragment:getSupportFragmentManager().getFragments()) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
+        getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        LoginFragment login = new LoginFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.signinActivity, login)
+                .addToBackStack(null);
+        transaction.commit();
     }
 }
