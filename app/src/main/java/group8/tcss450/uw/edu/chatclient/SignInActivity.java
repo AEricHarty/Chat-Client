@@ -293,11 +293,42 @@ public class SignInActivity extends AppCompatActivity implements
                 .build().execute();
     }
 
-    private void handleVerifyOnPost(String result) {
+    @Override
+    public void onResendCode(String userName, String userEmail) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_resend_code))
+                .build();
+        //build the JSONObject
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("username", userName);
+            msg.put("email", userEmail);
+        } catch (JSONException e) {
+            Log.wtf("RESEND VERIFICATION CODE", "Error creating JSON: " + e.getMessage());
+        }
+
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleResendOnPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    private void handleResendOnPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            loadVerificationResult(success);
+            if (success) {
+                if(findViewById(R.id.resendVerificationButton) != null) {
+                    Button b = findViewById(R.id.resendVerificationButton);
+                    b.setText("Another email has been sent. Send again?");
+                }
+            } else {
+                TextView t = (TextView) findViewById(R.id.resultDisplayMsg);
+                t.setText(resultsJSON.getString("message"));
+            }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
             //or it didn’t have what we expected in it.
@@ -307,7 +338,26 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    private void loadVerificationResult(boolean success) {
+    private void handleVerifyOnPost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            if (success) {
+                loadVerificationResult();
+            } else {
+                TextView t = (TextView) findViewById(R.id.resultDisplayMsg);
+                t.setText(resultsJSON.getString("message"));
+            }
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    private void loadVerificationResult() {
         if(findViewById(R.id.verifyButton) != null
                 && findViewById(R.id.verificationCodeInput) != null
                 && findViewById(R.id.resendVerificationButton) != null) {

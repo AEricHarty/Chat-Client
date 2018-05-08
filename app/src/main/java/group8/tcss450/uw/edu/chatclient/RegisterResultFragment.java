@@ -74,9 +74,15 @@ public class RegisterResultFragment extends Fragment {
         }
 
         verifyButton.setOnClickListener(this::onClick);
-
+        resendButton.setOnClickListener(this::onClickResend);
 
         return mView;
+    }
+
+    private void onClickResend(View view) {
+        if (mListener != null) {
+            mListener.onResendCode(userName, userEmai);
+        }
     }
 
     private void onClick(View view) {
@@ -124,6 +130,7 @@ public class RegisterResultFragment extends Fragment {
 
     public interface OnVerifyFragmentInteractionListener {
         void onVerifyAttempt(String userName, String userEmail, String code);
+        void onResendCode(String userName, String userEmail);
     }
 
 }

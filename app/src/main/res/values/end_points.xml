@@ -6,5 +6,5 @@
     <string name="ep_login">login</string>
     <string name="ep_register">register</string>
     <string name="ep_verify">verify</string>
-
+    <string name="ep_resend_code">resend</string>
 </resources>
