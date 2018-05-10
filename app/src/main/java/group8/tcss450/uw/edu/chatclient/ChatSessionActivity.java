@@ -42,13 +42,18 @@ public class ChatSessionActivity extends AppCompatActivity {
      */
     private boolean side = false;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //get app color theme
+
         SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
+
+        //SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
         int theme = themePrefs.getInt("colorTheme", 1);
         // apply app theme to activity
         if( theme == 1) {

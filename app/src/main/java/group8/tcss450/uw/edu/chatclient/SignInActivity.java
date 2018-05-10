@@ -67,6 +67,7 @@ public class SignInActivity extends AppCompatActivity implements
                                 Context.MODE_PRIVATE);
                 if (prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
                         false)) {
+                    //checkStayLoggedIn();
                     loadHome();
                 } else {
 
@@ -183,21 +184,24 @@ public class SignInActivity extends AppCompatActivity implements
      * @author Eric Harty - hartye@uw.edu
      */
     private void checkStayLoggedIn() {
-        if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
+        //if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
+
+
             SharedPreferences prefs =
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
                             Context.MODE_PRIVATE);
+            //save the username for later usage
             prefs.edit().putString(
                     getString(R.string.keys_prefs_username),
                     mCredentials.getUsername())
                     .apply();
+            //save the users “want” to stay logged in
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
                     true)
                     .apply();
-        }
-
+        //}
 
     }
 

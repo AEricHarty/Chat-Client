@@ -82,6 +82,8 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
 
@@ -108,10 +110,13 @@ public class HomeActivity extends AppCompatActivity
 
 
         if (id == R.id.logOutOption) {
+
             SharedPreferences prefs =
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
                             Context.MODE_PRIVATE);
+
+            //SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
             prefs.edit().remove(getString(R.string.keys_prefs_username));
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
@@ -145,7 +150,14 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_chat_list) {
-            loadFragment((new ChatListFragment()));
+
+            //loadFragment(new ChatFragment());
+
+            android.content.Intent intent = new android.content.Intent(this, ChatActivity.class);
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);

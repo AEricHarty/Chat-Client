@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="keys_shared_prefs">group8.tcss450.uw.edu.chatclient.PREFS</string>
+
 
     <string name="keys_prefs_username">username</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
@@ -10,5 +12,20 @@
 
     <string name="username_key">user_key</string>
     <string name="password_key">pass_key</string>
+
+
+    <string name="keys_prefs_time_stamp">ts key</string>
+
+    <string name="keys_json_username">username</string>
+    <string name="keys_json_password">password</string>
+    <string name="keys_json_email">email</string>
+    <string name="keys_json_firstname">first</string>
+    <string name="keys_json_lastname">last</string>
+    <string name="keys_json_message">message</string>
+    <string name="keys_json_messages">messages</string>
+    <string name="keys_json_success">success</string>
+    <string name="keys_json_chat_id">chatId</string>
+    <string name="keys_json_success_value_true">true</string>
+    <string name="keys_json_success_value_false">false</string>
 
 </resources>
