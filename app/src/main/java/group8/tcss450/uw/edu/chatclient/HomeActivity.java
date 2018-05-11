@@ -3,6 +3,7 @@ package group8.tcss450.uw.edu.chatclient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,7 +28,8 @@ import android.widget.RadioButton;
  */
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
-        ,SettingsFragment.OnSettingsInteractionListener{
+        ,SettingsFragment.OnSettingsInteractionListener
+        ,PendingConnectionsFragment.OnPendingConnectionsFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,9 +148,10 @@ public class HomeActivity extends AppCompatActivity
             loadFragment(new ConnectionsFragment());
         } else if (id == R.id.nav_new_connections) {
             loadFragment(new NewConnectionFragment());
-
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
+        } else if (id == R.id.nav_pending_connections){
+            loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
 
             //loadFragment(new ChatFragment());
@@ -192,5 +195,10 @@ public class HomeActivity extends AppCompatActivity
         Intent intent = getIntent();
         finish();
         startActivity(intent);
+    }
+
+    @Override
+    public void onPendingConnectionsFragmentInteraction(Uri uri) {
+        //TODO: Add stuff here for button clicks in PendingConnectionsFragment.
     }
 }

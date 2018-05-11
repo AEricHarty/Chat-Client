@@ -5,6 +5,9 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_chat_list"
+            android:icon="@drawable/ic_menu_chat_list"
+            android:title="Chat List" /><item
             android:id="@+id/nav_connections"
             android:icon="@drawable/ic_menu_connections"
             android:title="Connections" />
@@ -13,13 +16,16 @@
             android:icon="@drawable/ic_menu_new_connection"
             android:title="Create new Connection" />
         <item
+            android:id="@+id/nav_pending_connections"
+            android:icon="@drawable/ic_menu_pending_connections"
+            android:title="Pending Connections" />
+        <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_home"
             android:title="Home" />
-        <item
-            android:id="@+id/nav_chat_list"
-            android:icon="@drawable/ic_menu_chat_list"
-            android:title="Chat List" />
+
+
+
     </group>
 
   <!--
