@@ -53,7 +53,7 @@
     <string name="home_info_user_nickname">Nickname: userNickname</string>
 
 
-    <string name="writeMessage">Write a message</string>
+    <string name="chat_input_msg">Write a message</string>
 
 
 </resources>

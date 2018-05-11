@@ -13,6 +13,7 @@
     <string name="username_key">user_key</string>
     <string name="password_key">pass_key</string>
 
+    <string name="keys_send_button_description">Send</string>
 
     <string name="keys_prefs_time_stamp">ts key</string>
 
