@@ -61,18 +61,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             Editable password = passText.getText();
             boolean good = true;
 
-            //Client side checks here
             if(username.length() == 0 || password.length() == 0){
                 usernameText.setError("Both fields must be filled");
                 good = false;
             }else{
-                //Uses regex to check for <>@<>.XXX username
-                Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
-                Matcher mat = pattern.matcher(username);
-                if(!mat.matches()){
-                    usernameText.setError("Must have valid email form");
-                    good = false;
-                }
                 if(username.length() < 3){
                     usernameText.setError("Username must be at least 3 characters.");
                     good = false;
