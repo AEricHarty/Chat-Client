@@ -2,6 +2,7 @@ package group8.tcss450.uw.edu.chatclient;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -101,11 +102,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 }
             }
             if(good){
+
                 Credentials cred = new Credentials.Builder(username, password)
                         .addEmail(email).addFirstName(first).addLastName(last)
                         .build();
                 mListener.onRegisterAttempt(cred);
             }
+
         }
     }
 

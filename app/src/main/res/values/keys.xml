@@ -3,7 +3,7 @@
 
     <string name="keys_shared_prefs">group8.tcss450.uw.edu.chatclient.PREFS</string>
 
-
+    <string name="keys_prefs_email">email</string>
     <string name="keys_prefs_username">username</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
 
@@ -28,5 +28,9 @@
     <string name="keys_json_chat_id">chatId</string>
     <string name="keys_json_success_value_true">true</string>
     <string name="keys_json_success_value_false">false</string>
+
+    <string name="keys_json_current_username">memberid_a</string>
+    <string name="keys_json_connection_username">memberid_b</string>
+    <string name="keys_json_connection_verification">verified</string>
 
 </resources>
