@@ -76,7 +76,7 @@ public class NewConnectionFragment extends Fragment {
                 ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
                         .setText("");
                 Log.e("test3", "gets to success, should make toast");
-                //Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             Log.e("test4", "does not get to success");
