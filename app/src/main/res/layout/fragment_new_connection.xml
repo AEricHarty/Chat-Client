@@ -36,8 +36,8 @@
         android:id="@+id/newConnectionRequestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="63dp"
-        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="48dp"
+        android:layout_marginEnd="256dp"
         android:src="@drawable/ic_menu_new_connection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

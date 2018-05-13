@@ -41,17 +41,20 @@ public class NewConnectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_new_connection, container, false);
+        View v = inflater.inflate(R.layout.fragment_new_connection, container, false);
+        v.findViewById(R.id.newConnectionRequestButton).setOnClickListener(this::sendRequest);
+        return v;
     }
 
     private void sendRequest(final View theButton) {
+        Log.e("test1", "gets to sendRequest");
         JSONObject messageJson = new JSONObject();
         String newConnection = ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
                 .getText().toString();
         try {
             messageJson.put(getString(R.string.keys_json_current_username), mUsername);
             messageJson.put(getString(R.string.keys_json_connection_username), newConnection);
-            messageJson.put(getString(R.string.keys_json_connection_verification), 0);
+            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -64,16 +67,21 @@ public class NewConnectionFragment extends Fragment {
         Log.e("new Connections ERROR!!!", msg.toString());
     }
     private void endOfSendRequestTask(final String result) {
+        Log.e("test2", "gets to endofSendRequestTask");
         try {
             JSONObject res = new JSONObject(result);
+            Log.e("test", "gets to try part of endofSendRequestTask");
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
                 ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
                         .setText("");
-                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+                Log.e("test3", "gets to success, should make toast");
+                //Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
+            Log.e("test4", "does not get to success");
             e.printStackTrace();
+
         }
     }
 
