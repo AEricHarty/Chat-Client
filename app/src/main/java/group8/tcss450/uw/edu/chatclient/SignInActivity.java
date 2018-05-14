@@ -212,6 +212,18 @@ public class SignInActivity extends AppCompatActivity implements
      */
     public void loadHome() {
         Intent intent = new Intent(this, HomeActivity.class);
+        Bundle b = new Bundle();
+        EditText t = (EditText) findViewById(R.id.logUsernnameText);
+        String s = "";
+        if (t == null) {
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                            Context.MODE_PRIVATE);
+            s = prefs.getString("username", "");
+        } else {
+            s = t.getText().toString();
+        }
+        b.putString("username", s);
+        intent.putExtras(b);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

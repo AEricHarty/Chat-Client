@@ -19,7 +19,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RadioButton;
+import android.widget.ListView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
  * Home activity after logging in
@@ -29,8 +37,14 @@ import android.widget.RadioButton;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
         ,SettingsFragment.OnSettingsInteractionListener
-        ,PendingConnectionsFragment.OnPendingConnectionsFragmentInteractionListener{
+        ,PendingConnectionsFragment.OnPendingConnectionsFragmentInteractionListener
+        ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener {
 
+    private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
+
+    private SearchNewConnectionFragment.SearchConnectionAdapter adapter;
+
+    private String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -85,7 +99,9 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
+        Intent intent = getIntent();
+        userName = intent.getStringExtra("username");
+        System.out.println(userName);
     }
 
 
@@ -147,7 +163,8 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.nav_connections) {
             loadFragment(new ConnectionsFragment());
         } else if (id == R.id.nav_new_connections) {
-            loadFragment(new NewConnectionFragment());
+//            loadFragment(new NewConnectionFragment());
+            loadFragment(new SearchNewConnectionFragment());
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_pending_connections){
@@ -200,5 +217,79 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onPendingConnectionsFragmentInteraction(Uri uri) {
         //TODO: Add stuff here for button clicks in PendingConnectionsFragment.
+    }
+
+    @Override
+    public void onSearchAttempt(String username, String keyword,
+                                ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> data,
+                                SearchNewConnectionFragment.SearchConnectionAdapter adapter) {
+
+        searchContactList = data;
+        this.adapter = adapter;
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_search_contact))
+                .build();
+        //build the JSONObject
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("username", username);
+            msg.put("term", keyword);
+            System.out.println(msg);
+        } catch (JSONException e) {
+            Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
+        }
+//        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleSearchContact)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    private void handleSearchContact(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            if (success) {
+                System.out.println(resultsJSON);
+                populateSearchContactResult(resultsJSON);
+            }
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    private void populateSearchContactResult(JSONObject resultsJSON) {
+        try {
+            JSONArray array = resultsJSON.getJSONArray("message");
+
+            searchContactList.clear();
+            for (int i =0; i < array.length(); i++) {
+                JSONObject aContact = array.getJSONObject(i);
+                // PARSE JSON RESULTS HERE
+                String first = aContact.getString("firstname");
+                String last = aContact.getString("lastname");
+                String username = aContact.getString("username");
+                String email = aContact.getString("email");
+                searchContactList.add(new SearchNewConnectionFragment.SearchConnectionListItem(first, last, username, email));
+                adapter.notifyDataSetChanged();
+            }
+        } catch (JSONException e) {
+            Log.e("JSON_PARSE_ERROR", "Error when populating contacts.");
+        }
+    }
+
+    private void handleErrorsInTask(String result) {
+        Log.e("ASYNCT_TASK_ERROR", result);
     }
 }
