@@ -29,8 +29,8 @@
     <string name="keys_json_success_value_true">true</string>
     <string name="keys_json_success_value_false">false</string>
 
-    <string name="keys_json_current_username">memberid_a</string>
-    <string name="keys_json_connection_username">memberid_b</string>
+    <string name="keys_json_current_username">username</string>
+    <string name="keys_json_connection_username">connection</string>
     <string name="keys_json_connection_verification">verified</string>
 
 </resources>
