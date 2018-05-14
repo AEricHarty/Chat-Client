@@ -3,10 +3,12 @@ package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +22,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
@@ -152,7 +158,46 @@ public class SearchNewConnectionFragment extends Fragment {
             itemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Uri uri = new Uri.Builder()
+                            .scheme("https")
+                            .appendPath(getString(R.string.ep_base_url))
+                            .appendPath(getString(R.string.ep_send_request))
+                            .build();
+                    //build the JSONObject
+                    JSONObject msg = new JSONObject();
+                    try {
+                        msg.put("username", userName);
+                        msg.put("connection", currentItem.username);
+                        System.out.println(msg);
+                    } catch (JSONException e) {
+                        Log.wtf("SEND REQUEST", "Error creating JSON: " + e.getMessage());
+                    }
 
+                    new SendPostAsyncTask.Builder(uri.toString(), msg)
+                            .onPostExecute(this::handleAddContact)
+                            .onCancelled(this::handleErrorsInTask)
+                            .build().execute();
+                }
+
+                private void handleErrorsInTask(String result) {
+                    Log.e("ASYNCT_TASK_ERROR", result);
+                }
+
+                private void handleAddContact(String result) {
+                    try {
+                        JSONObject resultsJSON = new JSONObject(result);
+                        boolean success = resultsJSON.getBoolean("success");
+                        if (success) {
+                            itemButton.setEnabled(false);
+                            itemButton.setText("Sent");
+                        }
+                    } catch (JSONException e) {
+                        //It appears that the web service didn’t return a JSON formatted String
+                        //or it didn’t have what we expected in it.
+                        Log.e("JSON_PARSE_ERROR", result
+                                + System.lineSeparator()
+                                + e.getMessage());
+                    }
                 }
             });
 
