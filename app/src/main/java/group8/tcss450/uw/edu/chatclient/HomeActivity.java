@@ -40,12 +40,12 @@ public class HomeActivity extends AppCompatActivity
         ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
-    private ArrayList<pendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
-    private ArrayList<pendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
+    private ArrayList<PendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
+    private ArrayList<PendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
 
     private SearchNewConnectionFragment.SearchConnectionAdapter adapter;
-    private pendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
-    private pendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
+    private PendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
+    private PendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
 
     private String userName;
     @Override
@@ -138,7 +138,7 @@ public class HomeActivity extends AppCompatActivity
                             Context.MODE_PRIVATE);
 
             //SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
-            prefs.edit().remove(getString(R.string.keys_prefs_username));
+            prefs.edit().remove(getString(R.string.keys_prefs_username)).apply();
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
                     false)
@@ -171,7 +171,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_pending_connections){
-            loadFragment(new pendingConnectionsFragment());
+            loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
 
             //loadFragment(new ChatFragment());

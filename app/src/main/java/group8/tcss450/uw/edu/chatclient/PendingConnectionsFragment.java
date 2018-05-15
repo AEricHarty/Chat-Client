@@ -31,7 +31,7 @@ import java.util.List;
 import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
-public class pendingConnectionsFragment extends Fragment {
+public class PendingConnectionsFragment extends Fragment {
     public ArrayList<IncomingRequestListItem> incomingData = new ArrayList<IncomingRequestListItem>();
     public ArrayList<OutgoingRequestListItem> outgoingData = new ArrayList<OutgoingRequestListItem>();
 
@@ -45,7 +45,7 @@ public class pendingConnectionsFragment extends Fragment {
     protected IncomingRequestAdapter incomingAdapter;
     protected OutgoingRequestAdapter outgoingAdapter;
 
-    public pendingConnectionsFragment() {
+    public PendingConnectionsFragment() {
         // Required empty public constructor
     }
 
@@ -379,7 +379,7 @@ public class pendingConnectionsFragment extends Fragment {
                     String last = aContact.getString("lastname");
                     String username = aContact.getString("username");
                     String email = aContact.getString("email");
-                    incomingData.add(new pendingConnectionsFragment.IncomingRequestListItem(first, last, username, email));
+                    incomingData.add(new PendingConnectionsFragment.IncomingRequestListItem(first, last, username, email));
                     incomingAdapter.notifyDataSetChanged();
                 }
             } catch (JSONException e) {
@@ -423,7 +423,7 @@ public class pendingConnectionsFragment extends Fragment {
                     String last = aContact.getString("lastname");
                     String username = aContact.getString("username");
                     String email = aContact.getString("email");
-                    outgoingData.add(new pendingConnectionsFragment.OutgoingRequestListItem(first, last, username, email));
+                    outgoingData.add(new PendingConnectionsFragment.OutgoingRequestListItem(first, last, username, email));
                     outgoingAdapter.notifyDataSetChanged();
                 }
             } catch (JSONException e) {
