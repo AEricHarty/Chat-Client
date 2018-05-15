@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +21,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
@@ -31,6 +36,8 @@ import java.util.List;
  */
 public class SearchNewConnectionFragment extends Fragment {
 
+    private String mUsername;
+    private String mSendUrl;
     public ArrayList<SearchConnectionListItem> data = new ArrayList<SearchConnectionListItem>();
     private EditText searchContactTextView;
     private Button searchContactButton;
@@ -72,6 +79,9 @@ public class SearchNewConnectionFragment extends Fragment {
                 this.getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
+
+
+
 
         return v;
     }
@@ -157,6 +167,45 @@ public class SearchNewConnectionFragment extends Fragment {
             });
 
             return listItem;
+        }
+    }
+
+    private void sendRequest(final View theButton, String newUsername) {
+        Log.e("test1", "gets to sendRequest");
+        JSONObject messageJson = new JSONObject();
+
+        try {
+            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
+            messageJson.put(getString(R.string.keys_json_connection_username), newUsername);
+            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(mSendUrl, messageJson)
+                .onPostExecute(this::endOfSendRequestTask)
+                .onCancelled(this::handleError)
+                .build().execute();
+    }
+    private void handleError(final String msg) {
+        Log.e("new Connections ERROR!!!", msg.toString());
+    }
+
+    private void endOfSendRequestTask(final String result) {
+        Log.e("test2", "gets to endofSendRequestTask");
+        try {
+            JSONObject res = new JSONObject(result);
+            Log.e("test", "gets to try part of endofSendRequestTask");
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
+                        .setText("");
+                Log.e("test3", "gets to success, should make toast");
+                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            Log.e("test4", "does not get to success");
+            e.printStackTrace();
+
         }
     }
 

@@ -173,7 +173,7 @@ public class HomeActivity extends AppCompatActivity
 
             //loadFragment(new ChatFragment());
 
-            android.content.Intent intent = new android.content.Intent(this, ChatActivity.class);
+            android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();

@@ -57,8 +57,10 @@
 
     <string name="chat_input_username">Username</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="chat_add__chat_member">Add</string>
+    <string name="chat_leave_chat">Leave</string>
+    <string name="chat_go_home">Home</string>
+    <string name="chat_add_stranger">New</string>
+    <string name="chat_session_activity">ChatSessionActivity</string>
 
 </resources>

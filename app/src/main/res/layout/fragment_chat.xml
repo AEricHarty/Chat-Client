@@ -5,7 +5,8 @@
     android:id="@+id/chatFragID"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatFragment">
+    tools:context=".ChatFragment"
+    tools:layout_editor_absoluteY="81dp">
 
     <ScrollView
         android:id="@+id/chatOutputScrollView"
@@ -59,6 +60,43 @@
         app:layout_constraintEnd_toStartOf="@+id/chatSendButton"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/chatAddChatMemberButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/chat_add__chat_member"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/chatAddConnectionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/chat_add_stranger"
+        app:layout_constraintStart_toEndOf="@+id/chatAddChatMemberButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/chatLeaveChatButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/chat_leave_chat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/chatGoHomeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/chat_go_home"
+        app:layout_constraintStart_toStartOf="@+id/chatAddConnectionButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
