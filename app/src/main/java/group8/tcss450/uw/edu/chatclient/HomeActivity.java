@@ -87,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        getSupportActionBar().setTitle("You are now logged in!");
+        getSupportActionBar().setTitle("Chat");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
 

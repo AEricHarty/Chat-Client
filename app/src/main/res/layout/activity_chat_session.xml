@@ -25,8 +25,9 @@
         android:text="Send"
         app:layout_constraintBottom_toTopOf="@+id/msgview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/chatAddToChatButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/msg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 
     <ListView
@@ -39,7 +40,7 @@
         android:transcriptMode="alwaysScroll"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/msg"
-        app:layout_constraintTop_toBottomOf="@+id/send"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/chatLeaveChatButton"></ListView>
 
     <Button
         android:id="@+id/chatAddStrangerButton"
