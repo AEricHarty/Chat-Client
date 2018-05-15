@@ -184,9 +184,7 @@ public class SignInActivity extends AppCompatActivity implements
      * @author Eric Harty - hartye@uw.edu
      */
     private void checkStayLoggedIn() {
-        //if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
-
-
+        if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
             SharedPreferences prefs =
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
@@ -201,8 +199,7 @@ public class SignInActivity extends AppCompatActivity implements
                     getString(R.string.keys_prefs_stay_logged_in),
                     true)
                     .apply();
-        //}
-
+        }
     }
 
     /**
