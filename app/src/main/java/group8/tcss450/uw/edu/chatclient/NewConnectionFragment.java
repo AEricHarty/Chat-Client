@@ -66,7 +66,6 @@ public class NewConnectionFragment extends Fragment {
     private void handleError(final String msg) {
         Log.e("new Connections ERROR!!!", msg.toString());
     }
-
     private void endOfSendRequestTask(final String result) {
         Log.e("test2", "gets to endofSendRequestTask");
         try {

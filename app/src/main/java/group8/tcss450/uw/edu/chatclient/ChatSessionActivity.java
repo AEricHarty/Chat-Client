@@ -1,7 +1,6 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -51,15 +50,6 @@ public class ChatSessionActivity extends AppCompatActivity {
 
         //get app color theme
 
-        /*
-        ChatFragment chatFragment = new ChatFragment();
-        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.chatSessionActivityLayout, chatFragment);
-        // Commit the transaction
-        transaction.commit();
-        */
-
         SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
 
@@ -79,19 +69,6 @@ public class ChatSessionActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_chat_session);
-
-
-        Button home = (Button) findViewById(R.id.chatGoHomeButton);
-        home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent intent = new android.content.Intent(arg0.getContext(), HomeActivity.class);
-                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
-        });
-
 
         buttonSend = (Button) findViewById(R.id.send);
 
