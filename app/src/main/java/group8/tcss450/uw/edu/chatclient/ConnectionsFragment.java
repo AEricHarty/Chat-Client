@@ -1,13 +1,8 @@
 package group8.tcss450.uw.edu.chatclient;
 
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,23 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.List;
-
-import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
@@ -40,12 +24,12 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 public class ConnectionsFragment extends Fragment {
 
-    private ListView connectionList;
-    private ConnectionsAdapter connectionAdapter;
-    private ArrayList<Connection> connectionListData = new ArrayList<>();
-    private SearchView searchView;
-    private String userName;
-    private ConnectionsFragmentInteractionListener mListener;
+    private EditText editTxt;
+    private ImageButton btn;
+    private ListView list;
+    private ArrayList arrayList;
+    private ArrayAdapter<String> adapter;
+    private SearchView sv;
 
     public ConnectionsFragment() {
         // Required empty public constructor
@@ -57,28 +41,42 @@ public class ConnectionsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_connections, container, false);
-        Bundle b = this.getActivity().getIntent().getExtras();
-        if(b != null) {
-            userName = b.getString("username");
-        }
 
 
-        connectionList = (ListView) v.findViewById(R.id.connectionList);
+        // Code populate connections list using ArrayAdapter.
+        // Inflate the layout for this fragment
+        editTxt = (EditText) v.findViewById(R.id.addConnectionTextBox);
+        btn = (ImageButton) v.findViewById(R.id.addConnectionButton);
+        list = (ListView) v.findViewById(R.id.connectionsList);
+        arrayList = new ArrayList<String>();
 
-        connectionAdapter = new ConnectionsAdapter(v.getContext(), connectionListData);
+        // Adapter: You need three parameters 'the context, id of the layout (it will be where the data is shown),
+        // and the array that contains the data
+        adapter = new ArrayAdapter<String>(v.getContext(), android.R.layout.simple_spinner_dropdown_item, arrayList);
 
         // Here, you set the data in your ListView
-        connectionList.setAdapter(connectionAdapter);
+        list.setAdapter(adapter);
 
-//        connectionListData.add(new Connection("1", "lam", "pham", "ppham95@uw.edu"));
-//        connectionListData.add(new Connection("1", "ding", "dong", "dingidongo9@gmail.com"));
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            // For now add new item to ListView. Later on, use this to send a friend request
+            public void onClick(View view) {
+
+                // this line adds the data of your EditText and puts in your array
+                arrayList.add(editTxt.getText().toString());
+                editTxt.setText("");
+                // next thing you have to do is check if your adapter has changed
+                adapter.notifyDataSetChanged();
+            }
+        });
 
 
 
-        searchView=(SearchView) v.findViewById(R.id.searchBox);
-        searchView.setIconified(false);
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        sv=(SearchView) v.findViewById(R.id.searchBox);
+        sv.setIconified(false);
+        sv.setIconifiedByDefault(false);
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String text) {
                 // TODO Auto-generated method stub
@@ -87,122 +85,19 @@ public class ConnectionsFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String text) {
-                connectionAdapter.getFilter().filter(text);
+                adapter.getFilter().filter(text);
                 return false;
             }
         });
-        if (mListener != null) {
-            mListener.onGetContactsAttempt(userName, connectionListData, connectionAdapter);
-        }
+
+
+
+
         return v;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ConnectionsFragmentInteractionListener) {
-            mListener = (ConnectionsFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement ConnectionsFragmentInteractionListener");
-        }
-    }
-
-    public static class Connection {
-        private String userId;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private boolean selected;
-
-        public Connection(String userId, String firstName, String lastName, String email) {
-            this.userId = userId;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.email = email;
-            this.selected = false;
-        }
-    }
-
-    public class ConnectionsAdapter extends ArrayAdapter<Connection> {
-        private Context mContext;
-        private List<Connection> mList;
-        ArrayList<Connection> mStringFilterList;
-
-        public ConnectionsAdapter(Context context, ArrayList<Connection> list) {
-            super(context, 0, list);
-            mContext = context;
-            mList = list;
-            mStringFilterList = list;
-        }
-
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View listItem = convertView;
-            if(listItem == null) {
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.connection_list_item, parent, false);
-            }
-
-            Connection currentItem = mList.get(position);
-
-            CheckedTextView itemName = (CheckedTextView) listItem.findViewById(R.id.connectionListItemName);
-            itemName.setText(currentItem.firstName + " " + currentItem.lastName);
-            itemName.setChecked(false);
-
-            return listItem;
-        }
-
-
-//        @NonNull
-//        @Override
-//        public Filter getFilter() {
-//            Filter filter = new Filter() {
-//                protected FilterResults performFiltering(CharSequence constraint) {
-//                    FilterResults results = new FilterResults();
-//                    if (constraint != null && constraint.length() > 0) {
-//                        ArrayList<Connection> filterList = new ArrayList<>();
-//                        System.out.println(mStringFilterList);
-//                        for (int i = 0; i < mStringFilterList.size(); i++) {
-//                            if ((mStringFilterList.get(i).firstName + " " + mStringFilterList.get(i).lastName.toUpperCase())
-//                                    .contains(constraint.toString().toUpperCase())) {
-//
-//                                Connection conn = new Connection(mStringFilterList.get(i).userId,
-//                                        mStringFilterList.get(i).firstName,
-//                                        mStringFilterList.get(i).lastName,
-//                                        mStringFilterList.get(i).email);
-//                                filterList.add(conn);
-//                            }
-//                        }
-//                        results.count = filterList.size();
-//                        results.values = filterList;
-//                    } else {
-//                        results.count = mStringFilterList.size();
-//                        results.values = mStringFilterList;
-//                    }
-//                    return results;
-//                }
-//
-//                @Override
-//                protected void publishResults(CharSequence constraint, FilterResults results) {
-//                    mList = (ArrayList<Connection>) results.values;
-//                    notifyDataSetChanged();
-//                }
-//            };
-//            return filter;
-//        }
-    }
-
-    public interface ConnectionsFragmentInteractionListener {
-        void onGetContactsAttempt(String userName, ArrayList<Connection> data, ConnectionsAdapter adapter);
     }
 }

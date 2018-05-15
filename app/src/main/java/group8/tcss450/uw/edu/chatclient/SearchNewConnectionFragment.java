@@ -37,6 +37,8 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  */
 public class SearchNewConnectionFragment extends Fragment {
 
+    private String mUsername;
+    private String mSendUrl;
     public ArrayList<SearchConnectionListItem> data = new ArrayList<SearchConnectionListItem>();
     private EditText searchContactTextView;
     private Button searchContactButton;
@@ -48,7 +50,6 @@ public class SearchNewConnectionFragment extends Fragment {
     public SearchNewConnectionFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +79,9 @@ public class SearchNewConnectionFragment extends Fragment {
                 this.getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
+
+
+
 
         return v;
     }
@@ -205,9 +209,47 @@ public class SearchNewConnectionFragment extends Fragment {
         }
     }
 
+    private void sendRequest(final View theButton, String newUsername) {
+        Log.e("test1", "gets to sendRequest");
+        JSONObject messageJson = new JSONObject();
+
+        try {
+            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
+            messageJson.put(getString(R.string.keys_json_connection_username), newUsername);
+            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(mSendUrl, messageJson)
+                .onPostExecute(this::endOfSendRequestTask)
+                .onCancelled(this::handleError)
+                .build().execute();
+    }
+    private void handleError(final String msg) {
+        Log.e("new Connections ERROR!!!", msg.toString());
+    }
+
+    private void endOfSendRequestTask(final String result) {
+        Log.e("test2", "gets to endofSendRequestTask");
+        try {
+            JSONObject res = new JSONObject(result);
+            Log.e("test", "gets to try part of endofSendRequestTask");
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
+                        .setText("");
+                Log.e("test3", "gets to success, should make toast");
+                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            Log.e("test4", "does not get to success");
+            e.printStackTrace();
+
+        }
+    }
+
     public interface SearchContactFragmentInteractionListener {
         void onSearchAttempt(String userName, String keyword, ArrayList<SearchConnectionListItem> data, SearchConnectionAdapter adapter);
     }
-
 
 }

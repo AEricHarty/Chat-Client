@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -36,15 +37,15 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
         ,SettingsFragment.OnSettingsInteractionListener
-        ,PendingConnectionsFragment.OnPendingConnectionsFragmentInteractionListener
-        ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener
-        , ConnectionsFragment.ConnectionsFragmentInteractionListener {
+        ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
-    private ArrayList<ConnectionsFragment.Connection> connectionList;
+    private ArrayList<PendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
+    private ArrayList<PendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
 
-    private SearchNewConnectionFragment.SearchConnectionAdapter searchConnectionAdapter;
-    private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
+    private SearchNewConnectionFragment.SearchConnectionAdapter adapter;
+    private PendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
+    private PendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
 
     private String userName;
     @Override
@@ -89,7 +90,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        getSupportActionBar().setTitle("You are now logged in!");
+        getSupportActionBar().setTitle("Chat");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
 
@@ -137,7 +138,7 @@ public class HomeActivity extends AppCompatActivity
                             Context.MODE_PRIVATE);
 
             //SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
-            prefs.edit().remove(getString(R.string.keys_prefs_username));
+            prefs.edit().remove(getString(R.string.keys_prefs_username)).apply();
             prefs.edit().putBoolean(
                     getString(R.string.keys_prefs_stay_logged_in),
                     false)
@@ -175,21 +176,16 @@ public class HomeActivity extends AppCompatActivity
 
             //loadFragment(new ChatFragment());
 
-            android.content.Intent intent = new android.content.Intent(this, ChatActivity.class);
+            android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
-
 
     // Loads the fragments
     private void loadFragment(Fragment frag) {
@@ -201,7 +197,6 @@ public class HomeActivity extends AppCompatActivity
         // Commit the transaction
         transaction.commit();
     }
-
 
     @Override
     public void onSettingsInteraction(int theme) {
@@ -217,17 +212,12 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPendingConnectionsFragmentInteraction(Uri uri) {
-        //TODO: Add stuff here for button clicks in PendingConnectionsFragment.
-    }
-
-    @Override
     public void onSearchAttempt(String username, String keyword,
                                 ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> data,
                                 SearchNewConnectionFragment.SearchConnectionAdapter adapter) {
 
         searchContactList = data;
-        this.searchConnectionAdapter = adapter;
+        this.adapter = adapter;
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -284,7 +274,7 @@ public class HomeActivity extends AppCompatActivity
                 String username = aContact.getString("username");
                 String email = aContact.getString("email");
                 searchContactList.add(new SearchNewConnectionFragment.SearchConnectionListItem(first, last, username, email));
-                searchConnectionAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
             Log.e("JSON_PARSE_ERROR", "Error when populating contacts.");
@@ -295,70 +285,6 @@ public class HomeActivity extends AppCompatActivity
         Log.e("ASYNCT_TASK_ERROR", result);
     }
 
-    @Override
-    public void onGetContactsAttempt(String username, ArrayList<ConnectionsFragment.Connection> data, ConnectionsFragment.ConnectionsAdapter adapter) {
-        this.connectionsAdapter = adapter;
-        this.connectionList = data;
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_get_contacts))
-                .build();
-        //build the JSONObject
-        JSONObject msg = new JSONObject();
-        try {
-            msg.put("username", username);
-            System.out.println(msg);
-        } catch (JSONException e) {
-            Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
-        }
-//        mCredentials = cred;
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
-        new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleGetContacts)
-                .onCancelled(this::handleErrorsInTask)
-                .build().execute();
 
-    }
 
-    private void handleGetContacts(String result) {
-        try {
-            JSONObject resultsJSON = new JSONObject(result);
-            boolean success = resultsJSON.getBoolean("success");
-            if (success) {
-                System.out.println(resultsJSON);
-                populateGetContactsResult(resultsJSON);
-            }
-        } catch (JSONException e) {
-            //It appears that the web service didn’t return a JSON formatted String
-            //or it didn’t have what we expected in it.
-            Log.e("JSON_PARSE_ERROR", result
-                    + System.lineSeparator()
-                    + e.getMessage());
-        }
-    }
-
-    private void populateGetContactsResult(JSONObject resultsJSON) {
-        try {
-            JSONArray array = resultsJSON.getJSONArray("message");
-
-            connectionList.clear();
-            for (int i =0; i < array.length(); i++) {
-                JSONObject aContact = array.getJSONObject(i);
-                // PARSE JSON RESULTS HERE
-                String memberId = aContact.getString("memberid");
-                String first = aContact.getString("firstname");
-                String last = aContact.getString("lastname");
-                String username = aContact.getString("username");
-                String email = aContact.getString("email");
-                connectionList.add(new ConnectionsFragment.Connection(memberId, first, last, email));
-                connectionsAdapter.notifyDataSetChanged();
-            }
-        } catch (JSONException e) {
-            Log.e("JSON_PARSE_ERROR", "Error when populating contacts.");
-        }
-    }
 }
