@@ -18,6 +18,8 @@
     <string name="keys_prefs_time_stamp">ts key</string>
 
     <string name="keys_json_username">username</string>
+    <string name="keys_json_otherUsername">otherUsername</string>
+    <string name="keys_json_answer">answer</string>
     <string name="keys_json_password">password</string>
     <string name="keys_json_email">email</string>
     <string name="keys_json_firstname">first</string>

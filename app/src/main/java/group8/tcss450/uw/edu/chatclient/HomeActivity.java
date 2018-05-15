@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -37,12 +37,15 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
         ,SettingsFragment.OnSettingsInteractionListener
-        ,PendingConnectionsFragment.OnPendingConnectionsFragmentInteractionListener
         ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
+    private ArrayList<pendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
+    private ArrayList<pendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
 
     private SearchNewConnectionFragment.SearchConnectionAdapter adapter;
+    private pendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
+    private pendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
 
     private String userName;
     @Override
@@ -168,7 +171,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_home) {
             loadFragment(new HomeInformationFragment());
         } else if (id == R.id.nav_pending_connections){
-            loadFragment(new PendingConnectionsFragment());
+            loadFragment(new pendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
 
             //loadFragment(new ChatFragment());
@@ -177,17 +180,12 @@ public class HomeActivity extends AppCompatActivity
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
-
 
     // Loads the fragments
     private void loadFragment(Fragment frag) {
@@ -200,7 +198,6 @@ public class HomeActivity extends AppCompatActivity
         transaction.commit();
     }
 
-
     @Override
     public void onSettingsInteraction(int theme) {
 //        Intent restartIntent = new Intent(this, HomeActivity.class);
@@ -212,11 +209,6 @@ public class HomeActivity extends AppCompatActivity
         Intent intent = getIntent();
         finish();
         startActivity(intent);
-    }
-
-    @Override
-    public void onPendingConnectionsFragmentInteraction(Uri uri) {
-        //TODO: Add stuff here for button clicks in PendingConnectionsFragment.
     }
 
     @Override
@@ -292,4 +284,7 @@ public class HomeActivity extends AppCompatActivity
     private void handleErrorsInTask(String result) {
         Log.e("ASYNCT_TASK_ERROR", result);
     }
+
+
+
 }

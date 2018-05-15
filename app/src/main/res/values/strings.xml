@@ -52,6 +52,12 @@
     <string name="home_info_user_name">Username: userName</string>
     <string name="home_info_user_nickname">Nickname: userNickname</string>
 
+    <string name="pending_connections_title">Pending Connections:</string>
+    <string name="pending_connections_outgoing">Outgoing Requests:</string>
+    <string name="pending_connections_incoming">Incoming Requests:</string>
+    <string name="pending_connections_accept">Accept</string>
+    <string name="pending_connections_deny">Deny</string>
+    <string name="pending_connections_cancel">Cancel</string>
 
     <string name="chat_input_msg">Write a message</string>
 
@@ -62,5 +68,7 @@
     <string name="chat_go_home">Home</string>
     <string name="chat_add_stranger">New</string>
     <string name="chat_session_activity">ChatSessionActivity</string>
+
+
 
 </resources>
