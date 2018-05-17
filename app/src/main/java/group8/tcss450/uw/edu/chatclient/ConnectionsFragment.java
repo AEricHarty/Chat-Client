@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
@@ -47,7 +49,7 @@ public class ConnectionsFragment extends Fragment {
     private SearchView searchView;
     private String userName;
     private ConnectionsFragmentInteractionListener mListener;
-    private ArrayList<Connection> currentSelectedConnections = new ArrayList<>();
+    private HashSet<Connection> currentSelectedConnections = new HashSet<>();
 
     public ConnectionsFragment() {
         // Required empty public constructor
@@ -160,6 +162,21 @@ public class ConnectionsFragment extends Fragment {
             CheckedTextView itemName = (CheckedTextView) listItem.findViewById(R.id.connectionListItemName);
             itemName.setText(currentItem.firstName + " " + currentItem.lastName);
             CheckBox itemCheckBox = (CheckBox) listItem.findViewById(R.id.connectionListItemCheckBox);
+            itemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        currentSelectedConnections.add(currentItem);
+                    } else {
+                        if(currentSelectedConnections.contains(currentItem)) {
+                            currentSelectedConnections.remove(currentItem);
+                        }
+                    }
+                    for (Connection s : currentSelectedConnections) {
+                        System.out.println(s.email);
+                    }
+                }
+            });
 
             return listItem;
         }
