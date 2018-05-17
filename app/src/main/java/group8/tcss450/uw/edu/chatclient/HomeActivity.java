@@ -107,7 +107,7 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         userName = intent.getStringExtra("username");
-        System.out.println(userName);
+        //System.out.println(userName);
     }
 
 
@@ -232,7 +232,7 @@ public class HomeActivity extends AppCompatActivity
         try {
             msg.put("username", username);
             msg.put("term", keyword);
-            System.out.println(msg);
+            //System.out.println(msg);
         } catch (JSONException e) {
             Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
         }
@@ -252,7 +252,7 @@ public class HomeActivity extends AppCompatActivity
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                System.out.println(resultsJSON);
+                // System.out.println(resultsJSON);
                 populateSearchContactResult(resultsJSON);
             }
         } catch (JSONException e) {
@@ -297,7 +297,7 @@ public class HomeActivity extends AppCompatActivity
         JSONObject msg = new JSONObject();
         try {
             msg.put("username", username);
-            System.out.println(msg);
+            //System.out.println(msg);
         } catch (JSONException e) {
             Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
         }
@@ -318,7 +318,7 @@ public class HomeActivity extends AppCompatActivity
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                System.out.println(resultsJSON);
+                //System.out.println(resultsJSON);
                 populateGetContactsResult(resultsJSON);
             }
         } catch (JSONException e) {

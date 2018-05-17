@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.Filter;
@@ -46,6 +47,7 @@ public class ConnectionsFragment extends Fragment {
     private SearchView searchView;
     private String userName;
     private ConnectionsFragmentInteractionListener mListener;
+    private ArrayList<Connection> currentSelectedConnections = new ArrayList<>();
 
     public ConnectionsFragment() {
         // Required empty public constructor
@@ -157,7 +159,7 @@ public class ConnectionsFragment extends Fragment {
 
             CheckedTextView itemName = (CheckedTextView) listItem.findViewById(R.id.connectionListItemName);
             itemName.setText(currentItem.firstName + " " + currentItem.lastName);
-            itemName.setChecked(false);
+            CheckBox itemCheckBox = (CheckBox) listItem.findViewById(R.id.connectionListItemCheckBox);
 
             return listItem;
         }
