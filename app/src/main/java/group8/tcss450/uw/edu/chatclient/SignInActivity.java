@@ -30,7 +30,8 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 public class SignInActivity extends AppCompatActivity implements
         LoginFragment.OnLoginFragmentInteractionListener,
         RegisterFragment.OnRegisterFragmentInteractionListener,
-        RegisterResultFragment.OnVerifyFragmentInteractionListener {
+        RegisterResultFragment.OnVerifyFragmentInteractionListener,
+        ResetPasswordFragment.OnFragmentInteractionListener{
 
     private Credentials mCredentials;
 
@@ -55,7 +56,6 @@ public class SignInActivity extends AppCompatActivity implements
             Log.wtf("SignInActivity", "Why is the theme option set to " + Integer.toString(theme)+ "?!?!");
         }
 
-
         setContentView(R.layout.activity_sign_in);
         //setContentView(R.layout.activity_home);
 
@@ -70,7 +70,6 @@ public class SignInActivity extends AppCompatActivity implements
                     //checkStayLoggedIn();
                     loadHome();
                 } else {
-
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.signinActivity, new LoginFragment(),
                                     getString(R.string.keys_fragment_login))
@@ -107,47 +106,6 @@ public class SignInActivity extends AppCompatActivity implements
     }
 
     /**
-     * Transitions to the registerFragment.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
-    @Override
-    public void onRegisterClicked() {
-        RegisterFragment registerFragment = new RegisterFragment();
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.signinActivity, registerFragment)
-                .addToBackStack(null);
-        transaction.commit();
-    }
-
-    /**
-     * Builds JSON and starts new AsyncTask to send Registration post.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
-    @Override
-    public void onRegisterAttempt(Credentials cred) {
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_register))
-                .build();
-        //build the JSONObject
-        JSONObject msg = cred.asJSONObject();
-        mCredentials = cred;
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
-        new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleRegisterOnPost)
-                .onCancelled(this::handleErrorsInTask)
-                .build().execute();
-    }
-
-    /**
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param result the JSON formatted String response from the web service
@@ -176,6 +134,168 @@ public class SignInActivity extends AppCompatActivity implements
                     + System.lineSeparator()
                     + e.getMessage());
         }
+    }
+
+    /**
+     * Builds JSON and starts new AsyncTask to send first reset_password post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onEmailClicked(Credentials cred) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_reset_password_email))
+                .build();
+        //build the JSONObject
+        JSONObject msg = cred.asJSONObject();
+        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPreExecute(this::handleResetPre)
+                .onPostExecute(this::handleResetEmailPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    private void handleResetPre() {
+        ResetPasswordFragment resetFragment = (ResetPasswordFragment) getSupportFragmentManager().
+                findFragmentByTag(getString(R.string.reset_pass_tag));
+        resetFragment.handleProgressStart();
+    }
+
+    /**
+     * Handle onPostExecute of the AsynceTask. The result from our webservice is
+     * a JSON formatted String. Parse it for success or failure.
+     * @param result the JSON formatted String response from the web service
+     */
+    private void handleResetEmailPost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            ResetPasswordFragment resetFragment = (ResetPasswordFragment) getSupportFragmentManager().
+                    findFragmentByTag(getString(R.string.reset_pass_tag));
+
+            if (success) {
+                resetFragment.handleEmailSuccess();
+            } else {
+                resetFragment.handleEmailFail();
+            }
+        } catch (JSONException e) {
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    /**
+     * Builds JSON and starts new AsyncTask to send second reset_password post.
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onCodeClicked(Credentials cred) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_reset_password_code))
+                .build();
+        //build the JSONObject
+        JSONObject msg = cred.asJSONObject();
+        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPreExecute(this::handleResetPre)
+                .onPostExecute(this::handleResetCodePost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    /**
+     * Handle onPostExecute of the AsynceTask. The result from our webservice is
+     * a JSON formatted String. Parse it for success or failure.
+     * @param result the JSON formatted String response from the web service
+     */
+    private void handleResetCodePost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            ResetPasswordFragment resetFragment = (ResetPasswordFragment) getSupportFragmentManager().
+                    findFragmentByTag(getString(R.string.reset_pass_tag));
+            if (success) {
+                resetFragment.handleCodeSuccess();
+            } else {
+                resetFragment.handleCodeFail();
+            }
+        } catch (JSONException e) {
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    /**
+     * Transitions to the registerFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onRegisterClicked() {
+        RegisterFragment registerFragment = new RegisterFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.signinActivity, registerFragment)
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    /**
+     * Transitions to the ResetPasswordFragment.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onResetPasswordClicked() {
+        ResetPasswordFragment resetFragment = new ResetPasswordFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.signinActivity, resetFragment, getString(R.string.reset_pass_tag))
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    /**
+     * Builds JSON and starts new AsyncTask to send Registration post.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onRegisterAttempt(Credentials cred) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_register))
+                .build();
+        //build the JSONObject
+        JSONObject msg = cred.asJSONObject();
+        mCredentials = cred;
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleRegisterOnPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
     }
 
     /**
@@ -250,7 +370,7 @@ public class SignInActivity extends AppCompatActivity implements
      *
      * @author Eric Harty - hartye@uw.edu
      *
-     * @editor Phu-Lam Pham - ppham95@uw.edu
+     * @modified Phu-Lam Pham - ppham95@uw.edu
      */
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);

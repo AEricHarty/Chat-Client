@@ -44,6 +44,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         b = mView.findViewById(R.id.registerButton);
         b.setOnClickListener(this::onRegisterClick);
 
+        b = mView.findViewById(R.id.resetPasswordButton);
+        b.setOnClickListener(this::onResetPasswordClick);
+
         return mView;
     }
 
@@ -86,9 +89,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**@author Eric Harty - hartye@uw.edu*/
     public void onRegisterClick(View view) {
         if (mListener != null) {
             mListener.onRegisterClicked();
+        }
+    }
+
+    /**@author Eric Harty - hartye@uw.edu*/
+    public void onResetPasswordClick(View view) {
+        if (mListener != null) {
+            mListener.onResetPasswordClicked();
         }
     }
 
@@ -134,5 +145,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public interface OnLoginFragmentInteractionListener {
         void onLoginAttempt(Credentials cred);
         void onRegisterClicked();
+        void onResetPasswordClicked();
     }
 }
