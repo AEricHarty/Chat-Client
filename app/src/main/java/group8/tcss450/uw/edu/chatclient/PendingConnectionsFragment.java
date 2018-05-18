@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -372,6 +373,10 @@ public class PendingConnectionsFragment extends Fragment {
                 JSONArray array = resultsJSON.getJSONArray("incoming");
 
                 incomingData.clear();
+                ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
+                ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
+                incomingProgressBar.setVisibility(View.GONE);
+                outgoingProgressBar.setVisibility(View.GONE);
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
@@ -416,6 +421,10 @@ public class PendingConnectionsFragment extends Fragment {
                 JSONArray array = resultsJSON.getJSONArray("outgoing");
 
                 outgoingData.clear();
+                ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
+                ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
+                incomingProgressBar.setVisibility(View.GONE);
+                outgoingProgressBar.setVisibility(View.GONE);
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE

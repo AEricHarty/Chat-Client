@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -241,6 +242,9 @@ public class HomeActivity extends AppCompatActivity
         //Feel free to add a handler for onPreExecution so that a progress bar
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
+        searchContactList.clear();
+        ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
+        searchConnectionProgrsesBar.setVisibility(View.VISIBLE);
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleSearchContact)
                 .onCancelled(this::handleErrorsInTask)
@@ -268,7 +272,8 @@ public class HomeActivity extends AppCompatActivity
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
 
-            searchContactList.clear();
+            ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
+            searchConnectionProgrsesBar.setVisibility(View.GONE);
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
                 // PARSE JSON RESULTS HERE
@@ -335,6 +340,8 @@ public class HomeActivity extends AppCompatActivity
             JSONArray array = resultsJSON.getJSONArray("message");
 
             connectionList.clear();
+            ProgressBar loadingConnectionsProgressBar = findViewById(R.id.loadConnectionsProgressBar);
+            loadingConnectionsProgressBar.setVisibility(View.GONE);
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
                 // PARSE JSON RESULTS HERE

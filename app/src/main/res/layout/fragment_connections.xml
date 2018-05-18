@@ -15,7 +15,6 @@
         android:orientation="horizontal">
 
         <SearchView
-            android:focusable="false"
             android:id="@+id/searchBox"
             android:layout_width="294dp"
             android:layout_height="wrap_content"
@@ -25,13 +24,21 @@
             android:layout_marginTop="2dp"
             android:layout_weight="1"
             android:ems="10"
+            android:focusable="false"
             android:hint="@android:string/search_go"
-            android:queryHint="Search.."
             android:inputType="textPersonName"
             android:paddingLeft="10dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse" >
+            android:queryHint="Search.."
+            android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse">
+
         </SearchView>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loadConnectionsProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/connectionList"

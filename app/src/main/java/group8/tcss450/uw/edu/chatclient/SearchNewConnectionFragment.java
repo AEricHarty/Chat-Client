@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,9 @@ public class SearchNewConnectionFragment extends Fragment {
         searchContactButton = (Button) v.findViewById(R.id.searchContactButton);
         searchContactButton.setOnClickListener(this::onClick);
         searchContactList = (ListView) v.findViewById(R.id.searchContactList);
+
+        ProgressBar searchConnectionProgrsesBar = v.findViewById(R.id.searchConnectionProgressBar);
+        searchConnectionProgrsesBar.setVisibility(View.GONE);
 
         adapter= new SearchConnectionAdapter(v.getContext(), data);
 
