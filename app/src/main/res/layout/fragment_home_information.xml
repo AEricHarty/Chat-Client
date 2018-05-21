@@ -13,10 +13,10 @@
         android:id="@+id/homeWeatherView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="Weather: pretty nice lately"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toStartOf="@+id/moreWeatherButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,12 +24,11 @@
         android:id="@+id/homeInfoUserEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:text="Your location: here"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.231"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/antiLawsuitTextView"
         app:layout_constraintTop_toBottomOf="@+id/homeWeatherView" />
 
     <TextView
@@ -59,7 +58,7 @@
 
     <Button
         android:id="@+id/moreWeatherButton"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -69,4 +68,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/homeWeatherView"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/antiLawsuitTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/accuweather_site"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textSize="8sp"
+        android:autoLink="web"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeWeatherView" />
+
+    <ImageView
+        android:id="@+id/antiLawsuitImageView"
+        android:layout_width="84dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_accuweather"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeWeatherView" />
 </android.support.constraint.ConstraintLayout>

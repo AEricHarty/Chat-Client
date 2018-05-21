@@ -44,7 +44,7 @@ public class ChatFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
         setHasOptionsMenu(true);
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
-        mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
+        mOutputTextView = v.findViewById(R.id.chatOutputTextView);
 
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {

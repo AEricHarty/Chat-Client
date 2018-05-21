@@ -56,7 +56,7 @@ public class RegisterResultFragment extends Fragment {
             boolean success = getArguments().getBoolean("result");
             userName = getArguments().getString("username");
             userEmai = getArguments().getString("email");
-            TextView resultMsg = (TextView) mView.findViewById(R.id.resultDisplayMsg);
+            TextView resultMsg = mView.findViewById(R.id.resultDisplayMsg);
             TextView enterCodeMessage = (TextView) mView.findViewById(R.id.enterCodeMessage);
             if(success){
                 resultMsg.setText("An email with verification code has been sent to " + userEmai + ".");

@@ -1,10 +1,8 @@
 package group8.tcss450.uw.edu.chatclient;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,19 +10,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,7 +40,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
-import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -56,18 +54,19 @@ public class HomeActivity extends AppCompatActivity implements
         ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
+    private ArrayList<PendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
+    private ArrayList<PendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
 
-    private DataUpdateReceiver mDataUpdateReceiver;
     private SearchNewConnectionFragment.SearchConnectionAdapter searchConnectionAdapter;
     private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
-
+    private PendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
+    private PendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 1000000; //Not very frequently
+    public static final long UPDATE_INTERVAL = 2000000000; //Not frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
@@ -81,10 +80,10 @@ public class HomeActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //get app color theme. !!!THIS MUST BE THE FIRST THING AFTER super.onCreate(savedInstanceState)!!!
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+        //get app color theme
+        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
-        int theme = prefs.getInt("colorTheme", 1);
+        int theme = themePrefs.getInt("colorTheme", 1);
         // apply app theme to activity
         if( theme == 1) {
             setTheme(R.style.BlueAndOragneAppTheme);
@@ -136,9 +135,6 @@ public class HomeActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(getString(R.string.keys_sp_on),true);
-        editor.apply();
         Intent intent = getIntent();
         userName = intent.getStringExtra("username");
 
@@ -156,30 +152,8 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-        //Check to see if service should already be running
-        if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
-            //stop service from the background
-            ContactsIntentService.stopServiceAlarm(this);
-            //restart service but in the foreground
-            ContactsIntentService.startServiceAlarm(this, true);
-        }
-
-        if(mDataUpdateReceiver == null) {
-            mDataUpdateReceiver = new DataUpdateReceiver();
-        }
-        IntentFilter iFilter = new IntentFilter(ContactsIntentService.RECEIVED_UPDATE);
-        registerReceiver(mDataUpdateReceiver, iFilter);
-        if(getIntent().hasExtra(getString(R.string.keys_extra_results))) {
-            loadFragment(new PendingConnectionsFragment());
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_LOCATIONS: {
                 // If request is cancelled, the result arrays are empty.
@@ -197,26 +171,6 @@ public class HomeActivity extends AppCompatActivity implements
                 return;
             }
             // other 'case' lines to check for other permissions this app might request
-        }
-    }
-
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
-            //stop service running in foreground
-            ContactsIntentService.stopServiceAlarm(this);
-            //restart service in background
-            ContactsIntentService.startServiceAlarm(this, false);
-        }
-
-        if(mDataUpdateReceiver != null) {
-            unregisterReceiver(mDataUpdateReceiver);
         }
     }
 
@@ -340,7 +294,7 @@ public class HomeActivity extends AppCompatActivity implements
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
         searchContactList.clear();
-        ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
+        ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
         searchConnectionProgrsesBar.setVisibility(View.VISIBLE);
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleSearchContact)
@@ -369,7 +323,7 @@ public class HomeActivity extends AppCompatActivity implements
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
             if (findViewById(R.id.searchConnectionProgressBar) != null) {
-                ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
+                ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
                 searchConnectionProgrsesBar.setVisibility(View.GONE);
             }
             for (int i =0; i < array.length(); i++) {
@@ -441,11 +395,9 @@ public class HomeActivity extends AppCompatActivity implements
 
             connectionList.clear();
             if (findViewById(R.id.loadConnectionsProgressBar) != null) {
-                ProgressBar loadingConnectionsProgressBar = (ProgressBar) findViewById(R.id.loadConnectionsProgressBar);
+                ProgressBar loadingConnectionsProgressBar = findViewById(R.id.loadConnectionsProgressBar);
                 loadingConnectionsProgressBar.setVisibility(View.GONE);
             }
-            ProgressBar loadingConnectionsProgressBar = (ProgressBar) findViewById(R.id.loadConnectionsProgressBar);
-            loadingConnectionsProgressBar.setVisibility(View.GONE);
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
                 // PARSE JSON RESULTS HERE
@@ -466,15 +418,6 @@ public class HomeActivity extends AppCompatActivity implements
         Log.e("ASYNCT_TASK_ERROR", result);
     }
 
-    private class DataUpdateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ContactsIntentService.RECEIVED_UPDATE)) {
-                Log.d(TAG, "Hey I just got your broadcast!");
-                loadFragment(new PendingConnectionsFragment());
-            }
-        }
-    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -542,21 +485,19 @@ public class HomeActivity extends AppCompatActivity implements
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
     }
-    @Override
+
     protected void onStart() {
-        super.onStart();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+        super.onStart();
     }
 
-    @Override
     protected void onStop() {
-        super.onStop();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
-
+        super.onStop();
     }
 
     /**
@@ -600,18 +541,7 @@ public class HomeActivity extends AppCompatActivity implements
             JSONObject resultsJSON = new JSONObject(result);
             int location = 0;
             location = resultsJSON.getInt("Key");
-            if (location != 0) {
-                getWeather(location);
-            } else {
-                //Login was unsuccessful. Don’t switch fragments and inform the user
-                /*LoginFragment frag =
-                        (LoginFragment) getSupportFragmentManager()
-                                .findFragmentByTag(
-                                        getString(R.string.keys_fragment_login));
-                frag.setError("Log in unsuccessful");*/
-                TextView fail = (TextView) findViewById(R.id.loginFailMsg);
-                fail.setVisibility(View.VISIBLE);
-            }
+            if (location != 0) getWeather(location);
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
             //or it didn’t have what we expected in it.
@@ -659,14 +589,20 @@ public class HomeActivity extends AppCompatActivity implements
         String description = "";
         int temp = -99;
         try {
-            JSONObject json = new JSONObject(jsonResult);
-            description = json.getString("WeatherText");
-            if (json.has("Temperature")) {
-                JSONObject response = json.getJSONArray("Temperature").getJSONObject(1);
-                if (response.has("Imperial")) {
-                    JSONObject show = response.getJSONArray("Imperial").getJSONObject(0);
-                    if (show.has("Value")) {
-                        temp = show.getInt("Value");
+            JSONArray json = new JSONArray(jsonResult);
+
+            if (json.getJSONObject(2).has("WeatherText")) {
+                description = json.getJSONObject(2).getString("WeatherText");
+            }
+            if (json.getJSONObject(5).has("Temperature")) {
+                JSONArray response = json.getJSONObject(5).getJSONArray("Temperature");
+                if (response.getJSONObject(1).has("Imperial")) {
+                    JSONArray type = json.getJSONObject(1).getJSONArray("Imperial");
+                    if (type.getJSONObject(0).has("Value")) {
+                        JSONObject val = json.getJSONObject(0).getJSONObject("Value");
+                        if (val.has("Value")) {
+                            temp = val.getInt("Value");
+                        }
                     }
                 }
             }

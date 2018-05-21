@@ -29,14 +29,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
-import group8.tcss450.uw.edu.chatclient.utils.ListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 public class PendingConnectionsFragment extends Fragment {
-    private static final String TAG = "PendingConnectionsFragment";
-
     public ArrayList<IncomingRequestListItem> incomingData = new ArrayList<IncomingRequestListItem>();
     public ArrayList<OutgoingRequestListItem> outgoingData = new ArrayList<OutgoingRequestListItem>();
 
@@ -88,14 +84,9 @@ public class PendingConnectionsFragment extends Fragment {
             }
         });
 
-        return v;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         findIncomingRequests();
         findOutgoingRequests();
+        return v;
     }
 
     @Override
@@ -106,7 +97,6 @@ public class PendingConnectionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ContactsIntentService.stopServiceAlarm(getContext());
         mIncomingListenManager.startListening();
         mOutgoingListenManager.startListening();
     }
@@ -114,19 +104,8 @@ public class PendingConnectionsFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        ContactsIntentService.startServiceAlarm(getContext(), true);
-        //save most recent requests timestamps for future reference.
-        String lastIncomingRequestTime = mIncomingListenManager.stopListening();
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-        prefs.edit().putString(getString(R.string.keys_prefs_incoming_request_time_stamp),
-                lastIncomingRequestTime)
-                .apply();
-        String lastOutgoingRequestTime = mOutgoingListenManager.stopListening();
-        prefs.edit().putString(getString(R.string.keys_prefs_outgoing_request_time_stamp),
-                lastOutgoingRequestTime)
-                .apply();
+        mIncomingListenManager.stopListening();
+        mOutgoingListenManager.stopListening();
     }
 
     //Adapter and item for incoming requests:
@@ -365,6 +344,7 @@ public class PendingConnectionsFragment extends Fragment {
     }
 
     public void findIncomingRequests() {
+
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -374,28 +354,11 @@ public class PendingConnectionsFragment extends Fragment {
                 .appendQueryParameter("username", userName)
                 .build();
 
-        //get last time stamp from shared preferences to ignore old messages.
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        if(!prefs.contains(getString(R.string.keys_prefs_incoming_request_time_stamp))) {
-            //set the listenManager to ignore seen requests.
-            mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateIncomingRequestsResult)
-                    .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"))
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-            System.out.println(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"));
-        } else {
-            //no time stamp in settings. Must be a first time login.
-            mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateIncomingRequestsResult)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        }
+        mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                this::populateIncomingRequestsResult)
+                .setExceptionHandler(this::handleExceptionsInListener)
+                .setDelay(1000)
+                .build();
 
     }
 
@@ -407,19 +370,14 @@ public class PendingConnectionsFragment extends Fragment {
         getActivity().runOnUiThread(() -> {
 
             try {
-                JSONArray array = resultsJSON.getJSONArray("pending");
+                JSONArray array = resultsJSON.getJSONArray("incoming");
 
                 incomingData.clear();
                 if (getActivity().findViewById(R.id.incomingProgressBar) != null) {
-                    ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
+                    ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
                     incomingProgressBar.setVisibility(View.GONE);
                 }
 
-//                incomingData.clear();
-                ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
-//                ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
-
-//                outgoingProgressBar.setVisibility(View.GONE);
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
@@ -430,12 +388,10 @@ public class PendingConnectionsFragment extends Fragment {
                     incomingData.add(new PendingConnectionsFragment.IncomingRequestListItem(first, last, username, email));
                     incomingAdapter.notifyDataSetChanged();
                 }
-                incomingProgressBar.setVisibility(View.GONE);
             } catch (JSONException e) {
 
                 Log.e("JSON_PARSE_ERROR", "Error when populating incoming requests.");
             }
-
         });
     }
 
@@ -450,28 +406,11 @@ public class PendingConnectionsFragment extends Fragment {
                 .appendQueryParameter("username", userName)
                 .build();
 
-
-        //get last time stamp from shared preferences to ignore old messages.
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        if(!prefs.contains(getString(R.string.keys_prefs_outgoing_request_time_stamp))) {
-            //set the listenManager to ignore seen requests.
-            mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateOutgoingRequestsResult)
-                    .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_outgoing_request_time_stamp), "0"))
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        } else {
-            //no time stamp in settings. Must be a first time login.
-            mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateOutgoingRequestsResult)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        }
+        mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                this::populateOutgoingRequestsResult)
+                .setExceptionHandler(this::handleExceptionsInListener)
+                .setDelay(1000)
+                .build();
 
     }
 
@@ -480,18 +419,14 @@ public class PendingConnectionsFragment extends Fragment {
 
 
             try {
-                JSONArray array = resultsJSON.getJSONArray("pending");
+                JSONArray array = resultsJSON.getJSONArray("outgoing");
 
                 outgoingData.clear();
                 if (getActivity().findViewById(R.id.outgoingProgressBar) != null) {
-                    ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
+                    ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
                     outgoingProgressBar.setVisibility(View.GONE);
                 }
 
-//                outgoingData.clear();
-//                ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
-                ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
-//                incomingProgressBar.setVisibility(View.GONE);
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
@@ -502,7 +437,6 @@ public class PendingConnectionsFragment extends Fragment {
                     outgoingData.add(new PendingConnectionsFragment.OutgoingRequestListItem(first, last, username, email));
                     outgoingAdapter.notifyDataSetChanged();
                 }
-                outgoingProgressBar.setVisibility(View.GONE);
             } catch (JSONException e) {
                 Log.e("JSON_PARSE_ERROR", "Error when populating outgoing requests.");
             }

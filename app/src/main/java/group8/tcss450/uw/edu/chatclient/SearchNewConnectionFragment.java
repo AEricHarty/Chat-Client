@@ -66,7 +66,7 @@ public class SearchNewConnectionFragment extends Fragment {
         searchContactButton.setOnClickListener(this::onClick);
         searchContactList = (ListView) v.findViewById(R.id.searchContactList);
 
-        ProgressBar searchConnectionProgrsesBar = (ProgressBar) v.findViewById(R.id.searchConnectionProgressBar);
+        ProgressBar searchConnectionProgrsesBar = v.findViewById(R.id.searchConnectionProgressBar);
         searchConnectionProgrsesBar.setVisibility(View.GONE);
 
         adapter= new SearchConnectionAdapter(v.getContext(), data);

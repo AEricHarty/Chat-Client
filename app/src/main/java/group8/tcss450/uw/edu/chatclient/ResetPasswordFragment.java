@@ -49,21 +49,21 @@ public class ResetPasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_reset_password, container, false);
 
-        mProgressBar = (ProgressBar) mView.findViewById(R.id.resetPasswordProgressBar);
+        mProgressBar = mView.findViewById(R.id.resetPasswordProgressBar);
         mProgressBar.setVisibility(View.GONE);
-        mEmailView = (EditText) mView.findViewById(R.id.resetEmailEditText);
-        mCodeView = (EditText) mView.findViewById(R.id.resetCodeEditText);
+        mEmailView = mView.findViewById(R.id.resetEmailEditText);
+        mCodeView = mView.findViewById(R.id.resetCodeEditText);
         mCodeView.setVisibility(View.GONE);
-        mPassView = (EditText) mView.findViewById(R.id.resetPasswordEditText);
+        mPassView = mView.findViewById(R.id.resetPasswordEditText);
         mPassView.setVisibility(View.GONE);
-        mCopyView = (EditText) mView.findViewById(R.id.resetCopyEditText);
+        mCopyView = mView.findViewById(R.id.resetCopyEditText);
         mCopyView.setVisibility(View.GONE);
-        mResultMsg= (TextView) mView.findViewById(R.id.resetMessageTextView);
+        mResultMsg= mView.findViewById(R.id.resetMessageTextView);
 
-        mSubmitButton = (Button) mView.findViewById(R.id.resetAttemptButton);
+        mSubmitButton = mView.findViewById(R.id.resetAttemptButton);
         mSubmitButton.setOnClickListener(this::onEmailClick);
 
-        mSubmitCodeButton = (Button) mView.findViewById(R.id.resetSubmitCodeButton);
+        mSubmitCodeButton = mView.findViewById(R.id.resetSubmitCodeButton);
         mSubmitCodeButton.setOnClickListener(this::onCodeClick);
         mSubmitCodeButton.setVisibility(View.GONE);
 
@@ -73,7 +73,7 @@ public class ResetPasswordFragment extends Fragment {
     /**@author Eric Harty - hartye@uw.edu*/
     public void onEmailClick(View view) {
         if (mListener != null) {
-            EditText emailText = (EditText) mView.findViewById(R.id.resetEmailEditText);
+            EditText emailText = mView.findViewById(R.id.resetEmailEditText);
             mEmail = emailText.getText().toString();
             boolean good = true;
 
@@ -97,12 +97,12 @@ public class ResetPasswordFragment extends Fragment {
         if (mListener != null) {
             boolean good = true;
 
-            EditText passText = (EditText) mView.findViewById(R.id.resetPasswordEditText);
+            EditText passText = mView.findViewById(R.id.resetPasswordEditText);
             Editable password = passText.getText();
-            EditText copyText = (EditText) mView.findViewById(R.id.resetCopyEditText);
+            EditText copyText = mView.findViewById(R.id.resetCopyEditText);
             Editable passcopy = copyText.getText();
 
-            EditText codeText = (EditText) mView.findViewById(R.id.resetCodeEditText);
+            EditText codeText = mView.findViewById(R.id.resetCodeEditText);
             String code= codeText.getText().toString();
 
             if(code.length() < 4|| password.length() == 0 || passcopy.length() == 0 ){

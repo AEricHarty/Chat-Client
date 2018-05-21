@@ -2,7 +2,6 @@
 <resources>
 
     <string name="keys_shared_prefs">group8.tcss450.uw.edu.chatclient.PREFS</string>
-    <string name="keys_sp_on">true</string>
 
     <string name="keys_prefs_email">email</string>
     <string name="keys_prefs_username">username</string>
@@ -17,15 +16,11 @@
     <string name="reset_pass_tag">ResetPasswordFragment</string>
     <string name="home_info_tag">HomeInformationFragment</string>
 
+    <string name="accuweather_site">http://www.accuweather.com/</string>
+
     <string name="keys_send_button_description">Send</string>
 
-    <string name="keys_extra_results">results</string>
-    <string name="keys_is_foreground">FOREGROUND</string>
-
-
     <string name="keys_prefs_time_stamp">ts key</string>
-    <string name="keys_prefs_incoming_request_time_stamp">incoming ts key</string>
-    <string name="keys_prefs_outgoing_request_time_stamp">outgoing ts key</string>
 
     <string name="keys_json_username">username</string>
     <string name="keys_json_otherUsername">otherUsername</string>

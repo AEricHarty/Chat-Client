@@ -41,7 +41,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_registration, container, false);
 
-        Button b = (Button) mView.findViewById(R.id.registerButton2);
+        Button b = mView.findViewById(R.id.registerButton2);
         b.setOnClickListener(this);
 
         return mView;
@@ -56,17 +56,17 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         if (mListener != null) {
 
-            EditText emailText = (EditText) mView.findViewById(R.id.regEmailText);
+            EditText emailText = mView.findViewById(R.id.regEmailText);
             String email = emailText.getText().toString();
-            EditText firstText = (EditText) mView.findViewById(R.id.regFirstNameText);
+            EditText firstText = mView.findViewById(R.id.regFirstNameText);
             String first = firstText.getText().toString();
-            EditText lastText = (EditText) mView.findViewById(R.id.regLastNameText);
+            EditText lastText = mView.findViewById(R.id.regLastNameText);
             String last = lastText.getText().toString();
-            EditText userText = (EditText) mView.findViewById(R.id.regUsernameText);
+            EditText userText = mView.findViewById(R.id.regUsernameText);
             String username = userText.getText().toString();
-            EditText passText = (EditText) mView.findViewById(R.id.regPassText);
+            EditText passText = mView.findViewById(R.id.regPassText);
             Editable password = passText.getText();
-            EditText copyText = (EditText) mView.findViewById(R.id.regPassText2);
+            EditText copyText = mView.findViewById(R.id.regPassText2);
             Editable passcopy = copyText.getText();
             boolean good = true;
 

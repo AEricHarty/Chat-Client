@@ -36,7 +36,7 @@ public class SettingsFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_settings, container, false);
-        RadioGroup group = (RadioGroup) mView.findViewById(R.id.colorThemeRadioGroup);
+        RadioGroup group = mView.findViewById(R.id.colorThemeRadioGroup);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
 
             @Override
