@@ -322,9 +322,10 @@ public class HomeActivity extends AppCompatActivity implements
     private void populateSearchContactResult(JSONObject resultsJSON) {
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
-
-            ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
-            searchConnectionProgrsesBar.setVisibility(View.GONE);
+            if (findViewById(R.id.searchConnectionProgressBar) != null) {
+                ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
+                searchConnectionProgrsesBar.setVisibility(View.GONE);
+            }
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
                 // PARSE JSON RESULTS HERE
@@ -393,8 +394,10 @@ public class HomeActivity extends AppCompatActivity implements
             JSONArray array = resultsJSON.getJSONArray("message");
 
             connectionList.clear();
-            ProgressBar loadingConnectionsProgressBar = findViewById(R.id.loadConnectionsProgressBar);
-            loadingConnectionsProgressBar.setVisibility(View.GONE);
+            if (findViewById(R.id.loadConnectionsProgressBar) != null) {
+                ProgressBar loadingConnectionsProgressBar = findViewById(R.id.loadConnectionsProgressBar);
+                loadingConnectionsProgressBar.setVisibility(View.GONE);
+            }
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
                 // PARSE JSON RESULTS HERE
