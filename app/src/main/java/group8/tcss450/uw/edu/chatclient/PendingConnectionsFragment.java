@@ -373,10 +373,11 @@ public class PendingConnectionsFragment extends Fragment {
                 JSONArray array = resultsJSON.getJSONArray("incoming");
 
                 incomingData.clear();
-                ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
-                ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
-                incomingProgressBar.setVisibility(View.GONE);
-                outgoingProgressBar.setVisibility(View.GONE);
+                if (getActivity().findViewById(R.id.incomingProgressBar) != null) {
+                    ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
+                    incomingProgressBar.setVisibility(View.GONE);
+                }
+
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
@@ -421,10 +422,11 @@ public class PendingConnectionsFragment extends Fragment {
                 JSONArray array = resultsJSON.getJSONArray("outgoing");
 
                 outgoingData.clear();
-                ProgressBar incomingProgressBar = getActivity().findViewById(R.id.incomingProgressBar);
-                ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
-                incomingProgressBar.setVisibility(View.GONE);
-                outgoingProgressBar.setVisibility(View.GONE);
+                if (getActivity().findViewById(R.id.outgoingProgressBar) != null) {
+                    ProgressBar outgoingProgressBar = getActivity().findViewById(R.id.outgoingProgressBar);
+                    outgoingProgressBar.setVisibility(View.GONE);
+                }
+
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aContact = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
