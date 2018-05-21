@@ -1,8 +1,15 @@
 package group8.tcss450.uw.edu.chatclient;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,13 +20,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnMapClickListener{
+        GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener{
 
     public static final String LATITUDE = "lat";
     public static final String LONGITUDE = "lng";
     private GoogleMap mGoogleMap;
-    private double mLat, mLng;
+    private double mLat, mLng, mSavedLat, mSavedLng;
     private Marker m;
+    private String mWhenCoice = "Now";
+    private String mWhereCoice = "Here";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,34 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googleMap);
         mapFragment.getMapAsync(this);
+
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        String location = prefs.getString(getString(R.string.keys_prefs_save_location), null);
+        if (location != null) {
+            String loc[] = location.split("-");
+            mSavedLat = Double.parseDouble(loc[0]);
+            mSavedLng = Double.parseDouble(loc[1]);
+        } else {
+            mSavedLat = 47;     //Default UWT
+            mSavedLng = -122;
+        }
+
+        Spinner whereSpinner = findViewById(R.id.weatherWhereSpinner);
+        ArrayAdapter<CharSequence> whereAdapter = ArrayAdapter.createFromResource(this,
+                R.array.weatherSWhereArray, android.R.layout.simple_spinner_item);
+        whereAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        whereSpinner.setAdapter(whereAdapter);
+        whereSpinner.setOnItemSelectedListener(this);
+
+        Spinner whenSpinner = findViewById(R.id.weatherWhenSpinner);
+        ArrayAdapter<CharSequence> whenAdapter = ArrayAdapter.createFromResource(this,
+                R.array.weatherSWhenArray, android.R.layout.simple_spinner_item);
+        whenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        whenSpinner.setAdapter(whenAdapter);
+        whenSpinner.setOnItemSelectedListener(this);
 
 
     }
@@ -60,5 +97,18 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String item = (String) parent.getAdapter().getItem(position);
+        Toast.makeText(this,
+                "The item is " + item + "---from: " + parent,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

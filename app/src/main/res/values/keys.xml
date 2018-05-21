@@ -6,6 +6,7 @@
     <string name="keys_prefs_email">email</string>
     <string name="keys_prefs_username">username</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
+    <string name="keys_prefs_save_location">saved_location</string>
 
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
