@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  *
  * @author Charles Bryan
  * @author Lloyd Brooks
- * @version 4/14/2018
+ * @version 5/20/2018
  */
 public class RequestsListenManager {
 
@@ -42,6 +42,7 @@ public class RequestsListenManager {
     private final Consumer<JSONObject> mActionToTake;
     private final Consumer<Exception> mActionToTakeOnError;
     private final int mDelay;
+    private String mDate;
 
     private ScheduledThreadPoolExecutor mPool;
     private ScheduledFuture mThread;
@@ -59,15 +60,17 @@ public class RequestsListenManager {
 
         //Optional Parameters
         private int mSleepTime = 500;
-        private Consumer<Exception> mActionToTakeOnError = e -> {};
+        private Consumer<Exception> mActionToTakeOnError = e -> {
+        };
+        private String mDate = "1970-01-01 00:00:01.00000";
 
         /**
          * Constructs a new Builder with a delay of 500 ms.
-         *
+         * <p>
          * When the Consumer processing the results needs to manipulate any UI elements, this must be
          * performed on the UI Thread. See ListenManager class documentation for more information.
          *
-         * @param url the fully-formed url of the web service this task will connect to
+         * @param url          the fully-formed url of the web service this task will connect to
          * @param actionToTake the Consumer processing the results
          */
         public Builder(String url, Consumer<JSONObject> actionToTake) {
@@ -77,6 +80,7 @@ public class RequestsListenManager {
 
         /**
          * Set the delay amount between calls to the web service. The default delay is 500 ms.
+         *
          * @param val the delay amount between calls to the web service
          * @return
          */
@@ -94,6 +98,11 @@ public class RequestsListenManager {
          */
         public Builder setExceptionHandler(final Consumer<Exception> val) {
             mActionToTakeOnError = val;
+            return this;
+        }
+
+        public Builder setTimeStamp(final String val) {
+            mDate = val;
             return this;
         }
 
@@ -118,6 +127,7 @@ public class RequestsListenManager {
         mActionToTake = builder.mActionToTake;
         mDelay = builder.mSleepTime;
         mActionToTakeOnError = builder.mActionToTakeOnError;
+        mDate = builder.mDate;
         mPool = new ScheduledThreadPoolExecutor(5);
     }
 
@@ -125,7 +135,7 @@ public class RequestsListenManager {
      * Starts the worker thread to ask for updates every delay milliseconds.
      */
     public void startListening() {
-        mThread = mPool.scheduleAtFixedRate(new ListenForRequests(),
+        mThread = mPool.scheduleAtFixedRate(new ListenForMessages(),
                 0,
                 mDelay,
                 TimeUnit.MILLISECONDS);
@@ -133,15 +143,18 @@ public class RequestsListenManager {
 
     /**
      * Stops listening for new messages.
+     *
+     * @return the most recent timestamp
      */
-    public void stopListening() {
+    public String stopListening() {
         mThread.cancel(true);
+        return mDate;
     }
 
     /**
      * Does the work!
      */
-    private class ListenForRequests implements Runnable {
+    private class ListenForMessages implements Runnable {
 
         @Override
         public void run() {
@@ -152,6 +165,8 @@ public class RequestsListenManager {
             response = new StringBuilder();
             try {
                 String getURL = mURL;
+                //add the timestamp to the URL
+                getURL += "&after=" + mDate;
 
                 URL urlObject = new URL(getURL);
                 urlConnection = (HttpURLConnection) urlObject.openConnection();
@@ -166,6 +181,14 @@ public class RequestsListenManager {
 
                 //here is where we "publish" the message that we received.
                 mActionToTake.accept(messages);
+
+                //get and store the last date.
+                JSONArray msgs = messages.getJSONArray("pending");
+                if (msgs.length() > 0) {
+                    JSONObject mostRecent = msgs.getJSONObject(msgs.length() - 1);
+                    String timestamp = mostRecent.get("requesttime").toString();
+                    mDate = timestamp;
+                }
 
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());

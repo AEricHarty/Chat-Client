@@ -38,13 +38,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         mView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        Button b = mView.findViewById(R.id.loginButton);
+        Button b = (Button) mView.findViewById(R.id.loginButton);
         b.setOnClickListener(this);
 
-        b = mView.findViewById(R.id.registerButton);
+        b = (Button) mView.findViewById(R.id.registerButton);
         b.setOnClickListener(this::onRegisterClick);
 
-        b = mView.findViewById(R.id.resetPasswordButton);
+        b = (Button) mView.findViewById(R.id.resetPasswordButton);
         b.setOnClickListener(this::onResetPasswordClick);
 
         return mView;
@@ -58,9 +58,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (mListener != null) {
-            EditText usernameText = mView.findViewById(R.id.logUsernnameText);
+            EditText usernameText = (EditText) mView.findViewById(R.id.logUsernnameText);
             String username = usernameText.getText().toString();
-            EditText passText = mView.findViewById(R.id.logPasswordText);
+            EditText passText = (EditText) mView.findViewById(R.id.logPasswordText);
             Editable password = passText.getText();
             boolean good = true;
 
