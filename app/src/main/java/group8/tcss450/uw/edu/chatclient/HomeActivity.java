@@ -23,9 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,13 +44,14 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  * Home activity after logging in
  *
  * @author Jin Byoun - jinito@uw.edu
- * @modified Eric Harty - hartye@uw.edu added weather and location services
+ * @author Eric Harty - hartye@uw.edu added weather and location services
  */
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnSettingsInteractionListener,
         SearchNewConnectionFragment.SearchContactFragmentInteractionListener, LocationListener,
         ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        HomeInformationFragment.OnHomeFragmentInteractionListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
@@ -117,7 +116,6 @@ public class HomeActivity extends AppCompatActivity implements
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -270,7 +268,6 @@ public class HomeActivity extends AppCompatActivity implements
     public void onSearchAttempt(String username, String keyword,
                                 ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> data,
                                 SearchNewConnectionFragment.SearchConnectionAdapter adapter) {
-
         searchContactList = data;
         searchConnectionAdapter = adapter;
         //build the web service URL
@@ -539,7 +536,7 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleLocationPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
-            int location = 0;
+            int location;
             location = resultsJSON.getInt("Key");
             if (location != 0) getWeather(location);
         } catch (JSONException e) {
@@ -616,6 +613,19 @@ public class HomeActivity extends AppCompatActivity implements
             homeFragment.setWeather(weather);
 
         }
+    }
+
+    /**
+     * Transitions to the WeatherMapActivity.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    @Override
+    public void onMoreWeatherClicked() {
+        Intent i = new Intent(this, WeatherMapActivity.class);
+        i.putExtra(WeatherMapActivity.LATITUDE, mCurrentLocation.getLatitude());
+        i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
+        startActivity(i);
     }
 
 }

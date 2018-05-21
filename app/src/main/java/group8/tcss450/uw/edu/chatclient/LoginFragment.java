@@ -69,7 +69,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 usernameText.setError("Both fields must be filled");
                 good = false;
             }else{
-                
+
                 if(username.length() < 3){
                     usernameText.setError("Username must be at least 3 characters.");
                     good = false;

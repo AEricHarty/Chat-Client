@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WeatherMapActivity">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/googleMap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="275dp"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/weatherWhenGroup"
+        android:layout_width="259dp"
+        android:layout_height="114dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/weatherWhereGroup"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/googleMap">
+
+        <TextView
+            android:id="@+id/weatherWhenView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_when_prompt" />
+
+        <Button
+            android:id="@+id/weatherNowButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_now_button" />
+
+        <Button
+            android:id="@+id/weatherNextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_next_button" />
+
+        <Button
+            android:id="@+id/weatherFiveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_five_button" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/weatherRememberButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/weather_remember_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherWhenGroup"
+        app:layout_constraintVertical_bias="0.565" />
+
+    <Button
+        android:id="@+id/weatherSubmitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="12dp"
+        android:text="@string/weather_submit_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/weatherRememberButton"
+        app:layout_constraintTop_toBottomOf="@+id/weatherWhenGroup" />
+
+    <RadioGroup
+        android:id="@+id/weatherWhereGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/googleMap"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/weatherWhereView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="@string/weather_where_prompt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/googleMap"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/weatherZipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/weather_zip_button"
+            app:layout_constraintStart_toEndOf="@+id/googleMap"
+            app:layout_constraintTop_toBottomOf="@+id/weatherPinButton" />
+
+        <Button
+            android:id="@+id/weatherHereButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/weather_here_button"
+            app:layout_constraintStart_toEndOf="@+id/googleMap"
+            app:layout_constraintTop_toBottomOf="@+id/weatherWhereView" />
+
+        <Button
+            android:id="@+id/weatherPinButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="196dp"
+            android:layout_weight="1"
+            android:text="@string/weather_pin_button"
+            app:layout_constraintStart_toEndOf="@+id/googleMap"
+            app:layout_constraintTop_toBottomOf="@+id/weatherHereButton" />
+
+        <Button
+            android:id="@+id/weatherSavedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weather_saved_button"
+            tools:layout_editor_absoluteX="70dp"
+            tools:layout_editor_absoluteY="433dp" />
+    </RadioGroup>
+
+</android.support.constraint.ConstraintLayout>

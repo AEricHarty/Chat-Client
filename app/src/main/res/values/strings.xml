@@ -75,6 +75,17 @@
     <string name="chat_go_home">Home</string>
     <string name="chat_add_stranger">New</string>
     <string name="chat_session_activity">ChatSessionActivity</string>
+    <string name="weather_where_prompt">Where?</string>
+    <string name="weather_here_button">Here</string>
+    <string name="weather_pin_button">Pin</string>
+    <string name="weather_zip_button">ZIP</string>
+    <string name="weather_when_prompt">When?</string>
+    <string name="weather_now_button">Now</string>
+    <string name="weather_next_button">Tomorrow</string>
+    <string name="weather_five_button">Five Days</string>
+    <string name="weather_remember_button">Save for later</string>
+    <string name="weather_submit_button">Submit</string>
+    <string name="weather_saved_button">Saved</string>
 
 
 </resources>

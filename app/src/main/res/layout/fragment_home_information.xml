@@ -58,11 +58,12 @@
 
     <Button
         android:id="@+id/moreWeatherButton"
-        android:layout_width="wrap_content"
+        android:layout_width="116dp"
         android:layout_height="60dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:onClick="onClick"
         android:text="@string/home_info_more_weather_button"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintEnd_toEndOf="parent"
