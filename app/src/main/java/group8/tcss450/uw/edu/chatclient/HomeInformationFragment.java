@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -15,6 +17,8 @@ import android.view.ViewGroup;
  */
 public class HomeInformationFragment extends Fragment {
 
+    private Button mWeatherButton;
+    private TextView mWeatherView;
 
     public HomeInformationFragment() {
         // Required empty public constructor
@@ -24,8 +28,17 @@ public class HomeInformationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_information, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_home_information, container, false);
+        mWeatherButton = (Button) v.findViewById(R.id.moreWeatherButton);
+        mWeatherButton.setEnabled(false);
+        mWeatherView = (TextView) v.findViewById(R.id.homeWeatherView);
+
+        return v;
+    }
+
+    public void setWeather(String weather) {
+        mWeatherView.setText(weather);
     }
 
 }

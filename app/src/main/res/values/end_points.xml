@@ -10,6 +10,13 @@
     <string name="ep_reset_password_email">resetAttempt</string>
     <string name="ep_reset_password_code">resetSubmit</string>
 
+    <string name="ep_weather">weather</string>
+    <string name="ep_locate_gps">locategps</string>
+    <string name="ep_locate_zip">locatezip</string>
+    <string name="ep_weather_current">current</string>
+    <string name="ep_weather_next">nextday</string>
+    <string name="ep_weather_five">fiveday</string>
+
     <string name="ep_send_message">sendMessages</string>
     <string name="ep_get_message">getMessages</string>
     <string name="ep_send_request">sendRequest</string>

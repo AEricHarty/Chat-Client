@@ -14,6 +14,7 @@
     <string name="password_key">pass_key</string>
 
     <string name="reset_pass_tag">ResetPasswordFragment</string>
+    <string name="home_info_tag">HomeInformationFragment</string>
 
     <string name="keys_send_button_description">Send</string>
 

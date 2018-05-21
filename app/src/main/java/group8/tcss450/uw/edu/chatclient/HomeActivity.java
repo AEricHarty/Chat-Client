@@ -1,12 +1,16 @@
 package group8.tcss450.uw.edu.chatclient;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -19,7 +23,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,19 +39,20 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
+import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
  * Home activity after logging in
  *
  * @author Jin Byoun - jinito@uw.edu
+ * @modified Eric Harty - hartye@uw.edu added weather and location services
  */
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
-        ,SettingsFragment.OnSettingsInteractionListener
-        ,SearchNewConnectionFragment.SearchContactFragmentInteractionListener
-        , ConnectionsFragment.ConnectionsFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnSettingsInteractionListener,
+        SearchNewConnectionFragment.SearchContactFragmentInteractionListener, LocationListener,
+        ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
@@ -51,10 +64,20 @@ public class HomeActivity extends AppCompatActivity
     private PendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
     private PendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
 
+    private static final String TAG = "HomeActivity ERROR->";
+    /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
+    public static final long UPDATE_INTERVAL = 1000000; //Not very frequently
+    public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
+    private GoogleApiClient mGoogleApiClient;
+    private static final int MY_PERMISSIONS_LOCATIONS = 814;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
+
+
+
     private String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         //get app color theme
@@ -73,26 +96,32 @@ public class HomeActivity extends AppCompatActivity
         } else {
             Log.wtf("SignInActivity", "Why is the theme option set to " + Integer.toString(theme)+ "?!?!");
         }
-
         setContentView(R.layout.activity_home);
 
         if(savedInstanceState == null) {
             if (findViewById(R.id.HomeContainer) != null) {
-                getSupportFragmentManager().beginTransaction().add(R.id.HomeContainer, new HomeInformationFragment()).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.HomeContainer,
+                        new HomeInformationFragment(), getString(R.string.home_info_tag))
+                        .commit();
             }
         }
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         getSupportActionBar().setTitle("Chat");
 
@@ -108,9 +137,42 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         userName = intent.getStringExtra("username");
-        //System.out.println(userName);
+
+        //Ask for location permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
+                            , Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_LOCATIONS);
+        }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_LOCATIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted. Do the locations-related task you need to do.
+                } else {
+                    // permission denied. Disable the functionality that depends on this permission.
+                    Log.d("PERMISSION DENIED", "Nothing to see or do here.");
+
+                    //Shut down the app. In production release, you would let the user
+                    //know why the app is shutting down…maybe ask for permission again?
+                    //finishAndRemoveTask();
+                }
+                return;
+            }
+            // other 'case' lines to check for other permissions this app might request
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -132,10 +194,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-
         if (id == R.id.logOutOption) {
-
             SharedPreferences prefs =
                     getSharedPreferences(
                             getString(R.string.keys_shared_prefs),
@@ -147,7 +206,6 @@ public class HomeActivity extends AppCompatActivity
                     getString(R.string.keys_prefs_stay_logged_in),
                     false)
                     .apply();
-
             //noinspection SimplifiableIfStatement
             //Home setting
             Intent myIntent = new Intent(this,   SignInActivity.class);
@@ -157,14 +215,11 @@ public class HomeActivity extends AppCompatActivity
         }else if (id == R.id.settingOption){
             loadFragment(new SettingsFragment());
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_connections) {
@@ -177,7 +232,6 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_pending_connections){
             loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
-
             //loadFragment(new ChatFragment());
 
             android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
@@ -185,7 +239,6 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -196,9 +249,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.HomeContainer, frag)
-                // maybe instead of replace
                 .addToBackStack(null);
-        // Commit the transaction
         transaction.commit();
     }
 
@@ -281,7 +332,8 @@ public class HomeActivity extends AppCompatActivity
                 String last = aContact.getString("lastname");
                 String username = aContact.getString("username");
                 String email = aContact.getString("email");
-                searchContactList.add(new SearchNewConnectionFragment.SearchConnectionListItem(first, last, username, email));
+                searchContactList.add(new SearchNewConnectionFragment.SearchConnectionListItem(first,
+                        last, username, email));
                 searchConnectionAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
@@ -290,7 +342,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void onGetContactsAttempt(String username, ArrayList<ConnectionsFragment.Connection> data, ConnectionsFragment.ConnectionsAdapter adapter) {
+    public void onGetContactsAttempt(String username, ArrayList<ConnectionsFragment.Connection> data,
+                                     ConnectionsFragment.ConnectionsAdapter adapter) {
         this.connectionsAdapter = adapter;
         this.connectionList = data;
         Uri uri = new Uri.Builder()
@@ -363,5 +416,208 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // If the initial location was never previously requested, we use
+        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
+        // its value in the Bundle and check for it in onCreate(). We
+        // do not request it again unless the user specifically requests location updates by pressing
+        // the Start Updates button.
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+                    &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                startLocationUpdates();
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
+                connectionResult.getErrorCode());
+    }
+
+    /**Callback that fires when the location changes.*/
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        Log.d(TAG, mCurrentLocation.toString());
+        getLocation();
+    }
+
+    /**Requests location updates from the FusedLocationApi.*/
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    /**Removes location updates from the FusedLocationApi.*/
+    protected void stopLocationUpdates() {
+        // Remove location requests when the activity is in a paused or stopped state.
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
+    }
+
+    protected void onStart() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+        super.onStart();
+    }
+
+    protected void onStop() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
+
+    /**
+     * Builds JSON and starts new AsyncTask to send to weather service.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    public void getLocation() {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_weather))
+                .appendPath(getString(R.string.ep_locate_gps))
+                .build();
+        //build the JSONObject
+        //Pass lat and lon as username and email so we can use credentials.asJSON
+        String lat = Double.toString(mCurrentLocation.getLatitude());
+        String lon = Double.toString(mCurrentLocation.getLongitude());
+        Credentials cred = new Credentials.Builder(lat, null)
+                .addEmail(lon)
+                .build();
+        JSONObject msg = cred.asJSONObject();
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleLocationPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    /**
+     * Handle onPostExecute of the AsynceTask. The result from our webservice is
+     * a JSON formatted String. Parse it for success or failure.
+     * @param result the JSON formatted String response from the web service
+     */
+    private void handleLocationPost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            int location = 0;
+            location = resultsJSON.getInt("Key");
+            if (location != 0) {
+                getWeather(location);
+            } else {
+                //Login was unsuccessful. Don’t switch fragments and inform the user
+                /*LoginFragment frag =
+                        (LoginFragment) getSupportFragmentManager()
+                                .findFragmentByTag(
+                                        getString(R.string.keys_fragment_login));
+                frag.setError("Log in unsuccessful");*/
+                TextView fail = findViewById(R.id.loginFailMsg);
+                fail.setVisibility(View.VISIBLE);
+            }
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    /**
+     * Builds JSON and starts new AsyncTask to send to weather service.
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    public void getWeather(int location) {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_weather))
+                .appendPath(getString(R.string.ep_weather_current))
+                .build();
+        //build the JSONObject
+        //Pass location as username so we can use credentials.asJSON
+        String loc = Integer.toString(location);
+        Credentials cred = new Credentials.Builder(loc, null)
+                .build();
+        JSONObject msg = cred.asJSONObject();
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleWeatherPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    /**
+     * Handle onPostExecute of the AsynceTask. The result from our webservice is
+     * a JSON formatted String. Parse it for success or failure.
+     * @param jsonResult the JSON formatted String response from the web service
+     */
+    private void handleWeatherPost(final String jsonResult) {
+        String description = "";
+        int temp = -99;
+        try {
+            JSONObject json = new JSONObject(jsonResult);
+            description = json.getString("WeatherText");
+            if (json.has("Temperature")) {
+                JSONObject response = json.getJSONArray("Temperature").getJSONObject(1);
+                if (response.has("Imperial")) {
+                    JSONObject show = response.getJSONArray("Imperial").getJSONObject(0);
+                    if (show.has("Value")) {
+                        temp = show.getInt("Value");
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+        }
+        if(description.length() != 0 && temp != -99){
+            String weather = description + ": " + Integer.toString(temp);
+            HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
+                    findFragmentByTag(getString(R.string.home_info_tag));
+            homeFragment.setWeather(weather);
+
+        }
+    }
 
 }

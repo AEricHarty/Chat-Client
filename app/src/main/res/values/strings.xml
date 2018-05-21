@@ -54,7 +54,7 @@
     <string name="new_connection_nickname">Nickname</string>
 
 
-    <string name="home_info_user_information">Current User Information:</string>
+    <string name="home_info_more_weather_button">More Weather</string>
     <string name="home_info_user_email">Email: userEmail</string>
     <string name="home_info_user_name">Username: userName</string>
     <string name="home_info_user_nickname">Nickname: userNickname</string>
