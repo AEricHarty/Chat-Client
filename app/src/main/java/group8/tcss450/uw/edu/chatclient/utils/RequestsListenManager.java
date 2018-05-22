@@ -42,6 +42,7 @@ public class RequestsListenManager {
     private final Consumer<JSONObject> mActionToTake;
     private final Consumer<Exception> mActionToTakeOnError;
     private final int mDelay;
+    private String mDate;
 
     private ScheduledThreadPoolExecutor mPool;
     private ScheduledFuture mThread;
@@ -60,6 +61,7 @@ public class RequestsListenManager {
         //Optional Parameters
         private int mSleepTime = 500;
         private Consumer<Exception> mActionToTakeOnError = e -> {};
+        private String mDate = "1970-01-01 00:00:01.00000";
 
         /**
          * Constructs a new Builder with a delay of 500 ms.
@@ -98,6 +100,17 @@ public class RequestsListenManager {
         }
 
         /**
+         * Sets the timestamp value for the Builder
+         *
+         * @param val the timestamp to pass to the  RequestListenManager
+         * @return
+         */
+        public Builder setTimeStamp(final String val) {
+            mDate = val;
+            return this;
+        }
+
+        /**
          * Constructs a ListenManager with the current attributes.
          *
          * @return a ListenManager with the current attributes.
@@ -118,6 +131,7 @@ public class RequestsListenManager {
         mActionToTake = builder.mActionToTake;
         mDelay = builder.mSleepTime;
         mActionToTakeOnError = builder.mActionToTakeOnError;
+        mDate = builder.mDate;
         mPool = new ScheduledThreadPoolExecutor(5);
     }
 
@@ -133,9 +147,12 @@ public class RequestsListenManager {
 
     /**
      * Stops listening for new messages.
+     *
+     * @return the most recent timestamp
      */
-    public void stopListening() {
+    public String stopListening() {
         mThread.cancel(true);
+        return mDate;
     }
 
     /**
@@ -152,6 +169,7 @@ public class RequestsListenManager {
             response = new StringBuilder();
             try {
                 String getURL = mURL;
+                getURL += "&after=" + mDate;
 
                 URL urlObject = new URL(getURL);
                 urlConnection = (HttpURLConnection) urlObject.openConnection();
@@ -166,6 +184,15 @@ public class RequestsListenManager {
 
                 //here is where we "publish" the message that we received.
                 mActionToTake.accept(messages);
+
+                //get and store the last date.
+                JSONArray msgs = messages.getJSONArray("pending");
+                if (msgs.length() > 0) {
+                    JSONObject mostRecent = msgs.getJSONObject(msgs.length() - 1);
+                    String timestamp = mostRecent.get("requesttime").toString();
+                    mDate = timestamp;
+                    System.out.println("Updateing most recent time in RequestListenManager to : " + timestamp);
+                }
 
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());
