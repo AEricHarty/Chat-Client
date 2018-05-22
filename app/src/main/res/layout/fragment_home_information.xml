@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/homeInfoUserEmail"
+        android:id="@+id/homeInfoLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toTopOf="@+id/homeInfoUserNickname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeInfoUserEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/homeInfoLocation" />
 
     <TextView
         android:id="@+id/homeInfoUserNickname"
@@ -73,13 +73,13 @@
     <TextView
         android:id="@+id/antiLawsuitTextView"
         android:layout_width="wrap_content"
-        android:layout_height="10dp"
+        android:layout_height="12dp"
         android:layout_marginStart="2dp"
         android:layout_marginTop="8dp"
+        android:autoLink="web"
         android:text="@string/accuweather_site"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textSize="8sp"
-        android:autoLink="web"
+        android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homeWeatherView" />
 

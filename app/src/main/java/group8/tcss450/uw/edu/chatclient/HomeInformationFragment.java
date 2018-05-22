@@ -1,12 +1,16 @@
 package group8.tcss450.uw.edu.chatclient;
 
 
+import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
@@ -19,6 +23,7 @@ import group8.tcss450.uw.edu.chatclient.model.Credentials;
  */
 public class HomeInformationFragment extends Fragment implements View.OnClickListener{
 
+    private View mView;
     private Button mWeatherButton;
     private TextView mWeatherView;
     private HomeInformationFragment.OnHomeFragmentInteractionListener mListener;
@@ -32,23 +37,47 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_home_information, container, false);
-        mWeatherButton = (Button) v.findViewById(R.id.moreWeatherButton);
-        //mWeatherButton.setEnabled(false);
-        mWeatherView = (TextView) v.findViewById(R.id.homeWeatherView);
+        mView = inflater.inflate(R.layout.fragment_home_information, container, false);
+        mWeatherButton = (Button) mView.findViewById(R.id.moreWeatherButton);
+        mWeatherButton.setOnClickListener(this::onClick);
+        mWeatherView = (TextView) mView.findViewById(R.id.homeWeatherView);
 
-        return v;
+        return mView;
     }
 
     public void setWeather(String weather) {
         mWeatherView.setText(weather);
     }
 
+    public void setLocation(Location location) {
+        TextView text = (TextView) mView.findViewById(R.id.homeInfoLocation);
+        text.setText(location.getLatitude() + " " +
+                location.getLongitude());
+    }
+
     /**@author Eric Harty - hartye@uw.edu*/
     @Override
     public void onClick(View view) {
+        if (mListener != null) {
+            mListener.onMoreWeatherClicked();
+        }
+    }
 
-        mListener.onMoreWeatherClicked();
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof HomeInformationFragment.OnHomeFragmentInteractionListener) {
+            mListener = (HomeInformationFragment.OnHomeFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " OnHomeFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     /**

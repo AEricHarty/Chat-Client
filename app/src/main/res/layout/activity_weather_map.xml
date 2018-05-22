@@ -25,22 +25,13 @@
         app:layout_constraintTop_toBottomOf="@+id/weatherWhereView" />
 
     <Button
-        android:id="@+id/weatherRememberButton"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/weather_remember_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weatherWhenView" />
-
-    <Button
         android:id="@+id/weatherSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:text="@string/weather_submit_button"
-        app:layout_constraintStart_toEndOf="@+id/weatherRememberButton"
+        app:layout_constraintStart_toEndOf="@+id/weatherCheckBox"
         app:layout_constraintTop_toBottomOf="@+id/weatherWhenView" />
 
     <TextView
@@ -77,8 +68,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weatherRememberButton" />
+        app:layout_constraintTop_toBottomOf="@+id/weatherCheckBox" />
+
+    <TextView
+        android:id="@+id/antiLawsuitTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginBottom="4dp"
+        android:autoLink="web"
+        android:text="@string/accuweather_site"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/antiLawsuitImageView"
+        android:layout_width="137dp"
+        android:layout_height="86dp"
+        android:src="@drawable/ic_accuweather"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/weatherCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="42dp"
+        android:text="@string/weather_remember_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherWhenView" />
+
+    <EditText
+        android:id="@+id/weatherZIPEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="@string/weather_zip_hint"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/weatherWhereSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/googleMap" />
 
 </android.support.constraint.ConstraintLayout>

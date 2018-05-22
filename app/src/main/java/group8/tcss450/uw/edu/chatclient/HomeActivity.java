@@ -65,14 +65,13 @@ public class HomeActivity extends AppCompatActivity implements
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 2000000000; //Not frequently
+    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    //public static final long UPDATE_INTERVAL = 100000; //More frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
-
-
 
     private String userName;
     @Override
@@ -415,7 +414,6 @@ public class HomeActivity extends AppCompatActivity implements
         Log.e("ASYNCT_TASK_ERROR", result);
     }
 
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         // If the initial location was never previously requested, we use
@@ -453,6 +451,9 @@ public class HomeActivity extends AppCompatActivity implements
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         Log.d(TAG, mCurrentLocation.toString());
+        HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
+                findFragmentByTag(getString(R.string.home_info_tag));
+        homeFragment.setLocation(location);
         getLocation();
     }
 
@@ -529,6 +530,8 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     /**
+     * @author Eric Harty - hartye@uw.edu
+     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param result the JSON formatted String response from the web service
@@ -578,6 +581,8 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     /**
+     * @author Eric Harty - hartye@uw.edu
+     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param jsonResult the JSON formatted String response from the web service
@@ -626,6 +631,7 @@ public class HomeActivity extends AppCompatActivity implements
         i.putExtra(WeatherMapActivity.LATITUDE, mCurrentLocation.getLatitude());
         i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
         startActivity(i);
+        finish();
     }
 
 }
