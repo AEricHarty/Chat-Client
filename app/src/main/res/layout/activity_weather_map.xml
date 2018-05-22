@@ -9,8 +9,9 @@
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/googleMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="382dp"
-        android:layout_height="200dp"
+        android:layout_width="0dp"
+        android:layout_height="214dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:onClick="onClick"
         android:text="@string/weather_submit_button"
         app:layout_constraintStart_toEndOf="@+id/weatherCheckBox"
         app:layout_constraintTop_toBottomOf="@+id/weatherWhenView" />

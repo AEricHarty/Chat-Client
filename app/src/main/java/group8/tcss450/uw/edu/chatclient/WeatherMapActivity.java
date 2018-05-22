@@ -60,8 +60,8 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private String mWhenChoice = "Now";
     private String mWhereChoice = "Here";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    //public static final long UPDATE_INTERVAL = 100000; //More frequently
+    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    public static final long UPDATE_INTERVAL = 108000; //More frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -426,7 +426,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      */
     private void handleCurrentWeatherPost(final String jsonResult) {
         String description = "";
-        int temp = -99;
+        double temp = -99;
         try {
             JSONArray json = new JSONArray(jsonResult);
             if (json.getJSONObject(0).has("WeatherText")) {
@@ -437,8 +437,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 if (response.has("Imperial")) {
                     JSONObject type = response.getJSONObject("Imperial");
                     if (type.has("Value")) {
-                        JSONObject val = json.getJSONObject(0).getJSONObject("Value");
-                        temp = val.getInt("Value");
+                        temp = type.getDouble("Value");
                     }
                 }
             }

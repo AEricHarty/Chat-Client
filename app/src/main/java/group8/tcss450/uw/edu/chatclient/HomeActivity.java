@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -65,8 +66,8 @@ public class HomeActivity extends AppCompatActivity implements
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    //public static final long UPDATE_INTERVAL = 100000; //More frequently
+    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    public static final long UPDATE_INTERVAL = 108000; //More frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
@@ -74,6 +75,7 @@ public class HomeActivity extends AppCompatActivity implements
     private Location mCurrentLocation;
 
     private String userName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -589,22 +591,18 @@ public class HomeActivity extends AppCompatActivity implements
      */
     private void handleWeatherPost(final String jsonResult) {
         String description = "";
-        int temp = -99;
+        double temp = -99;
         try {
             JSONArray json = new JSONArray(jsonResult);
-
-            if (json.getJSONObject(2).has("WeatherText")) {
-                description = json.getJSONObject(2).getString("WeatherText");
+            if (json.getJSONObject(0).has("WeatherText")) {
+                description = json.getJSONObject(0).getString("WeatherText");
             }
-            if (json.getJSONObject(5).has("Temperature")) {
-                JSONArray response = json.getJSONObject(5).getJSONArray("Temperature");
-                if (response.getJSONObject(1).has("Imperial")) {
-                    JSONArray type = json.getJSONObject(1).getJSONArray("Imperial");
-                    if (type.getJSONObject(0).has("Value")) {
-                        JSONObject val = json.getJSONObject(0).getJSONObject("Value");
-                        if (val.has("Value")) {
-                            temp = val.getInt("Value");
-                        }
+            if (json.getJSONObject(0).has("Temperature")) {
+                JSONObject response = json.getJSONObject(0).getJSONObject("Temperature");
+                if (response.has("Imperial")) {
+                    JSONObject type = response.getJSONObject("Imperial");
+                    if (type.has("Value")) {
+                        temp = type.getDouble("Value");
                     }
                 }
             }
@@ -612,7 +610,7 @@ public class HomeActivity extends AppCompatActivity implements
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
-            String weather = description + ": " + Integer.toString(temp);
+            String weather = description + ": " + Double.toString(temp);
             HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                     findFragmentByTag(getString(R.string.home_info_tag));
             homeFragment.setWeather(weather);
