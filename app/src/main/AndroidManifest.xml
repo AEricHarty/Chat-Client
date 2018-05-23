@@ -26,7 +26,6 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ChatActivity" />
         <activity
             android:name=".ChatSessionActivity"
             android:label="@string/chat_session_activity"></activity>

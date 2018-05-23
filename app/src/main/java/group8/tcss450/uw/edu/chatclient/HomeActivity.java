@@ -75,13 +75,14 @@ public class HomeActivity extends AppCompatActivity implements
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
     //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    public static final long UPDATE_INTERVAL = 1080000;
-    //public static final long UPDATE_INTERVAL = 108000; //More frequently
+    //public static final long UPDATE_INTERVAL = 1080000; //More frequently
+    public static final long UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private boolean mWeatherChecked = false;
 
     private String userName;
 
@@ -382,8 +383,8 @@ public class HomeActivity extends AppCompatActivity implements
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
             if (findViewById(R.id.searchConnectionProgressBar) != null) {
-                ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
-                searchConnectionProgrsesBar.setVisibility(View.GONE);
+                ProgressBar searchConnectionProgressBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
+                searchConnectionProgressBar.setVisibility(View.GONE);
             }
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
@@ -517,7 +518,10 @@ public class HomeActivity extends AppCompatActivity implements
         HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                 findFragmentByTag(getString(R.string.home_info_tag));
         homeFragment.setLocation(location);
-        getLocation();
+        if (!mWeatherChecked) {
+            getLocation();
+            mWeatherChecked = true;
+        }
     }
 
     /**Requests location updates from the FusedLocationApi.*/
