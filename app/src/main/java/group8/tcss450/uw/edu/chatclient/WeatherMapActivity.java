@@ -61,7 +61,8 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private String mWhenChoice = "Now";
     private String mWhereChoice = "Here";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    public static final long UPDATE_INTERVAL = 1080000;
     //public static final long UPDATE_INTERVAL = 108000; //More frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL - (UPDATE_INTERVAL / 8);
     private GoogleApiClient mGoogleApiClient;
