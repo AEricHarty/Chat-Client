@@ -2,7 +2,6 @@ package group8.tcss450.uw.edu.chatclient;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -56,7 +56,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     public static final String LATITUDE = "lat";
     public static final String LONGITUDE = "lng";
     private GoogleMap mGoogleMap;
-    private double mLat, mLng, mSavedLat, mSavedLng;
+    private double mLat, mLng;
     private Marker mMarker;
     private String mWhenChoice = "Now";
     private String mWhereChoice = "Here";
@@ -70,7 +70,8 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private EditText mZIPView;
     private TextView mResultView;
     private int mChoiceFlag;
-
+    private ProgressBar mProgressBar;
+    private Button mSubmitButton;
 
     /**@author Eric Harty - hartye@uw.edu*/
     @Override
@@ -100,6 +101,9 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         whenSpinner.setAdapter(whenAdapter);
         whenSpinner.setOnItemSelectedListener(this);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.weatherMapProgressBar);
+        mProgressBar.setVisibility(View.GONE);
+
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -115,8 +119,9 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
 
         mResultView = (TextView) findViewById(R.id.weatherResultView);
 
-        Button b = (Button) findViewById(R.id.weatherSubmitButton);
-        b.setOnClickListener(this::onSubmitClick);
+
+        mSubmitButton = (Button) findViewById(R.id.weatherSubmitButton);
+        mSubmitButton.setOnClickListener(this::onSubmitClick);
 
     }
 
@@ -241,6 +246,14 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    /**
+     * @author Eric Harty - hartye@uw.edu
+     */
+    private void handlePre() {
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mProgressBar.setProgress(0);
+        mSubmitButton.setEnabled(false);
+    }
 
     /**
      * Builds JSON and starts new AsyncTask to send to weather service.
@@ -266,6 +279,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPreExecute(this::handlePre)
                 .onPostExecute(this::handleLocationPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
@@ -295,6 +309,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPreExecute(this::handlePre)
                 .onPostExecute(this::handleLocationZIPPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
@@ -479,8 +494,12 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
-            mResultView.setText(description + " " + temp);
+            String output = String.format(getString(R.string.weather_single_msg),
+                    description, temp);
+            mResultView.setText(output);
         }
+        mProgressBar.setVisibility(View.GONE);
+        mSubmitButton.setEnabled(true);
     }
 
     /**
@@ -517,8 +536,12 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
-            mResultView.setText(description + " " + temp);
+            String output = String.format(getString(R.string.weather_single_msg),
+                    description, temp);
+            mResultView.setText(output);
         }
+        mProgressBar.setVisibility(View.GONE);
+        mSubmitButton.setEnabled(true);
     }
 
     /**
@@ -559,9 +582,12 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp[0] != -99){
-            mResultView.setText(description + " " + temp[0] + ", " + temp[1] + ", " + temp[2] +
-                    ", " + temp[3]+ ", " + temp[4]);
+            String output = String.format(getString(R.string.weather_five_msg), description,
+                    temp[0], temp[1], temp[2], temp[3], temp[4]);
+            mResultView.setText(output);
         }
+        mProgressBar.setVisibility(View.GONE);
+        mSubmitButton.setEnabled(true);
     }
 
     private void handleErrorsInTask(String result) {

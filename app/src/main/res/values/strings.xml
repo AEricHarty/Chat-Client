@@ -91,6 +91,8 @@
     </string-array>
 
     <string name="home_info_location_msg">%1$f, %2$f</string>
+    <string name="weather_five_msg">%1$s: %2$f | %3$f| %4$f| %5$f| %6$f </string>
+    <string name="weather_single_msg">%1$s: %2$f</string>
 
     <string name="weather_remember_button">Save for later</string>
     <string name="weather_submit_button">Submit</string>

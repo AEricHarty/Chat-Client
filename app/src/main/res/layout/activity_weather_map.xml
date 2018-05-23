@@ -120,4 +120,16 @@
         app:layout_constraintStart_toEndOf="@+id/weatherWhereSpinner"
         app:layout_constraintTop_toBottomOf="@+id/googleMap" />
 
+    <ProgressBar
+        android:id="@+id/weatherMapProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherSubmitButton"
+        tools:visibility="gone" />
+
 </android.support.constraint.ConstraintLayout>
