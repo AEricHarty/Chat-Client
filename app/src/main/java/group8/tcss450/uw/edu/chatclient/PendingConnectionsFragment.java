@@ -57,11 +57,13 @@ public class PendingConnectionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Bundle b = this.getActivity().getIntent().getExtras();
-        if(b != null) {
-            userName = b.getString("username");
-        }
-        System.out.println("Username at onCreateView: " + userName);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        userName = prefs.getString(getString(R.string.keys_prefs_username), "Problem! No Username!");
+
+//        System.out.println("Username at onCreateView: " + userName);
         View v = inflater.inflate(R.layout.fragment_pending_connections, container, false);
 
 
@@ -387,7 +389,8 @@ public class PendingConnectionsFragment extends Fragment {
                 .build();
             System.out.println(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"));
         } else {
-            //no time stamp in settings. Must be a first time login.
+            //No time stamp in settings. Must be a first time login.
+            //The RequestListenManager will assign itself the default timestamp 1970 to get all requests
             mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
                     this::populateIncomingRequestsResult)
                     .setExceptionHandler(this::handleExceptionsInListener)
@@ -406,7 +409,6 @@ public class PendingConnectionsFragment extends Fragment {
             try {
                 JSONArray array = resultsJSON.getJSONArray("pending");
 
-//                incomingData.clear();
                 if (getActivity().findViewById(R.id.incomingProgressBar) != null) {
                     ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
                     incomingProgressBar.setVisibility(View.GONE);
@@ -470,7 +472,6 @@ public class PendingConnectionsFragment extends Fragment {
             try {
                 JSONArray array = resultsJSON.getJSONArray("pending");
 
-                outgoingData.clear();
                 if (getActivity().findViewById(R.id.outgoingProgressBar) != null) {
                     ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
                     outgoingProgressBar.setVisibility(View.GONE);

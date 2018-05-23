@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -26,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -39,6 +44,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import group8.tcss450.uw.edu.chatclient.model.BadgeDrawerArrowDrawable;
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
@@ -63,6 +69,7 @@ public class HomeActivity extends AppCompatActivity implements
     private SearchNewConnectionFragment.SearchConnectionAdapter searchConnectionAdapter;
     private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
 
+    private ActionBarDrawerToggle mToggle;
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
@@ -125,10 +132,10 @@ public class HomeActivity extends AppCompatActivity implements
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        mToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        drawer.addDrawerListener(mToggle);
+        mToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -155,6 +162,8 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
+        //Switch ContactsIntentService from background to foreground mode.
         SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
         //Check to see if service should already be running
@@ -165,6 +174,8 @@ public class HomeActivity extends AppCompatActivity implements
             ContactsIntentService.startServiceAlarm(this, true);
         }
 
+        //check to see if the Intent came from the ContactsIntentService.
+        //if so, load the PendingConnectionsFragment.
         if(mDataUpdateReceiver == null) {
             mDataUpdateReceiver = new DataUpdateReceiver();
         }
@@ -179,16 +190,15 @@ public class HomeActivity extends AppCompatActivity implements
     protected void onPause(){
         super.onPause();
 
+        //switch ContactsIntentService from foreground to background mode.
         SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
-
         if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
             //stop service running in foreground
             ContactsIntentService.stopServiceAlarm(this);
             //restart service in background
             ContactsIntentService.startServiceAlarm(this, false);
         }
-
         if(mDataUpdateReceiver != null) {
             unregisterReceiver(mDataUpdateReceiver);
         }
@@ -264,6 +274,10 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if(mToggle.getDrawerArrowDrawable() != null && mToggle.getDrawerArrowDrawable() instanceof  BadgeDrawerArrowDrawable) {
+            ((BadgeDrawerArrowDrawable)mToggle.getDrawerArrowDrawable()).setEnabled(false);
+        }
 
         if (id == R.id.nav_connections) {
             loadFragment(new ConnectionsFragment());
@@ -680,12 +694,29 @@ public class HomeActivity extends AppCompatActivity implements
         finish();
     }
 
+    //used to add notification icon to hamburger button.
+    private void addHamburgerButtonBadge(String msg){
+        //check if hamburger button already has badge.
+        if(mToggle.getDrawerArrowDrawable() != null && mToggle.getDrawerArrowDrawable() instanceof BadgeDrawerArrowDrawable) {
+            ((BadgeDrawerArrowDrawable)mToggle.getDrawerArrowDrawable()).setEnabled(true);
+        } else {
+            BadgeDrawerArrowDrawable badgeDrawable = new BadgeDrawerArrowDrawable(getSupportActionBar().getThemedContext());
+            mToggle.setDrawerArrowDrawable(badgeDrawable);
+            badgeDrawable.setText(msg);
+        }
+    }
+
+    // This internal class is to listen for pending connections while the HomeActivity is in the foreground.
     private class DataUpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ContactsIntentService.RECEIVED_UPDATE)) {
                 Log.d(TAG, "Hey I just got your broadcast!");
-                loadFragment(new PendingConnectionsFragment());
+//                loadFragment(new PendingConnectionsFragment());
+
+                //add badge to navigation drawer pending connections item.
+                addHamburgerButtonBadge("!");
+
             }
         }
     }
