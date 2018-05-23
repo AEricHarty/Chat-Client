@@ -4,8 +4,6 @@
     <string name="keys_shared_prefs">group8.tcss450.uw.edu.chatclient.PREFS</string>
     <string name="keys_sp_on">true</string>
 
-
-
     <string name="keys_prefs_email">email</string>
     <string name="keys_prefs_username">username</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
