@@ -124,7 +124,7 @@ public class SignInActivity extends AppCompatActivity implements
                                 .findFragmentByTag(
                                         getString(R.string.keys_fragment_login));
                 frag.setError("Log in unsuccessful");*/
-                TextView fail = findViewById(R.id.loginFailMsg);
+                TextView fail = (TextView) findViewById(R.id.loginFailMsg);
                 fail.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
@@ -455,7 +455,7 @@ public class SignInActivity extends AppCompatActivity implements
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
                 if(findViewById(R.id.resendVerificationButton) != null) {
-                    Button b = findViewById(R.id.resendVerificationButton);
+                    Button b = (Button) findViewById(R.id.resendVerificationButton);
                     b.setText("Another email has been sent. Send again?");
                 }
             } else {

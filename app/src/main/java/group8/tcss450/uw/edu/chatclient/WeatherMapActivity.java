@@ -93,7 +93,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         whereSpinner.setAdapter(whereAdapter);
         whereSpinner.setOnItemSelectedListener(this);
 
-        Spinner whenSpinner = findViewById(R.id.weatherWhenSpinner);
+        Spinner whenSpinner = (Spinner) findViewById(R.id.weatherWhenSpinner);
         ArrayAdapter<CharSequence> whenAdapter = ArrayAdapter.createFromResource(this,
                 R.array.weatherSWhenArray, android.R.layout.simple_spinner_item);
         whenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -3,6 +3,8 @@ package group8.tcss450.uw.edu.chatclient;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -39,6 +41,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
+import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -56,13 +59,11 @@ public class HomeActivity extends AppCompatActivity implements
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
-    private ArrayList<PendingConnectionsFragment.IncomingRequestListItem> incomingRequestsList;
-    private ArrayList<PendingConnectionsFragment.OutgoingRequestListItem> outgoingRequestsList;
 
+    private DataUpdateReceiver mDataUpdateReceiver;
     private SearchNewConnectionFragment.SearchConnectionAdapter searchConnectionAdapter;
     private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
-    private PendingConnectionsFragment.IncomingRequestAdapter incomingAdapter;
-    private PendingConnectionsFragment.OutgoingRequestAdapter outgoingAdapter;
+
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
@@ -81,9 +82,9 @@ public class HomeActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         //get app color theme
-        SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
-        int theme = themePrefs.getInt("colorTheme", 1);
+        int theme = prefs.getInt("colorTheme", 1);
         // apply app theme to activity
         if( theme == 1) {
             setTheme(R.style.BlueAndOragneAppTheme);
@@ -134,6 +135,9 @@ public class HomeActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        final SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(getString(R.string.keys_sp_on),true);
+        editor.apply();
         Intent intent = getIntent();
         userName = intent.getStringExtra("username");
 
@@ -147,6 +151,48 @@ public class HomeActivity extends AppCompatActivity implements
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
                             , Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_LOCATIONS);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        //Check to see if service should already be running
+        if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
+            //stop service from the background
+            ContactsIntentService.stopServiceAlarm(this);
+            //restart service but in the foreground
+            ContactsIntentService.startServiceAlarm(this, true);
+        }
+
+        if(mDataUpdateReceiver == null) {
+            mDataUpdateReceiver = new DataUpdateReceiver();
+        }
+        IntentFilter iFilter = new IntentFilter(ContactsIntentService.RECEIVED_UPDATE);
+        registerReceiver(mDataUpdateReceiver, iFilter);
+        if(getIntent().hasExtra(getString(R.string.keys_extra_results))) {
+            loadFragment(new PendingConnectionsFragment());
+        }
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+
+        if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
+            //stop service running in foreground
+            ContactsIntentService.stopServiceAlarm(this);
+            //restart service in background
+            ContactsIntentService.startServiceAlarm(this, false);
+        }
+
+        if(mDataUpdateReceiver != null) {
+            unregisterReceiver(mDataUpdateReceiver);
         }
     }
 
@@ -292,7 +338,7 @@ public class HomeActivity extends AppCompatActivity implements
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
         searchContactList.clear();
-        ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
+        ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
         searchConnectionProgrsesBar.setVisibility(View.VISIBLE);
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleSearchContact)
@@ -321,7 +367,7 @@ public class HomeActivity extends AppCompatActivity implements
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
             if (findViewById(R.id.searchConnectionProgressBar) != null) {
-                ProgressBar searchConnectionProgrsesBar = findViewById(R.id.searchConnectionProgressBar);
+                ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
                 searchConnectionProgrsesBar.setVisibility(View.GONE);
             }
             for (int i =0; i < array.length(); i++) {
@@ -393,7 +439,7 @@ public class HomeActivity extends AppCompatActivity implements
 
             connectionList.clear();
             if (findViewById(R.id.loadConnectionsProgressBar) != null) {
-                ProgressBar loadingConnectionsProgressBar = findViewById(R.id.loadConnectionsProgressBar);
+                ProgressBar loadingConnectionsProgressBar = (ProgressBar) findViewById(R.id.loadConnectionsProgressBar);
                 loadingConnectionsProgressBar.setVisibility(View.GONE);
             }
             for (int i =0; i < array.length(); i++) {
@@ -630,6 +676,16 @@ public class HomeActivity extends AppCompatActivity implements
         i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
         i.putExtra("username", userName);
         startActivity(i);
+    }
+
+    private class DataUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ContactsIntentService.RECEIVED_UPDATE)) {
+                Log.d(TAG, "Hey I just got your broadcast!");
+                loadFragment(new PendingConnectionsFragment());
+            }
+        }
     }
 
 }
