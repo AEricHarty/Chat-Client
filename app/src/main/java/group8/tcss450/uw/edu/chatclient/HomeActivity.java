@@ -74,8 +74,8 @@ public class HomeActivity extends AppCompatActivity implements
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    public static final long UPDATE_INTERVAL = 108000; //More frequently
+    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    //public static final long UPDATE_INTERVAL = 108000; //More frequently
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
