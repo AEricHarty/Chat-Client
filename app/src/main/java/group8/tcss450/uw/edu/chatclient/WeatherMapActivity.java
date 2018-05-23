@@ -86,7 +86,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 .findFragmentById(R.id.googleMap);
         mapFragment.getMapAsync(this);
 
-        Spinner whereSpinner = findViewById(R.id.weatherWhereSpinner);
+        Spinner whereSpinner = (Spinner)findViewById(R.id.weatherWhereSpinner);
         ArrayAdapter<CharSequence> whereAdapter = ArrayAdapter.createFromResource(this,
                 R.array.weatherSWhereArray, android.R.layout.simple_spinner_item);
         whereAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -113,7 +113,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        mResultView = findViewById(R.id.weatherResultView);
+        mResultView = (TextView) findViewById(R.id.weatherResultView);
 
         Button b = (Button) findViewById(R.id.weatherSubmitButton);
         b.setOnClickListener(this::onSubmitClick);
