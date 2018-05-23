@@ -42,7 +42,7 @@ public class PendingConnectionsFragment extends Fragment {
 
     private ListView incomingRequestsList;
     private ListView outgoingRequestsList;
-    private String userName;
+    private String mUserName;
 
     private RequestsListenManager mIncomingListenManager;
     private RequestsListenManager mOutgoingListenManager;
@@ -61,7 +61,7 @@ public class PendingConnectionsFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
-        userName = prefs.getString(getString(R.string.keys_prefs_username), "Problem! No Username!");
+        mUserName = prefs.getString(getString(R.string.keys_prefs_username), "Problem! No Username!");
 
 //        System.out.println("Username at onCreateView: " + userName);
         View v = inflater.inflate(R.layout.fragment_pending_connections, container, false);
@@ -128,6 +128,138 @@ public class PendingConnectionsFragment extends Fragment {
                 .apply();
     }
 
+
+
+    public void findIncomingRequests() {
+
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_pending))
+                .appendPath(getString(R.string.ep_pending_incoming))
+                .appendQueryParameter("username", mUserName)
+                .build();
+
+        //get last time stamp from shared preferences to ignore old messages.
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+
+        if(!prefs.contains(getString(R.string.keys_prefs_incoming_request_time_stamp))) {
+            //set the listenManager to ignore seen requests.
+            mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                this::populateIncomingRequestsResult)
+                .setExceptionHandler(this::handleExceptionsInListener)
+                .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"))
+                .setDelay(1000)
+                .build();
+            System.out.println(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"));
+        } else {
+            //No time stamp in settings. Must be a first time login.
+            //The RequestListenManager will assign itself the default timestamp 1970 to get all requests
+            mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                    this::populateIncomingRequestsResult)
+                    .setExceptionHandler(this::handleExceptionsInListener)
+                    .setDelay(1000)
+                    .build();
+        }
+    }
+
+    public void handleExceptionsInListener(Exception e) {
+        Log.e("LISTEN ERROR!!", e.getMessage());
+    }
+
+    private void populateIncomingRequestsResult(JSONObject resultsJSON) {
+        getActivity().runOnUiThread(() -> {
+
+            try {
+                JSONArray array = resultsJSON.getJSONArray("pending");
+
+                if (getActivity().findViewById(R.id.incomingProgressBar) != null) {
+                    ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
+                    incomingProgressBar.setVisibility(View.GONE);
+                }
+
+                for (int i =0; i < array.length(); i++) {
+                    JSONObject aContact = array.getJSONObject(i);
+                    // PARSE JSON RESULTS HERE
+                    String first = aContact.getString("firstname");
+                    String last = aContact.getString("lastname");
+                    String username = aContact.getString("username");
+                    String email = aContact.getString("email");
+                    incomingData.add(new PendingConnectionsFragment.IncomingRequestListItem(first, last, username, email));
+                    incomingAdapter.notifyDataSetChanged();
+                }
+            } catch (JSONException e) {
+
+                Log.e("JSON_PARSE_ERROR", "Error when populating incoming requests.");
+            }
+        });
+    }
+
+    public void findOutgoingRequests() {
+
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_pending))
+                .appendPath(getString(R.string.ep_pending_outgoing))
+                .appendQueryParameter("username", mUserName)
+                .build();
+
+        //get last time stamp from shared preferences to ignore old messages.
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+
+        if(!prefs.contains(getString(R.string.keys_prefs_outgoing_request_time_stamp))) {
+            //set the listenManager to ignore seen requests.
+        mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                this::populateOutgoingRequestsResult)
+                .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_outgoing_request_time_stamp), "0"))
+                .setExceptionHandler(this::handleExceptionsInListener)
+                .setDelay(1000)
+                .build();
+        } else {
+            //no time stamp in settings. Must be a first time login.
+            mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
+                    this::populateOutgoingRequestsResult)
+                    .setExceptionHandler(this::handleExceptionsInListener)
+                    .setDelay(1000)
+                    .build();
+        }
+    }
+
+    private void populateOutgoingRequestsResult(JSONObject resultsJSON) {
+        getActivity().runOnUiThread(() -> {
+            try {
+                JSONArray array = resultsJSON.getJSONArray("pending");
+
+                if (getActivity().findViewById(R.id.outgoingProgressBar) != null) {
+                    ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
+                    outgoingProgressBar.setVisibility(View.GONE);
+                }
+
+                for (int i =0; i < array.length(); i++) {
+                    JSONObject aContact = array.getJSONObject(i);
+                    // PARSE JSON RESULTS HERE
+                    String first = aContact.getString("firstname");
+                    String last = aContact.getString("lastname");
+                    String username = aContact.getString("username");
+                    String email = aContact.getString("email");
+                    outgoingData.add(new PendingConnectionsFragment.OutgoingRequestListItem(first, last, username, email));
+                    outgoingAdapter.notifyDataSetChanged();
+                }
+            } catch (JSONException e) {
+                Log.e("JSON_PARSE_ERROR", "Error when populating outgoing requests.");
+            }
+        });
+    }
+
+    //***************************************************Inner Classes **********************************
+
     //Adapter and item for incoming requests:
     public static class IncomingRequestListItem{
         private String name;
@@ -184,7 +316,7 @@ public class PendingConnectionsFragment extends Fragment {
                     //build the JSONObject
                     JSONObject msg = new JSONObject();
                     try {
-                        msg.put(getString(R.string.keys_json_username), userName);
+                        msg.put(getString(R.string.keys_json_username), mUserName);
                         msg.put(getString(R.string.keys_json_otherUsername), currentItem.username);
                         msg.put(getString(R.string.keys_json_answer), 0);
                         System.out.println(msg);
@@ -232,7 +364,7 @@ public class PendingConnectionsFragment extends Fragment {
                     //build the JSONObject
                     JSONObject msg = new JSONObject();
                     try {
-                        msg.put(getString(R.string.keys_json_username), userName);
+                        msg.put(getString(R.string.keys_json_username), mUserName);
                         msg.put(getString(R.string.keys_json_otherUsername), currentItem.username);
                         msg.put(getString(R.string.keys_json_answer), 1);
                         System.out.println(msg);
@@ -325,7 +457,7 @@ public class PendingConnectionsFragment extends Fragment {
                     //build the JSONObject
                     JSONObject msg = new JSONObject();
                     try {
-                        msg.put(getString(R.string.keys_json_username), userName);
+                        msg.put(getString(R.string.keys_json_username), mUserName);
                         msg.put(getString(R.string.keys_json_otherUsername), currentItem.username);
                         System.out.println(msg);
                     } catch (JSONException e) {
@@ -361,135 +493,5 @@ public class PendingConnectionsFragment extends Fragment {
 
             return listItem;
         }
-    }
-
-    public void findIncomingRequests() {
-
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_pending))
-                .appendPath(getString(R.string.ep_pending_incoming))
-                .appendQueryParameter("username", userName)
-                .build();
-
-        //get last time stamp from shared preferences to ignore old messages.
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        if(!prefs.contains(getString(R.string.keys_prefs_incoming_request_time_stamp))) {
-            //set the listenManager to ignore seen requests.
-        mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                this::populateIncomingRequestsResult)
-                .setExceptionHandler(this::handleExceptionsInListener)
-                .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"))
-                .setDelay(1000)
-                .build();
-            System.out.println(prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0"));
-        } else {
-            //No time stamp in settings. Must be a first time login.
-            //The RequestListenManager will assign itself the default timestamp 1970 to get all requests
-            mIncomingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateIncomingRequestsResult)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        }
-    }
-
-    public void handleExceptionsInListener(Exception e) {
-        Log.e("LISTEN ERROR!!", e.getMessage());
-    }
-
-    private void populateIncomingRequestsResult(JSONObject resultsJSON) {
-        getActivity().runOnUiThread(() -> {
-
-            try {
-                JSONArray array = resultsJSON.getJSONArray("pending");
-
-                if (getActivity().findViewById(R.id.incomingProgressBar) != null) {
-                    ProgressBar incomingProgressBar = (ProgressBar) getActivity().findViewById(R.id.incomingProgressBar);
-                    incomingProgressBar.setVisibility(View.GONE);
-                }
-
-                for (int i =0; i < array.length(); i++) {
-                    JSONObject aContact = array.getJSONObject(i);
-                    // PARSE JSON RESULTS HERE
-                    String first = aContact.getString("firstname");
-                    String last = aContact.getString("lastname");
-                    String username = aContact.getString("username");
-                    String email = aContact.getString("email");
-                    incomingData.add(new PendingConnectionsFragment.IncomingRequestListItem(first, last, username, email));
-                    incomingAdapter.notifyDataSetChanged();
-                }
-            } catch (JSONException e) {
-
-                Log.e("JSON_PARSE_ERROR", "Error when populating incoming requests.");
-            }
-        });
-    }
-
-    public void findOutgoingRequests() {
-
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_pending))
-                .appendPath(getString(R.string.ep_pending_outgoing))
-                .appendQueryParameter("username", userName)
-                .build();
-
-        //get last time stamp from shared preferences to ignore old messages.
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        if(!prefs.contains(getString(R.string.keys_prefs_outgoing_request_time_stamp))) {
-            //set the listenManager to ignore seen requests.
-        mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                this::populateOutgoingRequestsResult)
-                .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_outgoing_request_time_stamp), "0"))
-                .setExceptionHandler(this::handleExceptionsInListener)
-                .setDelay(1000)
-                .build();
-        } else {
-            //no time stamp in settings. Must be a first time login.
-            mOutgoingListenManager = new RequestsListenManager.Builder(uri.toString(),
-                    this::populateOutgoingRequestsResult)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        }
-    }
-
-    private void populateOutgoingRequestsResult(JSONObject resultsJSON) {
-        getActivity().runOnUiThread(() -> {
-
-
-            try {
-                JSONArray array = resultsJSON.getJSONArray("pending");
-
-                if (getActivity().findViewById(R.id.outgoingProgressBar) != null) {
-                    ProgressBar outgoingProgressBar = (ProgressBar) getActivity().findViewById(R.id.outgoingProgressBar);
-                    outgoingProgressBar.setVisibility(View.GONE);
-                }
-
-                for (int i =0; i < array.length(); i++) {
-                    JSONObject aContact = array.getJSONObject(i);
-                    // PARSE JSON RESULTS HERE
-                    String first = aContact.getString("firstname");
-                    String last = aContact.getString("lastname");
-                    String username = aContact.getString("username");
-                    String email = aContact.getString("email");
-                    outgoingData.add(new PendingConnectionsFragment.OutgoingRequestListItem(first, last, username, email));
-                    outgoingAdapter.notifyDataSetChanged();
-                }
-            } catch (JSONException e) {
-                Log.e("JSON_PARSE_ERROR", "Error when populating outgoing requests.");
-            }
-        });
     }
 }

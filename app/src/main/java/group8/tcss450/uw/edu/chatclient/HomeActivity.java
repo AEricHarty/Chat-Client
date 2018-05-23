@@ -61,7 +61,8 @@ public class HomeActivity extends AppCompatActivity implements
         SearchNewConnectionFragment.SearchContactFragmentInteractionListener, LocationListener,
         ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        HomeInformationFragment.OnHomeFragmentInteractionListener {
+        HomeInformationFragment.OnHomeFragmentInteractionListener,
+        ChatListFragment.ChatListFragmentInteractionListener{
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
@@ -293,12 +294,7 @@ public class HomeActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_pending_connections){
             loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
-            //loadFragment(new ChatFragment());
-
-            android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            loadFragment(new ChatListFragment());
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
@@ -707,6 +703,15 @@ public class HomeActivity extends AppCompatActivity implements
             mToggle.setDrawerArrowDrawable(badgeDrawable);
             badgeDrawable.setText(msg);
         }
+    }
+
+    //todo update this method so it sends chatSessionActivity the chosen chatId.
+    @Override
+    public void onChatSelected(String chatName, int chatId) {
+        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
+        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     // This internal class is to listen for pending connections while the HomeActivity is in the foreground.
