@@ -31,6 +31,9 @@ public class ChatFragment extends Fragment {
 
     private String mUsername;
     private String mSendUrl;
+    private String mLeaveChatUrl;
+    private String mAddToChatUrl;
+
     private TextView mOutputTextView;
     private ListenManager mListenManager;
 
@@ -46,6 +49,7 @@ public class ChatFragment extends Fragment {
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
 
+        v.findViewById(R.id.chatLeaveChatButton).setOnClickListener(this::leaveChat);
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +87,20 @@ public class ChatFragment extends Fragment {
                 .appendPath(getString(R.string.ep_get_message))
                 .appendQueryParameter("chatId", "1")
                 .build();
+
+        mLeaveChatUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_leave_chat))
+                .build()
+                .toString();
+
+        mAddToChatUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_add_to_chat))
+                .build()
+                .toString();
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
             //ignore all of the seen messages. You may want to store these messages locally
             mListenManager = new ListenManager.Builder(retrieve.toString(),
@@ -121,6 +139,79 @@ public class ChatFragment extends Fragment {
                 getString(R.string.keys_prefs_time_stamp),
                 latestMessage)
                 .apply();
+    }
+
+    private void addToChat(final View theButton) {
+        JSONObject messageJson = new JSONObject();
+
+        // String userToAdd = ((EditText) getView().findViewById(R.id.name of username input box to add))
+        //                .getText().toString();
+
+        try {
+            //messageJson.put(getString(R.string.keys_json_username), userToAdd);
+
+            messageJson.put("test", "test"); // can remove if you want, not needed
+
+            // messageJson.put(getString(R.string.keys_json_username), mUsername);
+            // need to get chat id somehow
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(mAddToChatUrl, messageJson)
+                .onPostExecute(this::endOfAddToChatTask)
+                .onCancelled(this::handleAddToChatError)
+                .build().execute();
+    }
+
+    private void handleAddToChatError(final String msg) {
+        Log.e("Leaving Chat ERROR!!!", msg.toString());
+    }
+
+    private void endOfAddToChatTask(final String result) {
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                // ((EditText) getView().findViewById(R.id.name of username input box to add))
+                // .setText("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void leaveChat(final View theButton) {
+        JSONObject messageJson = new JSONObject();
+
+        try {
+            messageJson.put(getString(R.string.keys_json_username), mUsername);
+
+            // messageJson.put(getString(R.string.keys_json_username), mUsername);
+            // need to get chat id somehow
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(mLeaveChatUrl, messageJson)
+                .onPostExecute(this::endOfLeaveChatTask)
+                .onCancelled(this::handleLeaveChatError)
+                .build().execute();
+    }
+
+    private void handleLeaveChatError(final String msg) {
+        Log.e("Leaving Chat ERROR!!!", msg.toString());
+    }
+
+    private void endOfLeaveChatTask(final String result) {
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+               // ((EditText) getView().findViewById(R.id.chatInputEditText))
+                       // .setText("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMessage(final View theButton) {
