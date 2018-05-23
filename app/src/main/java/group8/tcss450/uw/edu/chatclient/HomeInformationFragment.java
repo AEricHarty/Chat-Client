@@ -43,6 +43,8 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
         mWeatherButton.setEnabled(false);
         mWeatherView = (TextView) mView.findViewById(R.id.homeWeatherView);
 
+
+
         return mView;
     }
 
