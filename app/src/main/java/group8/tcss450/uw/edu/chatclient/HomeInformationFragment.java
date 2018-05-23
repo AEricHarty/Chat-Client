@@ -53,8 +53,9 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
 
     public void setLocation(Location location) {
         TextView text = (TextView) mView.findViewById(R.id.homeInfoLocation);
-        text.setText(location.getLatitude() + " " +
-                location.getLongitude());
+        String loc = String.format(getString(R.string.home_info_location_msg),
+                location.getLatitude(), location.getLongitude());
+        text.setText(loc);
     }
 
     /**@author Eric Harty - hartye@uw.edu*/

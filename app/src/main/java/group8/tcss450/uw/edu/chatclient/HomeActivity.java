@@ -628,8 +628,8 @@ public class HomeActivity extends AppCompatActivity implements
         Intent i = new Intent(this, WeatherMapActivity.class);
         i.putExtra(WeatherMapActivity.LATITUDE, mCurrentLocation.getLatitude());
         i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
+        i.putExtra("username", userName);
         startActivity(i);
-        finish();
     }
 
 }

@@ -90,9 +90,14 @@
         <item>Five Days</item>
     </string-array>
 
+    <string name="home_info_location_msg">%1$f, %2$f</string>
+
     <string name="weather_remember_button">Save for later</string>
     <string name="weather_submit_button">Submit</string>
     <string name="weather_zip_hint">ZIP</string>
+    <string name="home_info_weather_default">Loading...</string>
+    <string name="home_info_location_default">Please enable locations</string>
+    <string name="weather_icon_description">Accuweather</string>
 
 
 </resources>

@@ -2,6 +2,7 @@ package group8.tcss450.uw.edu.chatclient;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -48,7 +49,7 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  */
 public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener,
-        View.OnClickListener, LocationListener, GoogleApiClient.ConnectionCallbacks,
+        LocationListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "WeatherMapActivity ERROR->";
@@ -70,6 +71,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private TextView mResultView;
     private int mChoiceFlag;
 
+
     /**@author Eric Harty - hartye@uw.edu*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,20 +85,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googleMap);
         mapFragment.getMapAsync(this);
-
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        String location = prefs.getString(getString(R.string.keys_prefs_save_location), null);
-        if (location != null) {
-            String loc[] = location.split("-");
-            mSavedLat = Double.parseDouble(loc[0]);
-            mSavedLng = Double.parseDouble(loc[1]);
-        } else {
-            mSavedLat = 47;     //Default UWT
-            mSavedLng = -122;
-        }
 
         Spinner whereSpinner = findViewById(R.id.weatherWhereSpinner);
         ArrayAdapter<CharSequence> whereAdapter = ArrayAdapter.createFromResource(this,
@@ -124,6 +112,11 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mResultView = findViewById(R.id.weatherResultView);
+
+        Button b = (Button) findViewById(R.id.weatherSubmitButton);
+        b.setOnClickListener(this::onSubmitClick);
 
     }
 
@@ -184,8 +177,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     /**@author Eric Harty - hartye@uw.edu*/
-    @Override
-    public void onClick(View view) {
+    public void onSubmitClick(View view) {
         //There's probably a better design pattern to handle this but it's the end of sprint 4
         if(mWhenChoice.equals("Now")){
             mChoiceFlag = 0;
@@ -198,20 +190,30 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         String lon;
         switch (mWhereChoice){
             case "Here":
-                lat = Double.toString(mCurrentLocation.getLatitude());
-                lon = Double.toString(mCurrentLocation.getLongitude());
+                if(mCurrentLocation != null){
+                    lat = Double.toString(mCurrentLocation.getLatitude());
+                    lon = Double.toString(mCurrentLocation.getLongitude());
+                } else {
+                    lat = Double.toString(mLat);
+                    lon = Double.toString(mLng);
+                }
                 getLocationGPS(lat, lon);
             case "Pin":
-                lat = Double.toString(mMarker.getPosition().latitude);
-                lon = Double.toString(mMarker.getPosition().longitude);
+                if(mMarker != null){
+                    lat = Double.toString(mMarker.getPosition().latitude);
+                    lon = Double.toString(mMarker.getPosition().longitude);
+                } else {
+                    lat = Double.toString(mLat);
+                    lon = Double.toString(mLng);
+                }
                 getLocationGPS(lat, lon);
             case "ZIP":
                 checkZIP();
             case "Saved":
-                int l;
+                String l;
                 SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-                l = prefs.getInt(getString(R.string.location_key), 123456);
+                l = prefs.getString(getString(R.string.location_key), "41556_PC");
                 if(mWhenChoice.equals("Now")){
                     getCurrentWeather(l);
                 } else if (mWhenChoice.equals("Tomorrow")){
@@ -293,7 +295,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         //is displayed or maybe disable buttons. You would need a method in
         //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleLocationPost)
+                .onPostExecute(this::handleLocationZIPPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
     }
@@ -301,26 +303,61 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     /**
      * @author Eric Harty - hartye@uw.edu
      *
-     * Handle onPostExecute of the AsynceTask. The result from our webservice is
-     * a JSON formatted String. Parse it for success or failure.
      * @param result the JSON formatted String response from the web service
      */
     private void handleLocationPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
-            int location;
-            location = resultsJSON.getInt("Key");
-            CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
-            if(save.isChecked()){
-                saveLocation(location);
+            if (resultsJSON.has("Key")){
+                String location = resultsJSON.getString("Key");
+                CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
+                if(save.isChecked()){
+                    saveLocation(location);
+                }
+                // Use the flags to see which task to follow with
+                if(mChoiceFlag == 0){
+                    getCurrentWeather(location);
+                } else if (mChoiceFlag == 1){
+                    getNextWeather(location);
+                } else if (mChoiceFlag == 2){
+                    getFiveWeather(location);
+                }
             }
-            // Use the flags to see which task to follow with
-            if(mChoiceFlag == 0){
-                if (location != 0) getCurrentWeather(location);
-            } else if (mChoiceFlag == 1){
-                if (location != 0) getNextWeather(location);
-            } else if (mChoiceFlag == 2){
-                if (location != 0) getFiveWeather(location);
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses the differently formatted ZIP requests
+     *
+     * @author Eric Harty - hartye@uw.edu
+     *
+     * @param result the JSON formatted String response from the web service
+     */
+    private void handleLocationZIPPost(String result) {
+        try {
+            JSONArray resultsJSON = new JSONArray(result);
+
+            JSONObject response = resultsJSON.getJSONObject(0);
+            if (response.has("Key")) {
+                String location = response.getString("Key");
+                CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
+                if(save.isChecked()){
+                    saveLocation(location);
+                }
+                // Use the flags to see which task to follow with
+                if(mChoiceFlag == 0){
+                    getCurrentWeather(location);
+                } else if (mChoiceFlag == 1){
+                    getNextWeather(location);
+                } else if (mChoiceFlag == 2){
+                    getFiveWeather(location);
+                }
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -332,12 +369,12 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     /**@author Eric Harty - hartye@uw.edu*/
-    public void saveLocation(int key) {
+    public void saveLocation(String key) {
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-        prefs.edit().putInt(
+        prefs.edit().putString(
                 getString(R.string.location_key), key)
                 .apply();
     }
@@ -347,7 +384,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      *
      * @author Eric Harty - hartye@uw.edu
      */
-    public void getCurrentWeather(int location) {
+    public void getCurrentWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -357,8 +394,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 .build();
         //build the JSONObject
         //Pass location as username so we can use credentials.asJSON
-        String loc = Integer.toString(location);
-        Credentials cred = new Credentials.Builder(loc, null)
+        Credentials cred = new Credentials.Builder(location, null)
                 .build();
         JSONObject msg = cred.asJSONObject();
         new SendPostAsyncTask.Builder(uri.toString(), msg)
@@ -372,7 +408,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      *
      * @author Eric Harty - hartye@uw.edu
      */
-    public void getNextWeather(int location) {
+    public void getNextWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -382,8 +418,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 .build();
         //build the JSONObject
         //Pass location as username so we can use credentials.asJSON
-        String loc = Integer.toString(location);
-        Credentials cred = new Credentials.Builder(loc, null)
+        Credentials cred = new Credentials.Builder(location, null)
                 .build();
         JSONObject msg = cred.asJSONObject();
         new SendPostAsyncTask.Builder(uri.toString(), msg)
@@ -397,7 +432,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      *
      * @author Eric Harty - hartye@uw.edu
      */
-    public void getFiveWeather(int location) {
+    public void getFiveWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -407,8 +442,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 .build();
         //build the JSONObject
         //Pass location as username so we can use credentials.asJSON
-        String loc = Integer.toString(location);
-        Credentials cred = new Credentials.Builder(loc, null)
+        Credentials cred = new Credentials.Builder(location, null)
                 .build();
         JSONObject msg = cred.asJSONObject();
         new SendPostAsyncTask.Builder(uri.toString(), msg)
@@ -464,7 +498,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             if (json.has("Headline")) {
                 JSONObject response = json.getJSONObject("Headline");
                 if (response.has("Text"))
-                description = response.getString("WeatherText");
+                description = response.getString("Text");
             }
             if (json.has("DailyForecasts")){
                 JSONArray forecast = new JSONArray(jsonResult);
@@ -498,6 +532,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         String description = "";
         int temp[] = {-99, -99, -99, -99, -99};
         try {
+
             JSONObject json = new JSONObject(jsonResult);
             if (json.has("Headline")) {
                 JSONObject response = json.getJSONObject("Headline");
@@ -612,4 +647,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
         super.onStop();
     }
+
+
 }
