@@ -54,11 +54,10 @@ public class ChatListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        mUserName = prefs.getString(getString(R.string.keys_prefs_username), "Problem! No Username in " + TAG + "!");
+        Bundle b = this.getActivity().getIntent().getExtras();
+        if(b != null) {
+            mUserName = b.getString("username");
+        }
 
         View v = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
