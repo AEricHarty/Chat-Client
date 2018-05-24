@@ -51,4 +51,11 @@
     <string name="keys_json_connection_username">connection</string>
     <string name="keys_json_connection_verification">verified</string>
 
+    <string name="keys_json_checkbox_contacts_array">checkbox</string>
+    <string name="keys_json_chat_name">chatName</string>
+
+    <string name="keys_chatId">chatId</string>
+
+
+
 </resources>

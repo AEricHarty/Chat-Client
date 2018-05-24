@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +51,7 @@ public class ConnectionsFragment extends Fragment {
     private String userName;
     private ConnectionsFragmentInteractionListener mListener;
     private HashSet<Connection> currentSelectedConnections = new HashSet<>();
+    private String mCreateChatUrl;
 
     public ConnectionsFragment() {
         // Required empty public constructor
@@ -65,6 +67,15 @@ public class ConnectionsFragment extends Fragment {
         if(b != null) {
             userName = b.getString("username");
         }
+
+        v.findViewById(R.id.createMultichatButton).setOnClickListener(this::createChat);
+
+        mCreateChatUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_create_multichat))
+                .build()
+                .toString();
 
 
         connectionList = (ListView) v.findViewById(R.id.connectionList);
@@ -104,6 +115,76 @@ public class ConnectionsFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    private void createChat(final View theButton) {
+
+        JSONObject messageJson = new JSONObject();
+        JSONArray arrayJson = new JSONArray();
+        String chatName = ((EditText) getView().findViewById(R.id.inputChatName))
+                .getText().toString();
+
+        android.content.SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+
+        String mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
+
+        try {
+
+            for (Connection s : currentSelectedConnections) {
+                if (s.selected) {
+
+                    arrayJson.put(s.userId);
+                }
+
+            }
+
+            System.out.println(arrayJson.toString());
+            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
+            messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson.toString());
+            messageJson.put(getString(R.string.keys_json_chat_name), chatName);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Log.d("ERROR -----------------------------------", "Array at 0 is: " + arrayJson.get(0));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        /*new SendPostAsyncTask.Builder(mCreateChatUrl, messageJson)
+                .onPostExecute(this::endOfCreateChatTask)
+                .onCancelled(this::handleError)
+                .build().execute();
+                */
+    }
+    private void handleError(final String msg) {
+        Log.e("new chat creation from checks ERROR!!!", msg.toString());
+    }
+
+    private void endOfCreateChatTask(final String result) {
+
+        try {
+            JSONObject res = new JSONObject(result);
+
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                ((EditText) getView().findViewById(R.id.inputChatName))
+                        .setText("");
+
+            }
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+
+        }
     }
 
     @Override
@@ -182,43 +263,7 @@ public class ConnectionsFragment extends Fragment {
         }
 
 
-//        @NonNull
-//        @Override
-//        public Filter getFilter() {
-//            Filter filter = new Filter() {
-//                protected FilterResults performFiltering(CharSequence constraint) {
-//                    FilterResults results = new FilterResults();
-//                    if (constraint != null && constraint.length() > 0) {
-//                        ArrayList<Connection> filterList = new ArrayList<>();
-//                        System.out.println(mStringFilterList);
-//                        for (int i = 0; i < mStringFilterList.size(); i++) {
-//                            if ((mStringFilterList.get(i).firstName + " " + mStringFilterList.get(i).lastName.toUpperCase())
-//                                    .contains(constraint.toString().toUpperCase())) {
-//
-//                                Connection conn = new Connection(mStringFilterList.get(i).userId,
-//                                        mStringFilterList.get(i).firstName,
-//                                        mStringFilterList.get(i).lastName,
-//                                        mStringFilterList.get(i).email);
-//                                filterList.add(conn);
-//                            }
-//                        }
-//                        results.count = filterList.size();
-//                        results.values = filterList;
-//                    } else {
-//                        results.count = mStringFilterList.size();
-//                        results.values = mStringFilterList;
-//                    }
-//                    return results;
-//                }
-//
-//                @Override
-//                protected void publishResults(CharSequence constraint, FilterResults results) {
-//                    mList = (ArrayList<Connection>) results.values;
-//                    notifyDataSetChanged();
-//                }
-//            };
-//            return filter;
-//        }
+
     }
 
     public interface ConnectionsFragmentInteractionListener {

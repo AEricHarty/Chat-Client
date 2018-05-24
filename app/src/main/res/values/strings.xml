@@ -105,5 +105,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="invite_header">Invite Your Friend To Our App!</string>
 
+    <string name="create_multichat">Create New Chat</string>
+    <string name="Enter_new_chat_name">Enter new chat name</string>
 
 </resources>

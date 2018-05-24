@@ -87,6 +87,7 @@ public class HomeActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private boolean mWeatherChecked = false;
+    private Bundle bundle;
 
     private String userName;
 
@@ -131,6 +132,8 @@ public class HomeActivity extends AppCompatActivity implements
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

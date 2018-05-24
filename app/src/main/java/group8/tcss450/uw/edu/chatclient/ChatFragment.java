@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,9 +34,12 @@ public class ChatFragment extends Fragment {
     private String mSendUrl;
     private String mLeaveChatUrl;
     private String mAddToChatUrl;
+    private String mAddStrangerUrl;
 
     private TextView mOutputTextView;
     private ListenManager mListenManager;
+
+    private Bundle bundle;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -48,6 +52,8 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
+
+
 
         v.findViewById(R.id.chatLeaveChatButton).setOnClickListener(this::leaveChat);
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
@@ -73,6 +79,9 @@ public class ChatFragment extends Fragment {
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
             throw new IllegalStateException("No username in prefs!");
         }
+
+        bundle = this.getActivity().getIntent().getExtras();
+
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         mSendUrl = new Uri.Builder()
                 .scheme("https")
@@ -101,6 +110,14 @@ public class ChatFragment extends Fragment {
                 .appendPath(getString(R.string.ep_add_to_chat))
                 .build()
                 .toString();
+
+        mAddStrangerUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_send_request))
+                .build()
+                .toString();
+
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
             //ignore all of the seen messages. You may want to store these messages locally
             mListenManager = new ListenManager.Builder(retrieve.toString(),
@@ -144,16 +161,16 @@ public class ChatFragment extends Fragment {
     private void addToChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
-        // String userToAdd = ((EditText) getView().findViewById(R.id.name of username input box to add))
-        //                .getText().toString();
+        int chatId = bundle.getInt("chatId");
+
+        String userToAdd = ((EditText) getView().findViewById(R.id.chatInputEditText))
+                       .getText().toString();
 
         try {
-            //messageJson.put(getString(R.string.keys_json_username), userToAdd);
+            messageJson.put(getString(R.string.keys_json_username), userToAdd);
 
-            messageJson.put("test", "test"); // can remove if you want, not needed
+            messageJson.put(getString(R.string.keys_chatId), chatId);
 
-            // messageJson.put(getString(R.string.keys_json_username), mUsername);
-            // need to get chat id somehow
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -172,8 +189,8 @@ public class ChatFragment extends Fragment {
             JSONObject res = new JSONObject(result);
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
-                // ((EditText) getView().findViewById(R.id.name of username input box to add))
-                // .setText("");
+                 ((EditText) getView().findViewById(R.id.chatInputEditText))
+                 .setText("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -183,11 +200,13 @@ public class ChatFragment extends Fragment {
     private void leaveChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
+        int chatId = bundle.getInt("chatId");
+
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
 
-            // messageJson.put(getString(R.string.keys_json_username), mUsername);
-            // need to get chat id somehow
+            messageJson.put(getString(R.string.keys_chatId), chatId);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -214,6 +233,47 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    private void addStranger(final View theButton) {
+
+        JSONObject messageJson = new JSONObject();
+        String newConnection = ((EditText) getView().findViewById(R.id.chatInputEditText))
+                .getText().toString();
+        try {
+            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
+            messageJson.put(getString(R.string.keys_json_connection_username), newConnection);
+            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(mAddStrangerUrl, messageJson)
+                .onPostExecute(this::endOfAddStrangerTask)
+                .onCancelled(this::handleAddStrangerError)
+                .build().execute();
+    }
+    private void handleAddStrangerError(final String msg) {
+        Log.e("add Stranger Connections ERROR!!!", msg.toString());
+    }
+
+    private void endOfAddStrangerTask(final String result) {
+        Log.e("test2", "gets to endofSendRequestTask");
+        try {
+            JSONObject res = new JSONObject(result);
+
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
+                        .setText("");
+                Log.e("test3", "gets to success, should make toast");
+                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            Log.e("test4", "does not get to success");
+            e.printStackTrace();
+
+        }
+    }
+
+
     private void sendMessage(final View theButton) {
         JSONObject messageJson = new JSONObject();
         String msg = ((EditText) getView().findViewById(R.id.chatInputEditText))
@@ -221,6 +281,9 @@ public class ChatFragment extends Fragment {
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
             messageJson.put(getString(R.string.keys_json_message), msg);
+
+
+            // make it so that it sends messages to the chat that you are in, not always global id
             messageJson.put(getString(R.string.keys_json_chat_id), 1);
         } catch (JSONException e) {
             e.printStackTrace();
