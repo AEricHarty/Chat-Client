@@ -253,7 +253,7 @@ public class SignInActivity extends AppCompatActivity implements
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.signinActivity, registerFragment)
-                .addToBackStack(null);
+                .addToBackStack("registerFrag");
         transaction.commit();
     }
 
@@ -383,10 +383,7 @@ public class SignInActivity extends AppCompatActivity implements
         resultFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.signinActivity, resultFragment);
-        if(!success){
-            transaction.addToBackStack(null);
-        }
+                .replace(R.id.signinActivity, resultFragment).addToBackStack(null);
         transaction.commit();
     }
 
@@ -506,11 +503,7 @@ public class SignInActivity extends AppCompatActivity implements
     }
 
     private void goBackToLogin(View view) {
-        for (Fragment fragment:getSupportFragmentManager().getFragments()) {
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-        }
-        getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
+        getSupportFragmentManager().popBackStack ("registerFrag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         LoginFragment login = new LoginFragment();
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
