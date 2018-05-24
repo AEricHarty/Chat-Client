@@ -34,6 +34,20 @@
         </SearchView>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/createMultichatButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_multichat" />
+
+    <EditText
+        android:id="@+id/inputChatName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/Enter_new_chat_name"
+        android:inputType="textPersonName" />
+
     <ProgressBar
         android:id="@+id/loadConnectionsProgressBar"
         style="?android:attr/progressBarStyle"

@@ -34,5 +34,6 @@
     <string name="ep_create_multichat">createChat</string>
     <string name="ep_leave_chat">leaveChat</string>
     <string name="ep_add_to_chat">addToChat</string>
+    <string name="ep_invite">invite</string>
 
 </resources>

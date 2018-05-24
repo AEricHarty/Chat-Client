@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import group8.tcss450.uw.edu.chatclient.model.BadgeDrawerArrowDrawable;
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
+import group8.tcss450.uw.edu.chatclient.utils.InviteFragment;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -62,7 +64,8 @@ public class HomeActivity extends AppCompatActivity implements
         ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         HomeInformationFragment.OnHomeFragmentInteractionListener,
-        ChatListFragment.ChatListFragmentInteractionListener{
+        ChatListFragment.ChatListFragmentInteractionListener,
+        InviteFragment.InviteFragmentInteractionListener {
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
@@ -84,6 +87,7 @@ public class HomeActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private boolean mWeatherChecked = false;
+    private Bundle bundle;
 
     private String userName;
 
@@ -128,6 +132,8 @@ public class HomeActivity extends AppCompatActivity implements
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -718,6 +724,42 @@ public class HomeActivity extends AppCompatActivity implements
 
         intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void onGetContactsAttempt(String userName, String friendName, String friendEmail) {
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_invite))
+                .build();
+
+
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("username", userName);
+            msg.put("friendEmail", friendEmail);
+            msg.put("friendName", friendName);
+        } catch (JSONException e) {
+            Log.wtf("INVITATION", "Error creating JSON: " + e.getMessage());
+        }
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        Button button = (Button) this.findViewById(R.id.inviteSendButton);
+        button.setEnabled(false);
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleInvitationPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    private void handleInvitationPost(String result) {
+        Button button = (Button) this.findViewById(R.id.inviteSendButton);
+        button.setEnabled(true);
+        Toast.makeText(this, "Invitation Sent!",
+                Toast.LENGTH_LONG).show();
     }
 
     // This internal class is to listen for pending connections while the HomeActivity is in the foreground.
