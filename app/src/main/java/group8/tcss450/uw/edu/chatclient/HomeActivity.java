@@ -468,7 +468,7 @@ public class HomeActivity extends AppCompatActivity implements
                 String last = aContact.getString("lastname");
                 String username = aContact.getString("username");
                 String email = aContact.getString("email");
-                connectionList.add(new ConnectionsFragment.Connection(memberId, first, last, email));
+                connectionList.add(new ConnectionsFragment.Connection(memberId, first, last, email, username));
                 connectionsAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
