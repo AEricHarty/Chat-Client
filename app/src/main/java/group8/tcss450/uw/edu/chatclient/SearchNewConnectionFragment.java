@@ -115,7 +115,7 @@ public class SearchNewConnectionFragment extends Fragment {
     private void onClick(View view) {
         if (mListener != null) {
             String keyword = searchContactTextView.getText().toString();
-            if (keyword == "") {
+            if (keyword.length() == 0) {
                 searchContactTextView.setError("Keyword must not be empty");
             } else {
                 mListener.onSearchAttempt(userName, keyword, data, adapter);
