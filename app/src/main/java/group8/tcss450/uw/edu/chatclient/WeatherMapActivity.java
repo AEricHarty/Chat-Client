@@ -184,6 +184,8 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
 
     /**@author Eric Harty - hartye@uw.edu*/
     public void onSubmitClick(View view) {
+        String lat;
+        String lon;
         //There's probably a better design pattern to handle this but it's the end of sprint 4
         if(mWhenChoice.equals("Now")){
             mChoiceFlag = 0;
@@ -192,44 +194,40 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         } else if (mWhenChoice.equals("Five Days")){
             mChoiceFlag = 2;
         }
-        String lat;
-        String lon;
-        switch (mWhereChoice){
-            case "Here":
-                if(mCurrentLocation != null){
-                    lat = Double.toString(mCurrentLocation.getLatitude());
-                    lon = Double.toString(mCurrentLocation.getLongitude());
-                } else {
-                    lat = Double.toString(mLat);
-                    lon = Double.toString(mLng);
-                }
-                getLocationGPS(lat, lon);
-            case "Pin":
-                if(mMarker != null){
-                    lat = Double.toString(mMarker.getPosition().latitude);
-                    lon = Double.toString(mMarker.getPosition().longitude);
-                } else {
-                    lat = Double.toString(mLat);
-                    lon = Double.toString(mLng);
-                }
-                getLocationGPS(lat, lon);
-            case "ZIP":
-                checkZIP();
-            case "Saved":
-                String l;
-                SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-                l = prefs.getString(getString(R.string.location_key), "41556_PC");
-                if(mWhenChoice.equals("Now")){
-                    getCurrentWeather(l);
-                } else if (mWhenChoice.equals("Tomorrow")){
-                    getNextWeather(l);
-                } else if (mWhenChoice.equals("Five Days")){
-                    getFiveWeather(l);
-                }
-            default:
+        if(mWhereChoice.equals("Here")){
+            if(mCurrentLocation != null){
+                lat = Double.toString(mCurrentLocation.getLatitude());
+                lon = Double.toString(mCurrentLocation.getLongitude());
+            } else {
+                lat = Double.toString(mLat);
+                lon = Double.toString(mLng);
+            }
+            getLocationGPS(lat, lon);
+        } else if(mWhereChoice.equals("Pin")){
+            if(mMarker != null){
+                lat = Double.toString(mMarker.getPosition().latitude);
+                lon = Double.toString(mMarker.getPosition().longitude);
+            } else {
+                lat = Double.toString(mLat);
+                lon = Double.toString(mLng);
+            }
+            getLocationGPS(lat, lon);
+        } else if(mWhereChoice.equals("Zip")){
+
+        } else if(mWhereChoice.equals("Saved")){
+            String l;
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                    Context.MODE_PRIVATE);
+            l = prefs.getString(getString(R.string.location_key), "41556_PC");
+            if(mWhenChoice.equals("Now")){
+                getCurrentWeather(l);
+            } else if (mWhenChoice.equals("Tomorrow")){
+                getNextWeather(l);
+            } else if (mWhenChoice.equals("Five Days")){
+                getFiveWeather(l);
+            } else {
                 System.out.println("Error with Spinner!");
-                break;
+            }
         }
     }
 
@@ -337,6 +335,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                     getNextWeather(location);
                 } else if (mChoiceFlag == 2){
                     getFiveWeather(location);
+                    Log.d("++++++++++","!!!!!!!!!got here!!!!!!!!!");
                 }
             }
         } catch (JSONException e) {
@@ -521,7 +520,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 description = response.getString("Text");
             }
             if (json.has("DailyForecasts")){
-                JSONArray forecast = new JSONArray(jsonResult);
+                JSONArray forecast = new JSONArray(json);
                 if (forecast.getJSONObject(5).has("Temperature")) {
                     JSONObject temperature = forecast.getJSONObject(5).getJSONObject("Temperature");
                     if (temperature.has("Maximum")) {
@@ -564,7 +563,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                     description = response.getString("WeatherText");
             }
             if (json.has("DailyForecasts")){
-                JSONArray forecast = new JSONArray(jsonResult);
+                JSONArray forecast = new JSONArray(json);
                 if (forecast.getJSONObject(5).has("Temperature")) {
                     //Loop through all five days
                     for (int i = 0; i < 5; i++){
