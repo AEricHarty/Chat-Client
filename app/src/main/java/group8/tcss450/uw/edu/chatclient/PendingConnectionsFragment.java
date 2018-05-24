@@ -102,6 +102,8 @@ public class PendingConnectionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        incomingData.clear();
+        outgoingData.clear();
         findIncomingRequests();
         findOutgoingRequests();
         ContactsIntentService.stopServiceAlarm(getContext());
