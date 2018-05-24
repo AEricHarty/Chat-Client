@@ -61,7 +61,8 @@ public class HomeActivity extends AppCompatActivity implements
         SearchNewConnectionFragment.SearchContactFragmentInteractionListener, LocationListener,
         ConnectionsFragment.ConnectionsFragmentInteractionListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        HomeInformationFragment.OnHomeFragmentInteractionListener {
+        HomeInformationFragment.OnHomeFragmentInteractionListener,
+        ChatListFragment.ChatListFragmentInteractionListener{
 
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
     private ArrayList<ConnectionsFragment.Connection> connectionList;
@@ -74,13 +75,15 @@ public class HomeActivity extends AppCompatActivity implements
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    //public static final long UPDATE_INTERVAL = 108000; //More frequently
+    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
+    //public static final long UPDATE_INTERVAL = 1080000; //More frequently
+    public static final long UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private boolean mWeatherChecked = false;
 
     private String userName;
 
@@ -291,12 +294,7 @@ public class HomeActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_pending_connections){
             loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
-            //loadFragment(new ChatFragment());
-
-            android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            loadFragment(new ChatListFragment());
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
@@ -381,8 +379,8 @@ public class HomeActivity extends AppCompatActivity implements
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
             if (findViewById(R.id.searchConnectionProgressBar) != null) {
-                ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
-                searchConnectionProgrsesBar.setVisibility(View.GONE);
+                ProgressBar searchConnectionProgressBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
+                searchConnectionProgressBar.setVisibility(View.GONE);
             }
             for (int i =0; i < array.length(); i++) {
                 JSONObject aContact = array.getJSONObject(i);
@@ -516,7 +514,10 @@ public class HomeActivity extends AppCompatActivity implements
         HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                 findFragmentByTag(getString(R.string.home_info_tag));
         homeFragment.setLocation(location);
-        getLocation();
+        if (!mWeatherChecked) {
+            getLocation();
+            mWeatherChecked = true;
+        }
     }
 
     /**Requests location updates from the FusedLocationApi.*/
@@ -702,6 +703,15 @@ public class HomeActivity extends AppCompatActivity implements
             mToggle.setDrawerArrowDrawable(badgeDrawable);
             badgeDrawable.setText(msg);
         }
+    }
+
+    //todo update this method so it sends chatSessionActivity the chosen chatId.
+    @Override
+    public void onChatSelected(String chatName, int chatId) {
+        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
+        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     // This internal class is to listen for pending connections while the HomeActivity is in the foreground.

@@ -28,6 +28,8 @@
     <string name="keys_prefs_incoming_request_time_stamp">incoming ts key</string>
     <string name="keys_prefs_outgoing_request_time_stamp">outgoing ts key</string>
 
+    <string name="keys_prefs_chat_time_stamp">chat ts key</string>
+
     <string name="keys_extra_results">results</string>
     <string name="keys_is_foreground">FOREGROUND</string>
 

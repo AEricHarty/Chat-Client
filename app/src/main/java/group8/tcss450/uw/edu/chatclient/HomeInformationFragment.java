@@ -5,15 +5,11 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import group8.tcss450.uw.edu.chatclient.model.Credentials;
 
 
 /**
@@ -39,7 +35,7 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
 
         mView = inflater.inflate(R.layout.fragment_home_information, container, false);
         mWeatherButton = (Button) mView.findViewById(R.id.moreWeatherButton);
-        mWeatherButton.setOnClickListener(this::onClick);
+        mWeatherButton.setOnClickListener(this);
         mWeatherButton.setEnabled(false);
         mWeatherView = (TextView) mView.findViewById(R.id.homeWeatherView);
 
