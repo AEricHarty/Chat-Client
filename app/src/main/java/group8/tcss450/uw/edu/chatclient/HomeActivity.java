@@ -722,7 +722,7 @@ public class HomeActivity extends AppCompatActivity implements
         b.putInt("chatId", chatId);
         intent.putExtras(b);
 
-        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
