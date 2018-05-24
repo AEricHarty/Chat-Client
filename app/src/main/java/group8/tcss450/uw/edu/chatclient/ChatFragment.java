@@ -36,6 +36,7 @@ public class ChatFragment extends Fragment {
     private String mAddToChatUrl;
     private String mAddStrangerUrl;
 
+
     private TextView mOutputTextView;
     private ListenManager mListenManager;
 
@@ -86,6 +87,9 @@ public class ChatFragment extends Fragment {
         }
 
         bundle = this.getActivity().getIntent().getExtras();
+        int chatId = bundle.getInt("chatId");
+        String stringChatId = Integer.toString(chatId);
+
         System.out.println("bundle chatid is: " + bundle.getInt("chatId"));
 
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
@@ -100,8 +104,10 @@ public class ChatFragment extends Fragment {
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_get_message))
-                .appendQueryParameter("chatId", "1")
+                .appendQueryParameter("chatId", stringChatId)
                 .build();
+
+
 
         mLeaveChatUrl = new Uri.Builder()
                 .scheme("https")
@@ -124,6 +130,7 @@ public class ChatFragment extends Fragment {
                 .build()
                 .toString();
 
+        /*
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
             //ignore all of the seen messages. You may want to store these messages locally
             mListenManager = new ListenManager.Builder(retrieve.toString(),
@@ -141,6 +148,13 @@ public class ChatFragment extends Fragment {
                     .setDelay(1000)
                     .build();
         }
+        */
+
+        mListenManager = new ListenManager.Builder(retrieve.toString(),
+                this::publishProgress)
+                .setExceptionHandler(this::handleError)
+                .setDelay(1000)
+                .build();
     }
 
     @Override
@@ -228,11 +242,8 @@ public class ChatFragment extends Fragment {
     private void endOfLeaveChatTask(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
-                    .equals(getString(R.string.keys_json_success_value_true))) {
-               // ((EditText) getView().findViewById(R.id.chatInputEditText))
-                       // .setText("");
-            }
+            Intent myintent = new Intent(getActivity(), HomeActivity.class);
+            startActivity(myintent);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -300,11 +311,11 @@ public class ChatFragment extends Fragment {
         }
         new SendPostAsyncTask.Builder(mSendUrl, messageJson)
                 .onPostExecute(this::endOfSendMsgTask)
-                .onCancelled(this::handleError)
+                .onCancelled(this::handleSendMsgError)
                 .build().execute();
     }
 
-    private void handleError(final String msg) {
+    private void handleSendMsgError(final String msg) {
         Log.e("CHAT ERROR!!!", msg.toString());
     }
 

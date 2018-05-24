@@ -95,6 +95,7 @@ public class ChatSessionActivity extends AppCompatActivity {
         });
         */
 
+        /*
         buttonSend = (Button) findViewById(R.id.send);
 
         listView = (ListView) findViewById(R.id.msgview);
@@ -129,6 +130,7 @@ public class ChatSessionActivity extends AppCompatActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+        */
     }
 
     // Right now is alternating between left and right Later on based on who is sending, display accordingly
