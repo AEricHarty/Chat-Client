@@ -50,10 +50,17 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
         setHasOptionsMenu(true);
+
+
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
 
         v.findViewById(R.id.chatLeaveChatButton).setOnClickListener(this::leaveChat);
+
+        v.findViewById(R.id.chatAddChatMemberButton).setOnClickListener(this::addToChat);
+
+        v.findViewById(R.id.chatAddConnectionButton).setOnClickListener(this::addStranger);
+
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +86,7 @@ public class ChatFragment extends Fragment {
         }
 
         bundle = this.getActivity().getIntent().getExtras();
+        System.out.println("bundle chatid is: " + bundle.getInt("chatId"));
 
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         mSendUrl = new Uri.Builder()
@@ -185,11 +193,10 @@ public class ChatFragment extends Fragment {
     private void endOfAddToChatTask(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
-                    .equals(getString(R.string.keys_json_success_value_true))) {
+
                  ((EditText) getView().findViewById(R.id.chatInputEditText))
                  .setText("");
-            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -239,7 +246,7 @@ public class ChatFragment extends Fragment {
         try {
             messageJson.put(getString(R.string.keys_json_current_username), mUsername);
             messageJson.put(getString(R.string.keys_json_connection_username), newConnection);
-            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -248,6 +255,7 @@ public class ChatFragment extends Fragment {
                 .onCancelled(this::handleAddStrangerError)
                 .build().execute();
     }
+
     private void handleAddStrangerError(final String msg) {
         Log.e("add Stranger Connections ERROR!!!", msg.toString());
     }
@@ -257,13 +265,12 @@ public class ChatFragment extends Fragment {
         try {
             JSONObject res = new JSONObject(result);
 
-            if(res.get(getString(R.string.keys_json_success)).toString()
-                    .equals(getString(R.string.keys_json_success_value_true))) {
+
                 ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
                         .setText("");
                 //Log.e("test3", "gets to success, should make toast");
                 //Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
-            }
+
         } catch (JSONException e) {
             //Log.e("test4", "does not get to success");
             e.printStackTrace();

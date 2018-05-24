@@ -51,14 +51,7 @@ public class ChatSessionActivity extends AppCompatActivity {
 
         //get app color theme
 
-        /*
-        ChatFragment chatFragment = new ChatFragment();
-        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.chatSessionActivityLayout, chatFragment);
-        // Commit the transaction
-        transaction.commit();
-        */
+
 
         SharedPreferences themePrefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
@@ -81,6 +74,15 @@ public class ChatSessionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_session);
 
 
+        ChatFragment chatFragment = new ChatFragment();
+        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.chatSessionActivityLayout, chatFragment);
+        // Commit the transaction
+        transaction.commit();
+
+
+        /*
         Button home = (Button) findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +93,7 @@ public class ChatSessionActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        */
 
         buttonSend = (Button) findViewById(R.id.send);
 
