@@ -47,6 +47,7 @@
     <string name="settings_red_blue_theme">Red and Blue</string>
     <string name="settings_brown_pink_theme">Brown and Pink</string>
 
+    <string name="signup_email_sent">Another email has been sent. Send again?</string>
 
     <string name="new_connection_enter_info_please">Please enter new connection information</string>
     <string name="new_connection_email">Email</string>
