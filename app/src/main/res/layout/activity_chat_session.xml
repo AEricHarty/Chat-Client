@@ -8,37 +8,4 @@
     tools:context=".ChatSessionActivity">
 
 
-    <EditText
-        android:id="@+id/msg"
-        android:layout_width="0dp"
-        android:layout_height="42dp"
-        app:layout_constraintBottom_toTopOf="@+id/msgview"
-        app:layout_constraintEnd_toStartOf="@+id/send"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/send"
-        android:layout_width="123dp"
-        android:layout_height="41dp"
-        android:text="Send"
-        app:layout_constraintBottom_toTopOf="@+id/msgview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/msg"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-
-    <ListView
-        android:id="@+id/msgview"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="@null"
-        android:divider="@null"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/msg"></ListView>
-
 </android.support.constraint.ConstraintLayout>

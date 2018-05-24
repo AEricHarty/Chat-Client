@@ -266,10 +266,9 @@ public class ChatFragment extends Fragment {
             JSONObject res = new JSONObject(result);
 
 
-                ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
+                ((EditText) getView().findViewById(R.id.chatInputEditText))
                         .setText("");
-                //Log.e("test3", "gets to success, should make toast");
-                //Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+
 
         } catch (JSONException e) {
             //Log.e("test4", "does not get to success");
@@ -289,7 +288,7 @@ public class ChatFragment extends Fragment {
 
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_chat_id), msg);
+            messageJson.put(getString(R.string.keys_json_message), msg);
 
 
             messageJson.put(getString(R.string.keys_chatId), chatId);
