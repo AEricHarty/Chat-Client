@@ -708,7 +708,14 @@ public class HomeActivity extends AppCompatActivity implements
     //todo update this method so it sends chatSessionActivity the chosen chatId.
     @Override
     public void onChatSelected(String chatName, int chatId) {
+
         android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString("chatName", chatName);
+        b.putInt("chatId", chatId);
+        intent.putExtras(b);
+
         intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
