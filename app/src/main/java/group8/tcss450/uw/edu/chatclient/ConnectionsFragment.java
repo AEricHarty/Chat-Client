@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -85,12 +86,6 @@ public class ConnectionsFragment extends Fragment {
 
         // Here, you set the data in your ListView
         connectionList.setAdapter(connectionAdapter);
-
-//        connectionListData.add(new Connection("1", "lam", "pham", "ppham95@uw.edu"));
-//        connectionListData.add(new Connection("1", "ding", "dong", "dingidongo9@gmail.com"));
-
-
-
         searchView=(SearchView) v.findViewById(R.id.searchBox);
         searchView.setIconified(false);
         searchView.setIconifiedByDefault(false);
@@ -104,9 +99,12 @@ public class ConnectionsFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String text) {
                 connectionAdapter.getFilter().filter(text);
+//                connectionAdapter.notifyDataSetChanged();
                 return false;
             }
         });
+
+
         if (mListener != null) {
             mListener.onGetContactsAttempt(userName, connectionListData, connectionAdapter);
         }
@@ -222,23 +220,25 @@ public class ConnectionsFragment extends Fragment {
 
     public class ConnectionsAdapter extends ArrayAdapter<Connection> {
         private Context mContext;
-        private List<Connection> mList;
-        ArrayList<Connection> mStringFilterList;
+        private List<Connection> mList = new ArrayList<Connection>();
+        private List<Connection> mFilterList = new ArrayList<Connection>();
 
         public ConnectionsAdapter(Context context, ArrayList<Connection> list) {
             super(context, 0, list);
+
+            System.out.println("Input list is: " + list.toString());
             mContext = context;
             mList = list;
-            mStringFilterList = list;
+            mFilterList = list;
         }
 
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View listItem = convertView;
-            if(listItem == null) {
+            if (listItem == null) {
                 listItem = LayoutInflater.from(mContext).inflate(R.layout.connection_list_item, parent, false);
             }
 
-            Connection currentItem = mList.get(position);
+            Connection currentItem = mFilterList.get(position);
 
             CheckedTextView itemName = (CheckedTextView) listItem.findViewById(R.id.connectionListItemName);
             itemName.setText(currentItem.firstName + " " + currentItem.lastName);
@@ -249,7 +249,7 @@ public class ConnectionsFragment extends Fragment {
                     if (isChecked) {
                         currentSelectedConnections.add(currentItem);
                     } else {
-                        if(currentSelectedConnections.contains(currentItem)) {
+                        if (currentSelectedConnections.contains(currentItem)) {
                             currentSelectedConnections.remove(currentItem);
                         }
                     }
@@ -262,7 +262,69 @@ public class ConnectionsFragment extends Fragment {
             return listItem;
         }
 
+        public int getCount() {
+            return mFilterList.size();
+        }
 
+        public Connection getItem(int position) {
+            return mFilterList.get(position);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    String filterString = constraint.toString().toLowerCase();
+                    FilterResults results = new FilterResults();
+                    final List<Connection> list = mList;
+                    int count = list.size();
+                    final List<Connection> nlist = new ArrayList<Connection>(count);
+                    Connection filterableConnection;
+                    for (int i = 0; i < count; i++) {
+                        filterableConnection = list.get(i);
+                        if ((filterableConnection.firstName + " " + filterableConnection.lastName).toLowerCase().contains(filterString)) {
+                            nlist.add(filterableConnection);
+                        }
+                    }
+                    results.values = nlist;
+                    results.count = nlist.size();
+                    System.out.println(results.values.toString() + "\n" + results.count + " " + nlist.size());
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    mFilterList = (List<Connection>) results.values;
+                    connectionAdapter.notifyDataSetChanged();
+                }
+            };
+        }
+
+//        public void filter(String charText) {
+//            charText = charText.toLowerCase();
+//
+//            System.out.println(mList.toString());
+//            System.out.println(mFilterList.toString());
+//
+//            mList.clear();
+//            if (charText.length() == 0) {
+//                mList.addAll(mFilterList);
+//            } else {
+//                for (Connection c : mFilterList) {
+//                    if ((c.firstName + " " + c.lastName.toLowerCase()).contains(charText)) {
+//                        mList.add(c);
+//                    }
+//                }
+//            }
+//
+//            System.out.println(mList.toString());
+//            System.out.println(mFilterList.toString());
+//            connectionAdapter.notifyDataSetChanged();
+//        }
 
     }
 
