@@ -2,6 +2,7 @@ package group8.tcss450.uw.edu.chatclient;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -137,7 +138,7 @@ public class ConnectionsFragment extends Fragment {
             for (Connection s : currentSelectedConnections) {
                 arrayJson.put(s.userName);
             }
-            System.out.println("Array of usernames is: " + arrayJson.toString());
+            //System.out.println("Array of usernames is: " + arrayJson.toString());
             messageJson.put(getString(R.string.keys_json_current_username), mUsername);
             messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson);
             messageJson.put(getString(R.string.keys_json_chat_name), chatName);
@@ -163,13 +164,22 @@ public class ConnectionsFragment extends Fragment {
 
         try {
             JSONObject res = new JSONObject(result);
+            int chatId = res.getInt("chatId");
 
-            if(res.get(getString(R.string.keys_json_success)).toString()
-                    .equals(getString(R.string.keys_json_success_value_true))) {
-                ((EditText) getView().findViewById(R.id.inputChatName))
+            ((EditText) getView().findViewById(R.id.inputChatName))
                         .setText("");
 
-            }
+            Intent intent = new Intent(getActivity(), ChatSessionActivity.class);
+            startActivity(intent);
+
+            Bundle b = new Bundle();
+            b.putInt("chatId", chatId);
+            intent.putExtras(b);
+
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+
         } catch (JSONException e) {
 
             e.printStackTrace();

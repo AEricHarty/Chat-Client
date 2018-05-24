@@ -53,8 +53,6 @@ public class ChatFragment extends Fragment {
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
 
-
-
         v.findViewById(R.id.chatLeaveChatButton).setOnClickListener(this::leaveChat);
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {
@@ -255,7 +253,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void endOfAddStrangerTask(final String result) {
-        Log.e("test2", "gets to endofSendRequestTask");
+        //Log.e("test2", "gets to endofSendRequestTask");
         try {
             JSONObject res = new JSONObject(result);
 
@@ -263,11 +261,11 @@ public class ChatFragment extends Fragment {
                     .equals(getString(R.string.keys_json_success_value_true))) {
                 ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
                         .setText("");
-                Log.e("test3", "gets to success, should make toast");
-                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
+                //Log.e("test3", "gets to success, should make toast");
+                //Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
-            Log.e("test4", "does not get to success");
+            //Log.e("test4", "does not get to success");
             e.printStackTrace();
 
         }
@@ -278,13 +276,19 @@ public class ChatFragment extends Fragment {
         JSONObject messageJson = new JSONObject();
         String msg = ((EditText) getView().findViewById(R.id.chatInputEditText))
                 .getText().toString();
+
+        int chatId = bundle.getInt("chatId");
+
+
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_message), msg);
+            messageJson.put(getString(R.string.keys_json_chat_id), msg);
 
+
+            messageJson.put(getString(R.string.keys_chatId), chatId);
 
             // make it so that it sends messages to the chat that you are in, not always global id
-            messageJson.put(getString(R.string.keys_json_chat_id), 1);
+            //messageJson.put(getString(R.string.keys_json_chat_id), 1);
         } catch (JSONException e) {
             e.printStackTrace();
         }
