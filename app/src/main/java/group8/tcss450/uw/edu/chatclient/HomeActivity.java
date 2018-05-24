@@ -301,6 +301,8 @@ public class HomeActivity extends AppCompatActivity implements
             loadFragment(new PendingConnectionsFragment());
         } else if (id == R.id.nav_chat_list) {
             loadFragment(new ChatListFragment());
+        } else if (id == R.id.nav_invite_to_app) {
+            loadFragment(new InviteFragment());
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.HomeActivityLayout);
         drawer.closeDrawer(GravityCompat.START);
