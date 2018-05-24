@@ -36,7 +36,7 @@ public class ChatFragment extends Fragment {
     private String mLeaveChatUrl;
     private String mAddToChatUrl;
     private String mAddStrangerUrl;
-
+    ScrollView mScrollView;
 
     private TextView mOutputTextView;
     private ListenManager mListenManager;
@@ -62,6 +62,8 @@ public class ChatFragment extends Fragment {
         v.findViewById(R.id.chatAddChatMemberButton).setOnClickListener(this::addToChat);
 
         v.findViewById(R.id.chatAddConnectionButton).setOnClickListener(this::addStranger);
+
+        mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
         Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
         home.setOnClickListener(new View.OnClickListener() {
@@ -315,6 +317,8 @@ public class ChatFragment extends Fragment {
                 .onPostExecute(this::endOfSendMsgTask)
                 .onCancelled(this::handleSendMsgError)
                 .build().execute();
+        //set scroll view to show most recent message.
+        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
     }
 
     private void handleSendMsgError(final String msg) {
@@ -362,8 +366,7 @@ public class ChatFragment extends Fragment {
                     mOutputTextView.append(msg);
                     mOutputTextView.append(System.lineSeparator());
                 }
-                ScrollView scrollView = (ScrollView) getActivity().findViewById(R.id.chatOutputScrollView);
-                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+
             });
         }
     }
