@@ -515,15 +515,18 @@ public class HomeActivity extends AppCompatActivity implements
     /**Callback that fires when the location changes.*/
     @Override
     public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        Log.d(TAG, mCurrentLocation.toString());
-        HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
-                findFragmentByTag(getString(R.string.home_info_tag));
-        homeFragment.setLocation(location);
-        if (!mWeatherChecked) {
-            getLocation();
-            mWeatherChecked = true;
+        if (mCurrentLocation != null){
+            mCurrentLocation = location;
+            Log.d(TAG, mCurrentLocation.toString());
+            HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
+                    findFragmentByTag(getString(R.string.home_info_tag));
+            homeFragment.setLocation(location);
+            if (!mWeatherChecked) {
+                getLocation();
+                mWeatherChecked = true;
+            }
         }
+
     }
 
     /**Requests location updates from the FusedLocationApi.*/
