@@ -144,7 +144,6 @@ public class ChatListenManager {
             response = new StringBuilder();
             try {
                 String getURL = mURL;
-                getURL += "&after=" + mDate;
 
                 URL urlObject = new URL(getURL);
                 urlConnection = (HttpURLConnection) urlObject.openConnection();

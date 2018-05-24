@@ -66,10 +66,7 @@ public class ChatListFragment extends Fragment {
         mAdapter = new ChatSessionAdapter(v.getContext(), mData);
         mChatList.setAdapter(mAdapter);
 
-        //TODO this may not be the right time to call this?
         getPopulateList();
-
-
         return v;
     }
 
@@ -88,7 +85,6 @@ public class ChatListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        findChatSessions();
     }
 
     @Override
@@ -103,7 +99,6 @@ public class ChatListFragment extends Fragment {
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_my_chats))
-                .appendQueryParameter("username", mUserName)
                 .build();
 
         //open shared preferences
@@ -130,9 +125,6 @@ public class ChatListFragment extends Fragment {
                     .setDelay(1000)
                     .build();
         }
-
-        //TODO remove the rest of this method. It is here to add a hardcoded item to list.
-        populateChatList(new JSONObject());
     }
 
     public void handleExceptionsInListener(Exception e) {
@@ -140,20 +132,19 @@ public class ChatListFragment extends Fragment {
     }
 
     private void populateChatList(JSONObject resultsJSON) {
-        getActivity().runOnUiThread(() -> {
-            try {
-                JSONArray array = new JSONArray(resultsJSON);
 
-                if (getActivity().findViewById(R.id.loadChatListProgressBar) != null) {
-                    ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.loadChatListProgressBar);
-                    progressBar.setVisibility(View.GONE);
-                }
+        if (getActivity().findViewById(R.id.loadChatListProgressBar) != null) {
+            ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.loadChatListProgressBar);
+            progressBar.setVisibility(View.GONE);
+        }
+        try {
+            JSONArray array =resultsJSON.getJSONArray("chats");
 
                 for (int i =0; i < array.length(); i++) {
                     JSONObject aChatSession = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
-                    String chatName = aChatSession.getString("chatName"); //TODO replace with actual key
-                    int chatId = aChatSession.getInt("chatId"); //TODO replace with actual key
+                    String chatName = aChatSession.getString("name");
+                    int chatId = aChatSession.getInt("chatid");
 
                     mData.add(new ChatListItem(chatName, chatId));
                     mAdapter.notifyDataSetChanged();
@@ -163,25 +154,6 @@ public class ChatListFragment extends Fragment {
                 Log.e("JSON_PARSE_ERROR", "Error when populating Chat List in " + TAG);
             }
 
-            //TODO remove the hard coded chat session created in rest of this method.
-            if (getActivity().findViewById(R.id.loadChatListProgressBar) != null) {
-                ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.loadChatListProgressBar);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            String chatName = "Test Chat Session";
-            int chatId = 1;
-
-            mData.add(new ChatListItem(chatName, chatId));
-            mAdapter.notifyDataSetChanged();
-
-            chatName = "Second Test Chat Session";
-            chatId = 2;
-
-            mData.add(new ChatListItem(chatName, chatId));
-            mAdapter.notifyDataSetChanged();
-
-        });
     }
 
     /**
@@ -206,6 +178,7 @@ public class ChatListFragment extends Fragment {
                 .onPostExecute(this::handlePopulatePost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
+
     }
 
     /**
@@ -281,8 +254,6 @@ public class ChatListFragment extends Fragment {
 
             return listItem;
         }
-
-
     }
 
     public interface ChatListFragmentInteractionListener {
