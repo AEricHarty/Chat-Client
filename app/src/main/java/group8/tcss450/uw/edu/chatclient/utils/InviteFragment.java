@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import group8.tcss450.uw.edu.chatclient.R;
 
 /**
@@ -33,7 +36,7 @@ public class InviteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_connections, container, false);
+        View v = inflater.inflate(R.layout.fragment_invite, container, false);
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
@@ -44,6 +47,7 @@ public class InviteFragment extends Fragment {
         sendButton = (Button) v.findViewById(R.id.inviteSendButton);
         sendButton.setOnClickListener(this::onClick);
 
+
         return v;
     }
 
@@ -52,12 +56,18 @@ public class InviteFragment extends Fragment {
         String friendEmail = mFriendEmail.getText().toString();
         boolean good = true;
         if (friendName.length() == 0) {
-            mFriendName.setText("Name cannot be empty.");
+            mFriendName.setError("Name cannot be empty.");
+            good = false;
+        }
+        if (friendEmail.length() == 0) {
+            mFriendEmail.setError("Email cannot be empty.");
             good = false;
         }
 
-        if (friendEmail.length() == 0) {
-            mFriendEmail.setText("Email cannot be empty.");
+        Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+        Matcher mat = pattern.matcher(friendEmail);
+        if(!mat.matches()){
+            mFriendEmail.setError("Must have valid email form");
             good = false;
         }
 

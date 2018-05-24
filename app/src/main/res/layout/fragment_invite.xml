@@ -15,13 +15,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
         android:fontFamily="casual"
-        android:text="TextView"
+        android:text="@string/invite_header"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/invite_header" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/friendName"
