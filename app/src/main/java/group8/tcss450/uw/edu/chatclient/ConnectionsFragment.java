@@ -135,35 +135,25 @@ public class ConnectionsFragment extends Fragment {
         try {
 
             for (Connection s : currentSelectedConnections) {
-                if (s.selected) {
-
-                    arrayJson.put(s.userId);
-                }
-
+                arrayJson.put(s.userName);
             }
-
-            System.out.println(arrayJson.toString());
+            System.out.println("Array of usernames is: " + arrayJson.toString());
             messageJson.put(getString(R.string.keys_json_current_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson.toString());
+            messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson);
             messageJson.put(getString(R.string.keys_json_chat_name), chatName);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        try {
-            Log.d("ERROR -----------------------------------", "Array at 0 is: " + arrayJson.get(0));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        System.out.println(messageJson.toString());
 
 
-        /*new SendPostAsyncTask.Builder(mCreateChatUrl, messageJson)
+
+        new SendPostAsyncTask.Builder(mCreateChatUrl, messageJson)
                 .onPostExecute(this::endOfCreateChatTask)
                 .onCancelled(this::handleError)
                 .build().execute();
-                */
     }
     private void handleError(final String msg) {
         Log.e("new chat creation from checks ERROR!!!", msg.toString());
@@ -209,14 +199,14 @@ public class ConnectionsFragment extends Fragment {
         private String firstName;
         private String lastName;
         private String email;
-        private boolean selected;
+        public String userName;
 
-        public Connection(String userId, String firstName, String lastName, String email) {
+        public Connection(String userId, String firstName, String lastName, String email, String userName) {
+            this.userName = userName;
             this.userId = userId;
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
-            this.selected = false;
         }
     }
 
