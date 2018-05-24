@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -24,7 +25,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ChatListenManager;
+import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
@@ -63,6 +66,9 @@ public class ChatListFragment extends Fragment {
         mAdapter = new ChatSessionAdapter(v.getContext(), mData);
         mChatList.setAdapter(mAdapter);
 
+        //TODO this may not be the right time to call this?
+        getPopulateList();
+
 
         return v;
     }
@@ -96,8 +102,8 @@ public class ChatListFragment extends Fragment {
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_my_chats)) //TODO add actual endpoint for getMyChats
-                .appendQueryParameter("username", mUserName) //TODO verify this is the correct key for username
+                .appendPath(getString(R.string.ep_my_chats))
+                .appendQueryParameter("username", mUserName)
                 .build();
 
         //open shared preferences
@@ -135,9 +141,8 @@ public class ChatListFragment extends Fragment {
 
     private void populateChatList(JSONObject resultsJSON) {
         getActivity().runOnUiThread(() -> {
-
             try {
-                JSONArray array = resultsJSON.getJSONArray("pending"); //TODO replace with actual key
+                JSONArray array = new JSONArray(resultsJSON);
 
                 if (getActivity().findViewById(R.id.loadChatListProgressBar) != null) {
                     ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.loadChatListProgressBar);
@@ -178,6 +183,50 @@ public class ChatListFragment extends Fragment {
 
         });
     }
+
+    /**
+     * Builds JSON and starts new AsyncTask to populate the list
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
+    public void getPopulateList() {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_my_chats))
+                .build();
+        Credentials cred = new Credentials.Builder(mUserName, null).build();
+        JSONObject msg = cred.asJSONObject();
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handlePopulatePost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
+    }
+
+    /**
+     * @author Eric Harty - hartye@uw.edu
+     *
+     * Handle onPostExecute of the AsynceTask. The result from our webservice is
+     * a JSON formatted String. Parse it for success or failure.
+     * @param jsonResult the JSON formatted String response from the web service
+     */
+    private void handlePopulatePost(String jsonResult) {
+        try{
+            populateChatList(new JSONObject(jsonResult));
+        } catch (Exception e){
+            Log.d("populate","error casting response String");
+        }
+    }
+
+    private void handleErrorsInTask(String result) {
+        Log.e("ASYNCT_TASK_ERROR", result);
+    }
+
 
     //*******************************************************Inner Classes *************************************
 

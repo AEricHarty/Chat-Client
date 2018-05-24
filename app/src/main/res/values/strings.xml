@@ -101,5 +101,9 @@
     <string name="home_info_location_default">Please enable locations</string>
     <string name="weather_icon_description">Accuweather</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="invite_header">Invite Your Friend To Our App!</string>
+
 
 </resources>
