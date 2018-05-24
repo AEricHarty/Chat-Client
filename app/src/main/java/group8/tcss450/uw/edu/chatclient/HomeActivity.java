@@ -718,7 +718,6 @@ public class HomeActivity extends AppCompatActivity implements
 
         intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish();
     }
 
     // This internal class is to listen for pending connections while the HomeActivity is in the foreground.
