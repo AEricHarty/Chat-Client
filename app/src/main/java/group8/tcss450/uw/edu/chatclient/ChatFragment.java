@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -160,6 +161,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        mOutputTextView.setText("");
         mListenManager.startListening();
     }
 
@@ -360,6 +362,8 @@ public class ChatFragment extends Fragment {
                     mOutputTextView.append(msg);
                     mOutputTextView.append(System.lineSeparator());
                 }
+                ScrollView scrollView = (ScrollView) getActivity().findViewById(R.id.chatOutputScrollView);
+                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
             });
         }
     }
