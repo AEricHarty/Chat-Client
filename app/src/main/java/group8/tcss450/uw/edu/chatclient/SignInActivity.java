@@ -453,7 +453,7 @@ public class SignInActivity extends AppCompatActivity implements
             if (success) {
                 if(findViewById(R.id.resendVerificationButton) != null) {
                     Button b = (Button) findViewById(R.id.resendVerificationButton);
-                    b.setText("Another email has been sent. Send again?");
+                    b.setText(getString(R.string.signup_email_sent));
                 }
             } else {
                 TextView t = (TextView) findViewById(R.id.resultDisplayMsg);
