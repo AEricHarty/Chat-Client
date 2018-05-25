@@ -215,6 +215,8 @@ public class ChatFragment extends Fragment {
                  ((EditText) getView().findViewById(R.id.chatInputEditText))
                  .setText("");
 
+                 Toast.makeText(getActivity(),"Successfully added user to chat", Toast.LENGTH_SHORT).show();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -280,7 +282,7 @@ public class ChatFragment extends Fragment {
         try {
             JSONObject res = new JSONObject(result);
 
-
+            Toast.makeText(getActivity(),"Successfully sent request", Toast.LENGTH_SHORT).show();
                 ((EditText) getView().findViewById(R.id.chatInputEditText))
                         .setText("");
 
