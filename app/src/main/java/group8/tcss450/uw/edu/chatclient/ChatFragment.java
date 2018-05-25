@@ -70,7 +70,10 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.e("inChatFragmentOnCLick", "Go Home!");
+                Bundle b= new Bundle();
+                b.putString("username", mUsername);
                 Intent myintent = new Intent(getActivity(), HomeActivity.class);
+                myintent.putExtras(b);
                 startActivity(myintent);
             }
         });
@@ -81,12 +84,16 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        bundle = this.getActivity().getIntent().getExtras();
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
-            throw new IllegalStateException("No username in prefs!");
+//            throw new IllegalStateException("No username in prefs!");
+            mUsername = bundle.getString("username", "");
+        } else {
+            mUsername = prefs.getString("username", "");
         }
 
         bundle = this.getActivity().getIntent().getExtras();

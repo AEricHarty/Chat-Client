@@ -7,8 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,11 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -33,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +47,6 @@ import java.util.ArrayList;
 import group8.tcss450.uw.edu.chatclient.model.BadgeDrawerArrowDrawable;
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
-import group8.tcss450.uw.edu.chatclient.utils.InviteFragment;
 import group8.tcss450.uw.edu.chatclient.utils.MessagesIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
@@ -773,7 +767,7 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onGetContactsAttempt(String userName, String friendName, String friendEmail) {
+    public void onInviteAttempt(String userName, String friendName, String friendEmail) {
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -802,10 +796,29 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     private void handleInvitationPost(String result) {
-        Button button = (Button) this.findViewById(R.id.inviteSendButton);
-        button.setEnabled(true);
-        Toast.makeText(this, "Invitation Sent!",
-                Toast.LENGTH_LONG).show();
+        EditText friendName = (EditText) findViewById(R.id.friendName);
+        EditText friendEmail = (EditText) findViewById(R.id.friendEmail);
+
+
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            if (success) {
+                Toast.makeText(this, "Invitation Sent!",
+                        Toast.LENGTH_LONG).show();
+                friendName.setText("");
+                friendEmail.setText("");
+            } else {
+                Toast.makeText(this, "Error occured when sending invitation :(",
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
     }
 
     //used to add notification icon to hamburger button.
