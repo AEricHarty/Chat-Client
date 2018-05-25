@@ -160,10 +160,10 @@ public class ChatListenManager {
                 mActionToTake.accept(messages);
 
                 //get and store the last date.
-                JSONArray msgs = messages.getJSONArray("placeHolder"); //Todo replace with actual end point.
+                JSONArray msgs = messages.getJSONArray("chatid");
                 if (msgs.length() > 0) {
                     JSONObject mostRecent = msgs.getJSONObject(msgs.length() - 1);
-                    String timestamp = mostRecent.get("requesttime").toString(); //todo replace with correct timestamp key.
+                    String timestamp = mostRecent.get("timestamp").toString();
                     mDate = timestamp;
                     System.out.println("Updating most recent time in ChatListenManager to : " + timestamp);
                 }

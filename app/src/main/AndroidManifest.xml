@@ -38,6 +38,8 @@
 
         <service android:name=".utils.ContactsIntentService"
             android:exported="false" />
+        <service android:name=".utils.MessagesIntentService"
+            android:exported="false" />
 
         <receiver
             android:name=".utils.BootUpReceiver"

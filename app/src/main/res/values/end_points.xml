@@ -29,6 +29,7 @@
     <string name="ep_search_contact">searchContact</string>
     <string name="ep_get_contacts">getContacts</string>
 
+    <string name="pe_get_new_messages">getallmessages</string>
 
     <string name="ep_my_chats">getMyChats</string>
     <string name="ep_create_multichat">createChat</string>

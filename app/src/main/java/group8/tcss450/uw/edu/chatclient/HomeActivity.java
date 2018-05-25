@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +17,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -50,6 +53,7 @@ import group8.tcss450.uw.edu.chatclient.model.BadgeDrawerArrowDrawable;
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ContactsIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.InviteFragment;
+import group8.tcss450.uw.edu.chatclient.utils.MessagesIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
@@ -75,6 +79,8 @@ public class HomeActivity extends AppCompatActivity implements
     private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
 
     private ActionBarDrawerToggle mToggle;
+    private TextView mPendingConnectionsMenuItem;
+    private TextView mChatListMenuItem;
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
@@ -148,8 +154,15 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.addDrawerListener(mToggle);
         mToggle.syncState();
 
+;
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mPendingConnectionsMenuItem = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_pending_connections));
+        mChatListMenuItem = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_chat_list));
 
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(getString(R.string.keys_sp_on),true);
@@ -174,15 +187,17 @@ public class HomeActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        //Switch ContactsIntentService from background to foreground mode.
+        //Switch IntentServices from background to foreground mode.
         SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                 Context.MODE_PRIVATE);
         //Check to see if service should already be running
         if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
             //stop service from the background
             ContactsIntentService.stopServiceAlarm(this);
+            MessagesIntentService.stopServiceAlarm(this);
             //restart service but in the foreground
             ContactsIntentService.startServiceAlarm(this, true);
+            MessagesIntentService.startServiceAlarm(this,true);
         }
 
         //check to see if the Intent came from the ContactsIntentService.
@@ -190,10 +205,16 @@ public class HomeActivity extends AppCompatActivity implements
         if(mDataUpdateReceiver == null) {
             mDataUpdateReceiver = new DataUpdateReceiver();
         }
-        IntentFilter iFilter = new IntentFilter(ContactsIntentService.RECEIVED_UPDATE);
-        registerReceiver(mDataUpdateReceiver, iFilter);
+        IntentFilter intentFilter = new IntentFilter(ContactsIntentService.RECEIVED_UPDATE);
+        intentFilter.addAction(MessagesIntentService.RECEIVED_UPDATE);
+        registerReceiver(mDataUpdateReceiver, intentFilter);
+
+
         if(getIntent().hasExtra(getString(R.string.keys_extra_results))) {
             loadFragment(new PendingConnectionsFragment());
+        }
+        if(getIntent().hasExtra(getString(R.string.keys_message_results))) {
+            loadFragment(new ChatListFragment());
         }
     }
 
@@ -207,8 +228,10 @@ public class HomeActivity extends AppCompatActivity implements
         if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
             //stop service running in foreground
             ContactsIntentService.stopServiceAlarm(this);
+            MessagesIntentService.stopServiceAlarm(this);
             //restart service in background
             ContactsIntentService.startServiceAlarm(this, false);
+            MessagesIntentService.startServiceAlarm(this, true);
         }
         if(mDataUpdateReceiver != null) {
             unregisterReceiver(mDataUpdateReceiver);
@@ -563,6 +586,34 @@ public class HomeActivity extends AppCompatActivity implements
             mGoogleApiClient.connect();
         }
         super.onStart();
+        //Switch IntentServices from background to foreground mode.
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        //Check to see if service should already be running
+        if(prefs.getBoolean(getString(R.string.keys_sp_on),false)) {
+            //stop service from the background
+            ContactsIntentService.stopServiceAlarm(this);
+            MessagesIntentService.stopServiceAlarm(this);
+            //restart service but in the foreground
+            ContactsIntentService.startServiceAlarm(this, true);
+            MessagesIntentService.startServiceAlarm(this,true);
+        }
+
+        //check to see if the Intent came from the ContactsIntentService.
+        //if so, load the PendingConnectionsFragment.
+        if(mDataUpdateReceiver == null) {
+            mDataUpdateReceiver = new DataUpdateReceiver();
+        }
+        IntentFilter contactsIntentFilter = new IntentFilter(ContactsIntentService.RECEIVED_UPDATE);
+        registerReceiver(mDataUpdateReceiver, contactsIntentFilter);
+        IntentFilter messagesIntentFilter = new IntentFilter(MessagesIntentService.RECEIVED_UPDATE);
+        registerReceiver(mDataUpdateReceiver,messagesIntentFilter);
+        if(getIntent().hasExtra(getString(R.string.keys_extra_results))) {
+            loadFragment(new PendingConnectionsFragment());
+        }
+        if(getIntent().hasExtra(getString(R.string.keys_message_results))) {
+            loadFragment(new ChatListFragment());
+        }
     }
 
     protected void onStop() {
@@ -704,17 +755,7 @@ public class HomeActivity extends AppCompatActivity implements
         startActivity(i);
     }
 
-    //used to add notification icon to hamburger button.
-    private void addHamburgerButtonBadge(String msg){
-        //check if hamburger button already has badge.
-        if(mToggle.getDrawerArrowDrawable() != null && mToggle.getDrawerArrowDrawable() instanceof BadgeDrawerArrowDrawable) {
-            ((BadgeDrawerArrowDrawable)mToggle.getDrawerArrowDrawable()).setEnabled(true);
-        } else {
-            BadgeDrawerArrowDrawable badgeDrawable = new BadgeDrawerArrowDrawable(getSupportActionBar().getThemedContext());
-            mToggle.setDrawerArrowDrawable(badgeDrawable);
-            badgeDrawable.setText(msg);
-        }
-    }
+
 
     //todo update this method so it sends chatSessionActivity the chosen chatId.
     @Override
@@ -767,18 +808,49 @@ public class HomeActivity extends AppCompatActivity implements
                 Toast.LENGTH_LONG).show();
     }
 
+    //used to add notification icon to hamburger button.
+    private void addHamburgerButtonBadge(String msg){
+        //check if hamburger button already has badge.
+        if(mToggle.getDrawerArrowDrawable() != null && mToggle.getDrawerArrowDrawable() instanceof BadgeDrawerArrowDrawable) {
+            ((BadgeDrawerArrowDrawable)mToggle.getDrawerArrowDrawable()).setEnabled(true);
+        } else {
+            BadgeDrawerArrowDrawable badgeDrawable = new BadgeDrawerArrowDrawable(getSupportActionBar().getThemedContext());
+            mToggle.setDrawerArrowDrawable(badgeDrawable);
+            badgeDrawable.setText(msg);
+        }
+    }
+
+    public void addMenuItemBadge(int id, String msg) {
+
+
+        if(id == R.id.nav_pending_connections) {
+            mPendingConnectionsMenuItem.setGravity(Gravity.CENTER_VERTICAL);
+            mPendingConnectionsMenuItem.setTypeface(null, Typeface.BOLD);
+            mPendingConnectionsMenuItem.setTextColor(Color.RED);
+
+        } else if (id == R.id.nav_chat_list) {
+
+        } else {
+            Log.e(TAG, "didn't expect to get something other then requests and chatlist menu items!");
+        }
+    }
+
     // This internal class is to listen for pending connections while the HomeActivity is in the foreground.
     private class DataUpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ContactsIntentService.RECEIVED_UPDATE)) {
-                Log.d(TAG, "Hey I just got your broadcast!");
-//                loadFragment(new PendingConnectionsFragment());
 
                 //add badge to navigation drawer pending connections item.
                 addHamburgerButtonBadge("!");
+                addMenuItemBadge(R.id.nav_pending_connections, "!");
 
+            } else if (intent.getAction().equals(MessagesIntentService.RECEIVED_UPDATE)) {
+                //add badge to nav drawer and chat list item
+                addHamburgerButtonBadge("+");
+                addMenuItemBadge(R.id.nav_chat_list, "!");
             }
+
         }
     }
 

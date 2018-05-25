@@ -27,6 +27,7 @@ import java.util.List;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.ChatListenManager;
+import group8.tcss450.uw.edu.chatclient.utils.MessagesIntentService;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
@@ -84,11 +85,24 @@ public class ChatListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        mData.clear();
+        findChatSessions();
+        MessagesIntentService.stopServiceAlarm(getContext());
+        mListenManager.startListening();
     }
 
     @Override
     public void onStop(){
         super.onStop();
+
+        MessagesIntentService.startServiceAlarm(getContext(), true);
+        String lastMessageTime=mListenManager.stopListening();
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        prefs.edit().putString(getString(R.string.keys_prefs_messages_time_stamp),
+                lastMessageTime)
+                .apply();
 
     }
 
