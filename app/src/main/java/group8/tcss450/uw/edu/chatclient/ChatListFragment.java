@@ -66,7 +66,6 @@ public class ChatListFragment extends Fragment {
         mAdapter = new ChatSessionAdapter(v.getContext(), mData);
         mChatList.setAdapter(mAdapter);
 
-        getPopulateList();
         return v;
     }
 
@@ -86,9 +85,10 @@ public class ChatListFragment extends Fragment {
     public void onResume(){
         super.onResume();
         mData.clear();
-        findChatSessions();
+        getPopulateList();
+        updateTimestamp();
         MessagesIntentService.stopServiceAlarm(getContext());
-        mListenManager.startListening();
+
     }
 
     @Override
@@ -96,49 +96,91 @@ public class ChatListFragment extends Fragment {
         super.onStop();
 
         MessagesIntentService.startServiceAlarm(getContext(), true);
-        String lastMessageTime=mListenManager.stopListening();
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-        prefs.edit().putString(getString(R.string.keys_prefs_messages_time_stamp),
-                lastMessageTime)
-                .apply();
+//        String lastMessageTime=mListenManager.stopListening();
+//        SharedPreferences prefs = getActivity().getSharedPreferences(
+//                getString(R.string.keys_shared_prefs),
+//                Context.MODE_PRIVATE);
+//        prefs.edit().putString(getString(R.string.keys_prefs_messages_time_stamp),
+//                lastMessageTime)
+//                .apply();
 
     }
 
-    public void findChatSessions(){
+//    public void findChatSessions(){
+//        //build the web service URL
+//        Uri uri = new Uri.Builder()
+//                .scheme("https")
+//                .appendPath(getString(R.string.ep_base_url))
+//                .appendPath(getString(R.string.ep_my_chats) + "Two")
+//                .appendQueryParameter("username", mUserName)
+//                .build();
+//
+//        //open shared preferences
+//        SharedPreferences prefs = getActivity().getSharedPreferences(
+//                getString(R.string.keys_shared_prefs),
+//                Context.MODE_PRIVATE);
+//
+//        //check shared preferences for chatListTimestamp
+//        if(prefs.contains(getString(R.string.keys_prefs_chat_time_stamp))) {
+//            //create listen manager to ignore seen messages.
+//            Log.d(TAG, "Creating ChatListenManager with timestamp: " );
+//            mListenManager = new ChatListenManager.Builder(uri.toString(),
+//                    this::populateChatList)
+//                    .setExceptionHandler(this::handleExceptionsInListener)
+//                    .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_chat_time_stamp), "0"))
+//                    .setDelay(1000)
+//                    .build();
+//
+//        } else {
+//            //No time stamp in setting. Must be a first time login
+//            //The ChatListenManager will assign itself the default timestamp 1970 to get all results.
+//            Log.d(TAG, "Creating ChatListenManager without timestamp");
+//            mListenManager = new ChatListenManager.Builder(uri.toString(),
+//                    this::populateChatList)
+//                    .setExceptionHandler(this::handleExceptionsInListener)
+//                    .setDelay(1000)
+//                    .build();
+//        }
+//    }
+
+    //get the current time from the server to update last checked time
+    public void updateTimestamp(){
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_my_chats))
+                .appendPath("getTime")
                 .build();
+        Credentials cred = new Credentials.Builder(mUserName, null).build();
+        JSONObject msg = cred.asJSONObject();
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleUpdateTimeStamp)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
 
-        //open shared preferences
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-
-        //check shared preferences for chatListTimestamp
-        if(!prefs.contains(getString(R.string.keys_prefs_chat_time_stamp))) {
-            //create listen manager to ignore seen messages.
-            mListenManager = new ChatListenManager.Builder(uri.toString(),
-                    this::populateChatList)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_chat_time_stamp), "0"))
-                    .setDelay(1000)
-                    .build();
-
-        } else {
-            //No time stamp in setting. Must be a first time login
-            //The ChatListenManager will assign itself the default timestamp 1970 to get all results.
-            mListenManager = new ChatListenManager.Builder(uri.toString(),
-                    this::populateChatList)
-                    .setExceptionHandler(this::handleExceptionsInListener)
-                    .setDelay(1000)
-                    .build();
-        }
     }
+
+    public void handleUpdateTimeStamp(String s) {
+        try{
+            JSONObject results = new JSONObject(s);
+            String timestamp = results.getString("time");
+            SharedPreferences prefs = getActivity().getSharedPreferences(
+                    getString(R.string.keys_shared_prefs),
+                    Context.MODE_PRIVATE);
+            prefs.edit().putString(getString(R.string.keys_prefs_messages_time_stamp),
+                    timestamp)
+                    .apply();
+
+        } catch (Exception e){
+            Log.d(TAG,"error parsing JSON response from getTime");
+        }
+
+    }
+
 
     public void handleExceptionsInListener(Exception e) {
         Log.e(TAG + "LISTEN ERROR!!", e.getMessage());
@@ -157,6 +199,7 @@ public class ChatListFragment extends Fragment {
                     JSONObject aChatSession = array.getJSONObject(i);
                     // PARSE JSON RESULTS HERE
                     String chatName = aChatSession.getString("name");
+                    Log.d(TAG, "chat name = " + chatName);
                     int chatId = aChatSession.getInt("chatid");
 
                     mData.add(new ChatListItem(chatName, chatId));

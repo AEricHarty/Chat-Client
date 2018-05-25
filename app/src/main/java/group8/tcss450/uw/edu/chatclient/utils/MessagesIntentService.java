@@ -48,17 +48,19 @@ public class MessagesIntentService extends IntentService {
             SharedPreferences prefs =  getSharedPreferences(getString(R.string.keys_shared_prefs)
                     , Context.MODE_PRIVATE);
             mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
-            mTimestamp = prefs.getString(getString(R.string.keys_prefs_messages_time_stamp), "0");
+            mTimestamp = prefs.getString(getString(R.string.keys_prefs_messages_time_stamp), "1970-01-01 00:00:01.00000");
 
-            checkWebService(intent.getBooleanExtra(getString(R.string.keys_is_foreground), false));
+            boolean foreground = intent.getBooleanExtra(getString(R.string.keys_is_foreground), false);
+            Log.wtf(TAG, "checking server with foregroung = " + foreground);
+            checkWebService(foreground);
 
         }
     }
 
     //used to start the service
     public static void startServiceAlarm(Context context, boolean isInForeground) {
-        Log.d(TAG, "starting service");
         Intent i = new Intent(context, MessagesIntentService.class);
+        Log.d(TAG, "in foreground set to : " + isInForeground);
         i.putExtra(context.getString(R.string.keys_is_foreground), isInForeground);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0,i,0);
 
@@ -72,7 +74,6 @@ public class MessagesIntentService extends IntentService {
 
     // used to stop the service.
     public static void stopServiceAlarm(Context context) {
-        Log.d(TAG, "stopping service");
         Intent i = new Intent(context, ContactsIntentService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, i, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -89,13 +90,14 @@ public class MessagesIntentService extends IntentService {
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_get_all_message))
                 .appendQueryParameter("username", mUsername)
+                .appendQueryParameter("after", mTimestamp)
                 .build();
 
         HttpURLConnection urlConnection = null;
 
         StringBuilder response = new StringBuilder();
         try{
-            URL urlObject = new URL(checkForNew.toString() + "&after=" + mTimestamp);
+            URL urlObject = new URL(checkForNew.toString());
             urlConnection = (HttpURLConnection) urlObject.openConnection();
             InputStream content = urlConnection.getInputStream();
             BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
@@ -111,13 +113,11 @@ public class MessagesIntentService extends IntentService {
             }
         }
 
-        Log.d(TAG, mTimestamp.toString());
         //check for empty reply
         if(response.charAt(11) == ']') isEmptyReply = true;
-        Log.d(TAG, "found new messages = " + isEmptyReply);
-        Log.d(TAG, "reply: " + response);
         //if there are new incoming requests then set a notification or notify HomeActivity.
         if (!isEmptyReply) {
+            Log.e(TAG, "creating notification in forground" + isInForeground);
             if (isInForeground) {
                 Intent i = new Intent(RECEIVED_UPDATE);
                 i.putExtra(getString(R.string.keys_extra_results), response.toString());
