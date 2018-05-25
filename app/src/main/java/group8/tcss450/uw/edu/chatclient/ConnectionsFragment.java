@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,35 +125,43 @@ public class ConnectionsFragment extends Fragment {
         String chatName = ((EditText) getView().findViewById(R.id.inputChatName))
                 .getText().toString();
 
-        android.content.SharedPreferences prefs =
-                getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
+        if (chatName.length() == 0) {
+            System.out.println("Create Toast");
+            Toast.makeText(getActivity(),"Please enter valid chat name", Toast.LENGTH_SHORT).show();
+        } else {
+            System.out.println("Create Chat");
+            android.content.SharedPreferences prefs =
+                    getActivity().getSharedPreferences(
+                            getString(R.string.keys_shared_prefs),
+                            Context.MODE_PRIVATE);
 
-        String mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
+            String mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
 
-        try {
+            try {
 
-            for (Connection s : currentSelectedConnections) {
-                arrayJson.put(s.userName);
+                for (Connection s : currentSelectedConnections) {
+                    arrayJson.put(s.userName);
+                }
+                //System.out.println("Array of usernames is: " + arrayJson.toString());
+                messageJson.put(getString(R.string.keys_json_current_username), mUsername);
+                messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson);
+                messageJson.put(getString(R.string.keys_json_chat_name), chatName);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            //System.out.println("Array of usernames is: " + arrayJson.toString());
-            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_checkbox_contacts_array), arrayJson);
-            messageJson.put(getString(R.string.keys_json_chat_name), chatName);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+            System.out.println(messageJson.toString());
+
+
+
+            new SendPostAsyncTask.Builder(mCreateChatUrl, messageJson)
+                    .onPostExecute(this::endOfCreateChatTask)
+                    .onCancelled(this::handleError)
+                    .build().execute();
         }
 
-        System.out.println(messageJson.toString());
 
-
-
-        new SendPostAsyncTask.Builder(mCreateChatUrl, messageJson)
-                .onPostExecute(this::endOfCreateChatTask)
-                .onCancelled(this::handleError)
-                .build().execute();
     }
     private void handleError(final String msg) {
         Log.e("new chat creation from checks ERROR!!!", msg.toString());
