@@ -824,9 +824,6 @@ public class HomeActivity extends AppCompatActivity implements
 
 
         if(id == R.id.nav_pending_connections) {
-            mPendingConnectionsMenuItem.setGravity(Gravity.CENTER_VERTICAL);
-            mPendingConnectionsMenuItem.setTypeface(null, Typeface.BOLD);
-            mPendingConnectionsMenuItem.setTextColor(Color.RED);
 
         } else if (id == R.id.nav_chat_list) {
 
