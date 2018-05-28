@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import group8.tcss450.uw.edu.chatclient.model.BadgeDrawerArrowDrawable;
@@ -78,8 +79,6 @@ public class HomeActivity extends AppCompatActivity implements
 
     private static final String TAG = "HomeActivity ERROR->";
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    //public static final long UPDATE_INTERVAL = 1080000; //More frequently
     public static final long UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private GoogleApiClient mGoogleApiClient;
@@ -87,7 +86,6 @@ public class HomeActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private boolean mWeatherChecked = false;
-    private Bundle bundle;
 
     private String userName;
 
@@ -672,7 +670,8 @@ public class HomeActivity extends AppCompatActivity implements
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
-            String weather = description + ": " + Double.toString(temp);
+            DecimalFormat df = new DecimalFormat("#.#");
+            String weather = description + ": " + df.format(temp);
             HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                     findFragmentByTag(getString(R.string.home_info_tag));
             homeFragment.setWeather(weather);

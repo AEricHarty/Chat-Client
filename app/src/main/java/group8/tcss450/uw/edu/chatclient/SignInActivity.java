@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -331,7 +330,7 @@ public class SignInActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, HomeActivity.class);
         Bundle b = new Bundle();
         EditText t = (EditText) findViewById(R.id.logUsernnameText);
-        String s = "";
+        String s;
         if (t == null) {
             SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                             Context.MODE_PRIVATE);
@@ -495,9 +494,9 @@ public class SignInActivity extends AppCompatActivity implements
             Button verifyButton = (Button) findViewById(R.id.verifyButton);
             Button resendButton = (Button) findViewById(R.id.resendVerificationButton);
             verificationInput.setEnabled(false);
-            verifyButton.setText("Account Verified");
+            verifyButton.setText(getString(R.string.signin_verify));
             verifyButton.setEnabled(false);
-            resendButton.setText("Go to Login");
+            resendButton.setText(getString(R.string.signin_resend));
             resendButton.setOnClickListener(this::goBackToLogin);
         }
     }

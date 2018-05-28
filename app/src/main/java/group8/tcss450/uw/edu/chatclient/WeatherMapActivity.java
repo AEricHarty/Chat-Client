@@ -39,6 +39,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
@@ -53,8 +55,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         GoogleApiClient.OnConnectionFailedListener {
 
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    //public static final long UPDATE_INTERVAL = 10800000; //Every 3 hrs
-    //public static final long UPDATE_INTERVAL = 1080000; //More frequently
     public static final long UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private static final String TAG = "WeatherMapActivity ERROR->";
@@ -186,7 +186,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
         String lat;
         String lon;
-        //There's probably a better design pattern to handle this but it's the end of sprint 4
+        //There's probably a better way to do this with less cyclomatic complexity
         if(mWhereChoice.equals("Here")){
             if(mCurrentLocation != null){
                 lat = Double.toString(mCurrentLocation.getLatitude());
@@ -197,11 +197,11 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             }
             String loc = lat + "," + lon;
             if(save.isChecked()) saveLocation(loc);
-            if(mWhenChoice.equals("Now")){
+            if(mWhenChoice.equals(getString(R.string.weather_now))){
                 getCurrentWeather(loc);
-            } else if (mWhenChoice.equals("Tomorrow")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_tomorrow))){
                 getNextWeather(loc);
-            } else if (mWhenChoice.equals("Seven Days")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_ten))){
                 getFiveWeather(loc);
             }
         } else if(mWhereChoice.equals("Pin")){
@@ -214,11 +214,11 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             }
             String loc = lat + "," + lon;
             if(save.isChecked()) saveLocation(loc);
-            if(mWhenChoice.equals("Now")){
+            if(mWhenChoice.equals(getString(R.string.weather_now))){
                 getCurrentWeather(loc);
-            } else if (mWhenChoice.equals("Tomorrow")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_tomorrow))){
                 getNextWeather(loc);
-            } else if (mWhenChoice.equals("Seven Days")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_ten))){
                 getFiveWeather(loc);
             }
         } else if(mWhereChoice.equals("ZIP")){
@@ -228,11 +228,11 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
                     Context.MODE_PRIVATE);
             l = prefs.getString(getString(R.string.location_key), "98403");
-            if(mWhenChoice.equals("Now")){
+            if(mWhenChoice.equals(getString(R.string.weather_now))){
                 getCurrentWeather(l);
-            } else if (mWhenChoice.equals("Tomorrow")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_tomorrow))){
                 getNextWeather(l);
-            } else if (mWhenChoice.equals("Seven Days")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_ten))){
                 getFiveWeather(l);
             } else {
                 System.out.println("Error with Spinner!");
@@ -248,16 +248,15 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     public void checkZIP() {
         CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
         String zip = (mZIPView.getText().toString());
-        Log.d(TAG, "**********************************" +zip);
         if (zip.length() != 5){
             mZIPView.setError("5-Digit ZIP");
         } else{
             if(save.isChecked()) saveLocation(zip);
-            if(mWhenChoice.equals("Now")){
+            if(mWhenChoice.equals(getString(R.string.weather_now))){
                 getCurrentWeather(zip);
-            } else if (mWhenChoice.equals("Tomorrow")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_tomorrow))){
                 getNextWeather(zip);
-            } else if (mWhenChoice.equals("Seven Days")){
+            } else if (mWhenChoice.equals(getString(R.string.weather_ten))){
                 getFiveWeather(zip);
             }
         }
@@ -350,7 +349,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         //build the JSONObject
         //Pass location as username so we can use credentials.asJSON
         Credentials cred = new Credentials.Builder(location, null)
-                .addEmail("7")
+                .addEmail("10")
                 .build();
         JSONObject msg = cred.asJSONObject();
         new SendPostAsyncTask.Builder(uri.toString(), msg)
@@ -388,8 +387,10 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
+            //Truncate the temp
+            DecimalFormat df = new DecimalFormat("#.#");
             String output = String.format(getString(R.string.weather_single_msg),
-                    description, temp);
+                    description, df.format(temp));
             mResultView.setText(output);
         }
         mProgressBar.setVisibility(View.GONE);
@@ -426,8 +427,10 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp != -99){
+            //Truncate the temp
+            DecimalFormat df = new DecimalFormat("#.#");
             String output = String.format(getString(R.string.weather_single_msg),
-                    description, temp);
+                    description, df.format(temp));
             mResultView.setText(output);
         }
         mProgressBar.setVisibility(View.GONE);
@@ -443,13 +446,13 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      */
     private void handleFiveWeatherPost(final String jsonResult) {
         String description = "";
-        double temp[] = {-99, -99, -99, -99, -99, -99, -99};
+        double temp[] = {-99, -99, -99, -99, -99, -99, -99, -99, -99, -99};
         try {
             JSONObject json = new JSONObject(jsonResult);
             if (json.has("forecast")) {
                 JSONObject result = json.getJSONObject("forecast");
                 JSONArray days = result.getJSONArray("forecastday");
-                for(int i =0; i < 7; i++){
+                for(int i =0; i < 10; i++){
                     JSONObject forecast = days.getJSONObject(i).getJSONObject("day");
                     if (forecast.has("avgtemp_f")) {
                         temp[i] = forecast.getDouble("avgtemp_f");
@@ -461,14 +464,17 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                         }
                     }
                 }
-
             }
         } catch (JSONException e) {
             Log.e(TAG, e.toString());
         }
         if(description.length() != 0 && temp[0] != -99){
-            String output = String.format(getString(R.string.weather_five_msg), description,
-                    temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]);
+            //Truncate the temp
+            DecimalFormat df = new DecimalFormat("#.#");
+            String output = String.format(getString(R.string.weather_five_msg),
+                    description, df.format(temp[0]), df.format(temp[1]), df.format(temp[2]),
+                    df.format(temp[3]), df.format(temp[4]), df.format(temp[5]), df.format(temp[6]),
+                    df.format(temp[7]), df.format(temp[8]), df.format(temp[9]));
             mResultView.setText(output);
         }
         mProgressBar.setVisibility(View.GONE);

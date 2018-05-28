@@ -11,9 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
 
 /**

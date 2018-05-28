@@ -2,7 +2,6 @@ package group8.tcss450.uw.edu.chatclient;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
