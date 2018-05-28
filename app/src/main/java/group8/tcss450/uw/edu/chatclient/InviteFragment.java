@@ -1,4 +1,4 @@
-package group8.tcss450.uw.edu.chatclient.utils;
+package group8.tcss450.uw.edu.chatclient;
 
 
 import android.content.Context;
@@ -72,7 +72,7 @@ public class InviteFragment extends Fragment {
         }
 
         if(good && mListener != null) {
-            mListener.onGetContactsAttempt(mUserName, friendName, friendEmail);
+            mListener.onInviteAttempt(mUserName, friendName, friendEmail);
         }
     }
 
@@ -93,7 +93,7 @@ public class InviteFragment extends Fragment {
     }
 
     public interface InviteFragmentInteractionListener {
-        void onGetContactsAttempt(String userName, String friendName, String friendEmail);
+        void onInviteAttempt(String userName, String friendName, String friendEmail);
     }
 
 }

@@ -28,44 +28,47 @@ import group8.tcss450.uw.edu.chatclient.R;
  * a service on a separate handler thread.
  * <p>
  */
-public class ContactsIntentService extends IntentService {
+public class MessagesIntentService extends IntentService {
 
-    private static final String TAG = "ContactsIntentService";
+    private static final String TAG = "MessagesIntentService";
     private static final int POLL_INTERVAL = 60_000;
-    public static final  String RECEIVED_UPDATE = "New Contact Request";
+    public static final  String RECEIVED_UPDATE = "New Message(s)";
 
     private String mUsername;
-    private String mIncomingTimestamp;
+    private String mTimestamp;
 
-    public ContactsIntentService() {
-        super("ContactsIntentService");
+    public MessagesIntentService() {
+        super("MessagesIntentService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            Log.d(TAG, "performing the contacts listen service");
+            Log.d(TAG, "performing the new messages listen service");
             SharedPreferences prefs =  getSharedPreferences(getString(R.string.keys_shared_prefs)
                     , Context.MODE_PRIVATE);
             mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
-            mIncomingTimestamp = prefs.getString(getString(R.string.keys_prefs_incoming_request_time_stamp), "0");
+            mTimestamp = prefs.getString(getString(R.string.keys_prefs_messages_time_stamp), "1970-01-01 00:00:01.00000");
 
-            checkWebService(intent.getBooleanExtra(getString(R.string.keys_is_foreground), false));
+            boolean foreground = intent.getBooleanExtra(getString(R.string.keys_is_foreground), false);
+            Log.wtf(TAG, "checking server with foregroung = " + foreground);
+            checkWebService(foreground);
 
         }
     }
 
     //used to start the service
     public static void startServiceAlarm(Context context, boolean isInForeground) {
-        Intent i = new Intent(context, ContactsIntentService.class);
+        Intent i = new Intent(context, MessagesIntentService.class);
+        Log.d(TAG, "in foreground set to : " + isInForeground);
         i.putExtra(context.getString(R.string.keys_is_foreground), isInForeground);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0,i,0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        int startAfeter = isInForeground ? POLL_INTERVAL : POLL_INTERVAL *2;
+        int startAfter = isInForeground ? POLL_INTERVAL : POLL_INTERVAL *2;
 
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, startAfeter
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, startAfter
                 ,POLL_INTERVAL, pendingIntent);
     }
 
@@ -82,19 +85,19 @@ public class ContactsIntentService extends IntentService {
     private boolean checkWebService(boolean isInForeground) {
         boolean isEmptyReply = false;
         //check webservice in background
-        Uri retrieveIncoming = new Uri.Builder()
+        Uri checkForNew = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_pending))
-                .appendPath(getString(R.string.ep_pending_incoming))
+                .appendPath(getString(R.string.ep_get_all_message))
                 .appendQueryParameter("username", mUsername)
+                .appendQueryParameter("after", mTimestamp)
                 .build();
 
         HttpURLConnection urlConnection = null;
 
         StringBuilder response = new StringBuilder();
         try{
-            URL urlObject = new URL(retrieveIncoming.toString() + "&after=" + mIncomingTimestamp);
+            URL urlObject = new URL(checkForNew.toString());
             urlConnection = (HttpURLConnection) urlObject.openConnection();
             InputStream content = urlConnection.getInputStream();
             BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
@@ -111,10 +114,10 @@ public class ContactsIntentService extends IntentService {
         }
 
         //check for empty reply
-        if(response.charAt(27) == ']') isEmptyReply = true;
-
+        if(response.charAt(11) == ']') isEmptyReply = true;
         //if there are new incoming requests then set a notification or notify HomeActivity.
         if (!isEmptyReply) {
+            Log.e(TAG, "creating notification in forground" + isInForeground);
             if (isInForeground) {
                 Intent i = new Intent(RECEIVED_UPDATE);
                 i.putExtra(getString(R.string.keys_extra_results), response.toString());
@@ -124,20 +127,19 @@ public class ContactsIntentService extends IntentService {
             }
         }
 
-
         return true;
     }
 
     private void buildNotification (String s) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_menu_new_connection)
-                .setContentTitle("New Connection")
-                .setContentText("You have a new connection request!");
+                .setSmallIcon(R.drawable.ic_menu_message)
+                .setContentTitle("New Message(s)")
+                .setContentText("You have a new messages");
 
         //Create an Intent for the Activity
         Intent notifyIntent = new Intent(this, HomeActivity.class);
         notifyIntent.putExtra("username", mUsername);
-        notifyIntent.putExtra(getString(R.string.keys_extra_results), s);
+        notifyIntent.putExtra(getString(R.string.keys_message_results), s);
 
         //Sets the activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

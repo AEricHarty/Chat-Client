@@ -58,10 +58,10 @@ public class PendingConnectionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
-        mUserName = prefs.getString(getString(R.string.keys_prefs_username), "Problem! No Username!");
+        Bundle b = this.getActivity().getIntent().getExtras();
+        if(b != null) {
+            mUserName = b.getString("username");
+        }
 
 //        System.out.println("Username at onCreateView: " + userName);
         View v = inflater.inflate(R.layout.fragment_pending_connections, container, false);
