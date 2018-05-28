@@ -524,7 +524,7 @@ public class HomeActivity extends AppCompatActivity implements
                     findFragmentByTag(getString(R.string.home_info_tag));
             homeFragment.setLocation(location);
             if (!mWeatherChecked) {
-                getLocation();
+                getWeather();
                 mWeatherChecked = true;
             }
         }
@@ -577,60 +577,7 @@ public class HomeActivity extends AppCompatActivity implements
      *
      * @author Eric Harty - hartye@uw.edu
      */
-    public void getLocation() {
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_weather))
-                .appendPath(getString(R.string.ep_locate_gps))
-                .build();
-        //build the JSONObject
-        //Pass lat and lon as username and email so we can use credentials.asJSON
-        String lat = Double.toString(mCurrentLocation.getLatitude());
-        String lon = Double.toString(mCurrentLocation.getLongitude());
-        Credentials cred = new Credentials.Builder(lat, null)
-                .addEmail(lon)
-                .build();
-        JSONObject msg = cred.asJSONObject();
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
-        new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleLocationPost)
-                .onCancelled(this::handleErrorsInTask)
-                .build().execute();
-    }
-
-    /**
-     * @author Eric Harty - hartye@uw.edu
-     *
-     * Handle onPostExecute of the AsynceTask. The result from our webservice is
-     * a JSON formatted String. Parse it for success or failure.
-     * @param result the JSON formatted String response from the web service
-     */
-    private void handleLocationPost(String result) {
-        try {
-            JSONObject resultsJSON = new JSONObject(result);
-            int location;
-            location = resultsJSON.getInt("Key");
-            if (location != 0) getWeather(location);
-        } catch (JSONException e) {
-            //It appears that the web service didn’t return a JSON formatted String
-            //or it didn’t have what we expected in it.
-            Log.e("JSON_PARSE_ERROR", result
-                    + System.lineSeparator()
-                    + e.getMessage());
-        }
-    }
-
-    /**
-     * Builds JSON and starts new AsyncTask to send to weather service.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
-    public void getWeather(int location) {
+    public void getWeather() {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -639,15 +586,13 @@ public class HomeActivity extends AppCompatActivity implements
                 .appendPath(getString(R.string.ep_weather_current))
                 .build();
         //build the JSONObject
-        //Pass location as username so we can use credentials.asJSON
-        String loc = Integer.toString(location);
+        //Pass lat and lon as username and email so we can use credentials.asJSON
+        String lat = Double.toString(mCurrentLocation.getLatitude());
+        String lon = Double.toString(mCurrentLocation.getLongitude());
+        String loc = lat + "," + lon;
         Credentials cred = new Credentials.Builder(loc, null)
                 .build();
         JSONObject msg = cred.asJSONObject();
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleWeatherPost)
                 .onCancelled(this::handleErrorsInTask)
@@ -665,16 +610,16 @@ public class HomeActivity extends AppCompatActivity implements
         String description = "";
         double temp = -99;
         try {
-            JSONArray json = new JSONArray(jsonResult);
-            if (json.getJSONObject(0).has("WeatherText")) {
-                description = json.getJSONObject(0).getString("WeatherText");
-            }
-            if (json.getJSONObject(0).has("Temperature")) {
-                JSONObject response = json.getJSONObject(0).getJSONObject("Temperature");
-                if (response.has("Imperial")) {
-                    JSONObject type = response.getJSONObject("Imperial");
-                    if (type.has("Value")) {
-                        temp = type.getDouble("Value");
+            JSONObject json = new JSONObject(jsonResult);
+            if (json.has("current")) {
+                JSONObject current = json.getJSONObject("current");
+                if (current.has("temp_f")) {
+                    temp = current.getDouble("temp_f");
+                }
+                if (current.has("condition")) {
+                    JSONObject cond = current.getJSONObject("condition");
+                    if (cond.has("text")) {
+                        description = cond.getString("text");
                     }
                 }
             }
@@ -686,7 +631,6 @@ public class HomeActivity extends AppCompatActivity implements
             HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                     findFragmentByTag(getString(R.string.home_info_tag));
             homeFragment.setWeather(weather);
-
         }
     }
 
