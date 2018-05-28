@@ -87,6 +87,8 @@ public class HomeActivity extends AppCompatActivity implements
     private Location mCurrentLocation;
     private boolean mWeatherChecked = false;
 
+    public double mLat, mLng;
+
     private String userName;
 
     @Override
@@ -534,6 +536,8 @@ public class HomeActivity extends AppCompatActivity implements
     public void onLocationChanged(Location location) {
         if (mCurrentLocation != null){
             mCurrentLocation = location;
+            mLat = mCurrentLocation.getLatitude();
+            mLng = mCurrentLocation.getLongitude();
             Log.d(TAG, mCurrentLocation.toString());
             HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                     findFragmentByTag(getString(R.string.home_info_tag));
@@ -685,11 +689,12 @@ public class HomeActivity extends AppCompatActivity implements
      */
     @Override
     public void onMoreWeatherClicked() {
-        Intent i = new Intent(this, WeatherMapActivity.class);
-        i.putExtra(WeatherMapActivity.LATITUDE, mCurrentLocation.getLatitude());
-        i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
-        i.putExtra("username", userName);
-        startActivity(i);
+//        Intent i = new Intent(this, WeatherMapActivity.class);
+//        i.putExtra(WeatherMapActivity.LATITUDE, mCurrentLocation.getLatitude());
+//        i.putExtra(WeatherMapActivity.LONGITUDE, mCurrentLocation.getLongitude());
+//        i.putExtra("username", userName);
+//        startActivity(i);
+        loadFragment(new WeatherMapFragment());
     }
 
 

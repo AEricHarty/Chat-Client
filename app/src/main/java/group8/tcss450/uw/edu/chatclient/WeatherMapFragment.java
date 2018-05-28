@@ -6,13 +6,15 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -45,23 +47,19 @@ import group8.tcss450.uw.edu.chatclient.model.Credentials;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
- * Activity for the Map and major Weather features
- *
- * Not used in latest version.
+ * Fragment for the Map and Weather features.
  *
  * @author Eric Harty - hartye@uw.edu
  */
-public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyCallback,
+public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener,
         LocationListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener{
 
     /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
     public static final long UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private static final String TAG = "WeatherMapActivity ERROR->";
-    public static final String LATITUDE = "lat";
-    public static final String LONGITUDE = "lng";
     private GoogleMap mGoogleMap;
     private double mLat, mLng;
     private Marker mMarker;
@@ -75,40 +73,48 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private ProgressBar mProgressBar;
     private Button mSubmitButton;
 
-    /**@author Eric Harty - hartye@uw.edu*/
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weather_map);
+    private View mView;
 
-        mZIPView = (EditText) findViewById(R.id.weatherZIPEditText);
+    public WeatherMapFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        mView = inflater.inflate(R.layout.fragment_weather_map, container, false);
+
+        mZIPView = (EditText) mView.findViewById(R.id.weatherZIPEditText);
         mZIPView.setVisibility(View.GONE);
-        mLat = getIntent().getDoubleExtra(LATITUDE, 0.0);
-        mLng = getIntent().getDoubleExtra(LONGITUDE, 0.0);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+
+        HomeActivity home = (HomeActivity) getActivity();
+        mLat = home.mLat;
+        mLng = home.mLng;
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.googleMap);
         mapFragment.getMapAsync(this);
 
-        Spinner whereSpinner = (Spinner)findViewById(R.id.weatherWhereSpinner);
-        ArrayAdapter<CharSequence> whereAdapter = ArrayAdapter.createFromResource(this,
+        Spinner whereSpinner = (Spinner) mView.findViewById(R.id.weatherWhereSpinner);
+        ArrayAdapter<CharSequence> whereAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.weatherSWhereArray, android.R.layout.simple_spinner_item);
         whereAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         whereSpinner.setAdapter(whereAdapter);
         whereSpinner.setOnItemSelectedListener(this);
 
-        Spinner whenSpinner = (Spinner) findViewById(R.id.weatherWhenSpinner);
-        ArrayAdapter<CharSequence> whenAdapter = ArrayAdapter.createFromResource(this,
+        Spinner whenSpinner = (Spinner) mView.findViewById(R.id.weatherWhenSpinner);
+        ArrayAdapter<CharSequence> whenAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.weatherSWhenArray, android.R.layout.simple_spinner_item);
         whenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         whenSpinner.setAdapter(whenAdapter);
         whenSpinner.setOnItemSelectedListener(this);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.weatherMapProgressBar);
+        mProgressBar = (ProgressBar) mView.findViewById(R.id.weatherMapProgressBar);
         mProgressBar.setVisibility(View.GONE);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
@@ -119,11 +125,12 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        mResultView = (TextView) findViewById(R.id.weatherResultView);
+        mResultView = (TextView) mView.findViewById(R.id.weatherResultView);
 
-        mSubmitButton = (Button) findViewById(R.id.weatherSubmitButton);
+        mSubmitButton = (Button) mView.findViewById(R.id.weatherSubmitButton);
         mSubmitButton.setOnClickListener(this::onSubmitClick);
 
+        return mView;
     }
 
     /**@author Eric Harty - hartye@uw.edu*/
@@ -187,7 +194,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      * @author Eric Harty - hartye@uw.edu
      */
     public void onSubmitClick(View view) {
-        CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
+        CheckBox save = (CheckBox) mView.findViewById(R.id.weatherCheckBox);
         String lat;
         String lon;
         //There's probably a better way to do this with less cyclomatic complexity
@@ -228,19 +235,19 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         } else if(mWhereChoice.equals("ZIP")){
             checkZIP();
         } else if(mWhereChoice.equals("Saved")){
-            String l;
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.keys_shared_prefs),
+            String loc;
+            SharedPreferences prefs = getContext().getSharedPreferences(getString(R.string.keys_shared_prefs),
                     Context.MODE_PRIVATE);
-            l = prefs.getString(getString(R.string.location_key), "98403");
+            loc = prefs.getString(getString(R.string.location_key), "98403");
             if(mWhenChoice.equals(getString(R.string.weather_now))){
-                getCurrentWeather(l);
+                getCurrentWeather(loc);
             } else if (mWhenChoice.equals(getString(R.string.weather_tomorrow))){
-                getNextWeather(l);
+                getNextWeather(loc);
             } else if (mWhenChoice.equals(getString(R.string.weather_ten))){
-                getFiveWeather(l);
-            } else {
-                System.out.println("Error with Spinner!");
+                getFiveWeather(loc);
             }
+        }else {
+            System.out.println("Error with Spinner!");
         }
     }
 
@@ -250,7 +257,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      * @author Eric Harty - hartye@uw.edu
      */
     public void checkZIP() {
-        CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
+        CheckBox save = (CheckBox) mView.findViewById(R.id.weatherCheckBox);
         String zip = (mZIPView.getText().toString());
         if (zip.length() != 5){
             mZIPView.setError("5-Digit ZIP");
@@ -266,6 +273,97 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    /**@author Eric Harty - hartye@uw.edu*/
+    public void saveLocation(String key) {
+        SharedPreferences prefs =
+                getContext().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        prefs.edit().putString(
+                getString(R.string.location_key), key)
+                .apply();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // If the initial location was never previously requested, we use
+        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
+        // its value in the Bundle and check for it in onCreate(). We
+        // do not request it again unless the user specifically requests location updates by pressing
+        // the Start Updates button.
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+                    &&
+                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                startLocationUpdates();
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
+                connectionResult.getErrorCode());
+    }
+
+    /**Callback that fires when the location changes.*/
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        Log.d(TAG, mCurrentLocation.toString());
+    }
+
+    /**Requests location updates from the FusedLocationApi.*/
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    /**Removes location updates from the FusedLocationApi.*/
+    protected void stopLocationUpdates() {
+        // Remove location requests when the activity is in a paused or stopped state.
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
+    }
+
+    public void onStart() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+        super.onStart();
+    }
+
+    public void onStop() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
+
     /**
      * @author Eric Harty - hartye@uw.edu
      */
@@ -273,17 +371,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         mProgressBar.setProgress(0);
         mSubmitButton.setEnabled(false);
-    }
-
-    /**@author Eric Harty - hartye@uw.edu*/
-    public void saveLocation(String key) {
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        prefs.edit().putString(
-                getString(R.string.location_key), key)
-                .apply();
     }
 
     /**
@@ -487,86 +574,5 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
     private void handleErrorsInTask(String result) {
         Log.e("ASYNCT_TASK_ERROR", result);
     }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        // If the initial location was never previously requested, we use
-        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
-        // its value in the Bundle and check for it in onCreate(). We
-        // do not request it again unless the user specifically requests location updates by pressing
-        // the Start Updates button.
-        if (mCurrentLocation == null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED
-                    &&
-                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                startLocationUpdates();
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
-                connectionResult.getErrorCode());
-    }
-
-    /**Callback that fires when the location changes.*/
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        Log.d(TAG, mCurrentLocation.toString());
-    }
-
-    /**Requests location updates from the FusedLocationApi.*/
-    protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-        }
-    }
-
-    /**Removes location updates from the FusedLocationApi.*/
-    protected void stopLocationUpdates() {
-        // Remove location requests when the activity is in a paused or stopped state.
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopLocationUpdates();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
-    }
-
-    protected void onStart() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-        super.onStart();
-    }
-
-    protected void onStop() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onStop();
-    }
-
 
 }
