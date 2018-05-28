@@ -33,9 +33,7 @@ public class ChatFragment extends Fragment {
 
     private String mUsername;
     private String mSendUrl;
-    private String mLeaveChatUrl;
-    private String mAddToChatUrl;
-    private String mAddStrangerUrl;
+
     ScrollView mScrollView;
 
     private TextView mOutputTextView;
@@ -54,14 +52,21 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
+        v.findViewById(R.id.chatOptionsButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChatInnerFragment nextFrag= new ChatInnerFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.chatSessionActivityLayout, nextFrag)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
 
-        v.findViewById(R.id.chatLeaveChatButton).setOnClickListener(this::leaveChat);
 
-        v.findViewById(R.id.chatAddChatMemberButton).setOnClickListener(this::addToChat);
-
-        v.findViewById(R.id.chatAddConnectionButton).setOnClickListener(this::addStranger);
 
         mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
@@ -119,26 +124,7 @@ public class ChatFragment extends Fragment {
 
 
 
-        mLeaveChatUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_leave_chat))
-                .build()
-                .toString();
 
-        mAddToChatUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_add_to_chat))
-                .build()
-                .toString();
-
-        mAddStrangerUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_send_request))
-                .build()
-                .toString();
 
         /*
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
@@ -189,117 +175,7 @@ public class ChatFragment extends Fragment {
                 .apply();
     }
 
-    private void addToChat(final View theButton) {
-        JSONObject messageJson = new JSONObject();
 
-        int chatId = bundle.getInt("chatId");
-
-        String userToAdd = ((EditText) getView().findViewById(R.id.chatInputEditText))
-                       .getText().toString();
-
-        try {
-            messageJson.put(getString(R.string.keys_json_username), userToAdd);
-
-            messageJson.put(getString(R.string.keys_chatId), chatId);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(mAddToChatUrl, messageJson)
-                .onPostExecute(this::endOfAddToChatTask)
-                .onCancelled(this::handleAddToChatError)
-                .build().execute();
-    }
-
-    private void handleAddToChatError(final String msg) {
-        Log.e("Leaving Chat ERROR!!!", msg.toString());
-    }
-
-    private void endOfAddToChatTask(final String result) {
-        try {
-            JSONObject res = new JSONObject(result);
-
-                 ((EditText) getView().findViewById(R.id.chatInputEditText))
-                 .setText("");
-
-                 Toast.makeText(getActivity(),"Successfully added user to chat", Toast.LENGTH_SHORT).show();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void leaveChat(final View theButton) {
-        JSONObject messageJson = new JSONObject();
-
-        int chatId = bundle.getInt("chatId");
-
-        try {
-            messageJson.put(getString(R.string.keys_json_username), mUsername);
-
-            messageJson.put(getString(R.string.keys_chatId), chatId);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(mLeaveChatUrl, messageJson)
-                .onPostExecute(this::endOfLeaveChatTask)
-                .onCancelled(this::handleLeaveChatError)
-                .build().execute();
-    }
-
-    private void handleLeaveChatError(final String msg) {
-        Log.e("Leaving Chat ERROR!!!", msg.toString());
-    }
-
-    private void endOfLeaveChatTask(final String result) {
-        try {
-            JSONObject res = new JSONObject(result);
-            Intent myintent = new Intent(getActivity(), HomeActivity.class);
-            startActivity(myintent);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addStranger(final View theButton) {
-
-        JSONObject messageJson = new JSONObject();
-        String newConnection = ((EditText) getView().findViewById(R.id.chatInputEditText))
-                .getText().toString();
-        try {
-            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_connection_username), newConnection);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(mAddStrangerUrl, messageJson)
-                .onPostExecute(this::endOfAddStrangerTask)
-                .onCancelled(this::handleAddStrangerError)
-                .build().execute();
-    }
-
-    private void handleAddStrangerError(final String msg) {
-        Log.e("add Stranger Connections ERROR!!!", msg.toString());
-    }
-
-    private void endOfAddStrangerTask(final String result) {
-        //Log.e("test2", "gets to endofSendRequestTask");
-        try {
-            JSONObject res = new JSONObject(result);
-
-            Toast.makeText(getActivity(),"Successfully sent request", Toast.LENGTH_SHORT).show();
-                ((EditText) getView().findViewById(R.id.chatInputEditText))
-                        .setText("");
-
-
-        } catch (JSONException e) {
-            //Log.e("test4", "does not get to success");
-            e.printStackTrace();
-
-        }
-    }
 
 
     private void sendMessage(final View theButton) {

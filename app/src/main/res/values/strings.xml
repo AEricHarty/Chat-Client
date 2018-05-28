@@ -112,4 +112,14 @@
     <string name="create_multichat">Create New Chat</string>
     <string name="Enter_new_chat_name">Enter new chat name</string>
 
+    <string name="chat_options">Chat Options</string>
+
+    <string name="chat_inner_fragment_add_to_chat">Enter username to add to chat</string>
+
+    <string name="chat_inner_fragment_add_stranger">Enter username to send connection request</string>
+
+    <string name="chat_inner_fragment_leave_chat">Leave Chat</string>
+    <string name="chat_inner_fragment_send">Send</string>
+    <string name="chat_inner_fragment_add">Add</string>
+
 </resources>
