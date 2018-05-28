@@ -349,7 +349,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         //build the JSONObject
         //Pass location as username so we can use credentials.asJSON
         Credentials cred = new Credentials.Builder(location, null)
-                .addEmail("10")
+                .addEmail("7")
                 .build();
         JSONObject msg = cred.asJSONObject();
         new SendPostAsyncTask.Builder(uri.toString(), msg)
@@ -413,8 +413,8 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                 JSONObject result = json.getJSONObject("forecast");
                 JSONArray days = result.getJSONArray("forecastday");
                 JSONObject forecast = days.getJSONObject(0).getJSONObject("day");
-                if (forecast.has("avgtemp_f")) {
-                    temp = forecast.getDouble("avgtemp_f");
+                if (forecast.has("maxtemp_f")) {
+                    temp = forecast.getDouble("maxtemp_f");
                 }
                 if (forecast.has("condition")) {
                     JSONObject cond = forecast.getJSONObject("condition");
@@ -446,16 +446,16 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
      */
     private void handleFiveWeatherPost(final String jsonResult) {
         String description = "";
-        double temp[] = {-99, -99, -99, -99, -99, -99, -99, -99, -99, -99};
+        double temp[] = {-99, -99, -99, -99, -99, -99, -99};
         try {
             JSONObject json = new JSONObject(jsonResult);
             if (json.has("forecast")) {
                 JSONObject result = json.getJSONObject("forecast");
                 JSONArray days = result.getJSONArray("forecastday");
-                for(int i =0; i < 10; i++){
+                for(int i =0; i < 7; i++){
                     JSONObject forecast = days.getJSONObject(i).getJSONObject("day");
-                    if (forecast.has("avgtemp_f")) {
-                        temp[i] = forecast.getDouble("avgtemp_f");
+                    if (forecast.has("maxtemp_f")) {
+                        temp[i] = forecast.getDouble("maxtemp_f");
                     }
                     if (forecast.has("condition")) {
                         JSONObject cond = forecast.getJSONObject("condition");
@@ -471,10 +471,9 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         if(description.length() != 0 && temp[0] != -99){
             //Truncate the temp
             DecimalFormat df = new DecimalFormat("#.#");
-            String output = String.format(getString(R.string.weather_five_msg),
-                    description, df.format(temp[0]), df.format(temp[1]), df.format(temp[2]),
-                    df.format(temp[3]), df.format(temp[4]), df.format(temp[5]), df.format(temp[6]),
-                    df.format(temp[7]), df.format(temp[8]), df.format(temp[9]));
+            String output = String.format(getString(R.string.weather_five_msg), description,
+                    df.format(temp[0]), df.format(temp[1]), df.format(temp[2]), df.format(temp[3]),
+                    df.format(temp[4]), df.format(temp[5]), df.format(temp[6]));
             mResultView.setText(output);
         }
         mProgressBar.setVisibility(View.GONE);

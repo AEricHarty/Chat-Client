@@ -90,16 +90,16 @@
     <string name="weather_when_prompt">When?</string>
     <string name="weather_now">Now</string>
     <string name="weather_tomorrow">Tomorrow</string>
-    <string name="weather_ten">Ten Days</string>
+    <string name="weather_ten">Seven Days</string>
     <string-array name="weatherSWhenArray">
         <item>Now</item>
         <item>Tomorrow</item>
-        <item>Ten Days</item>
+        <item>Seven Days</item>
     </string-array>
 
     <string name="home_info_location_msg">%1$f, %2$f</string>
-    <string name="weather_five_msg">%1$s:\n %2$s | %3$s| %4$s| %5$s| %6$s | %7$s | %8$s | %9$s | %10$s | %11$s</string>
     <string name="weather_single_msg">%1$s: %2$s</string>
+    <string name="weather_five_msg">%1$s:\n %2$s | %3$s| %4$s| %5$s| %6$s | %7$s | %8$s</string>
 
     <string name="weather_remember_button">Save for later</string>
     <string name="weather_submit_button">Submit</string>
