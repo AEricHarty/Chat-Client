@@ -20,7 +20,7 @@
     <string name="reset_pass_tag">ResetPasswordFragment</string>
     <string name="home_info_tag">HomeInformationFragment</string>
 
-    <string name="accuweather_site">http://www.accuweather.com/</string>
+    <string name="weather_site">https://www.apixu.com</string>
 
     <string name="keys_send_button_description">Send</string>
 
