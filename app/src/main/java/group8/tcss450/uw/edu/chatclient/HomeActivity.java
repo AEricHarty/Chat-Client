@@ -84,7 +84,7 @@ public class HomeActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
-    private Location mCurrentLocation;
+    public Location mCurrentLocation;
     private boolean mWeatherChecked = false;
 
     public double mLat, mLng;
@@ -633,7 +633,6 @@ public class HomeActivity extends AppCompatActivity implements
                 .appendPath(getString(R.string.ep_weather_current))
                 .build();
         //build the JSONObject
-        //Pass lat and lon as username and email so we can use credentials.asJSON
         String lat = Double.toString(mCurrentLocation.getLatitude());
         String lon = Double.toString(mCurrentLocation.getLongitude());
         String loc = lat + "," + lon;

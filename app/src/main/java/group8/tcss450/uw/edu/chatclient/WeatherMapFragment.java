@@ -52,27 +52,19 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  * @author Eric Harty - hartye@uw.edu
  */
 public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
-        GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener,
-        LocationListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener{
 
-    /**The desired interval for location updates. Inexact. Updates may be more or less frequent.*/
-    public static final long UPDATE_INTERVAL = 30000;
-    public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
     private static final String TAG = "WeatherMapActivity ERROR->";
     private GoogleMap mGoogleMap;
     private double mLat, mLng;
     private Marker mMarker;
     private String mWhenChoice = "Now";
     private String mWhereChoice = "Here";
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     private EditText mZIPView;
     private TextView mResultView;
     private ProgressBar mProgressBar;
     private Button mSubmitButton;
-
     private View mView;
 
     public WeatherMapFragment() {
@@ -88,6 +80,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         mZIPView.setVisibility(View.GONE);
 
         HomeActivity home = (HomeActivity) getActivity();
+        mCurrentLocation = home.mCurrentLocation;
         mLat = home.mLat;
         mLng = home.mLng;
 
@@ -111,19 +104,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
 
         mProgressBar = (ProgressBar) mView.findViewById(R.id.weatherMapProgressBar);
         mProgressBar.setVisibility(View.GONE);
-
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         mResultView = (TextView) mView.findViewById(R.id.weatherResultView);
 
@@ -194,6 +174,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
      * @author Eric Harty - hartye@uw.edu
      */
     public void onSubmitClick(View view) {
+        getLocation();
         CheckBox save = (CheckBox) mView.findViewById(R.id.weatherCheckBox);
         String lat;
         String lon;
@@ -284,84 +265,10 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .apply();
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        // If the initial location was never previously requested, we use
-        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
-        // its value in the Bundle and check for it in onCreate(). We
-        // do not request it again unless the user specifically requests location updates by pressing
-        // the Start Updates button.
-        if (mCurrentLocation == null) {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED
-                    &&
-                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                startLocationUpdates();
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
-                connectionResult.getErrorCode());
-    }
-
-    /**Callback that fires when the location changes.*/
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        Log.d(TAG, mCurrentLocation.toString());
-    }
-
-    /**Requests location updates from the FusedLocationApi.*/
-    protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-        }
-    }
-
-    /**Removes location updates from the FusedLocationApi.*/
-    protected void stopLocationUpdates() {
-        // Remove location requests when the activity is in a paused or stopped state.
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopLocationUpdates();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
-    }
-
-    public void onStart() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-        super.onStart();
-    }
-
-    public void onStop() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onStop();
+    /**@author Eric Harty - hartye@uw.edu*/
+    public void getLocation() {
+        HomeActivity home = (HomeActivity) getActivity();
+        mCurrentLocation = home.mCurrentLocation;
     }
 
     /**
@@ -387,7 +294,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .appendPath(getString(R.string.ep_weather_current))
                 .build();
         //build the JSONObject
-        //Pass location as username so we can use credentials.asJSON
         Credentials cred = new Credentials.Builder(location, null)
                 .build();
         JSONObject msg = cred.asJSONObject();
@@ -412,7 +318,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .appendPath(getString(R.string.ep_weather_forecast))
                 .build();
         //build the JSONObject
-        //Pass location as username so we can use credentials.asJSON
         Credentials cred = new Credentials.Builder(location, null)
                 .addEmail("1")
                 .build();
@@ -438,7 +343,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .appendPath(getString(R.string.ep_weather_forecast))
                 .build();
         //build the JSONObject
-        //Pass location as username so we can use credentials.asJSON
         Credentials cred = new Credentials.Builder(location, null)
                 .addEmail("7")
                 .build();
