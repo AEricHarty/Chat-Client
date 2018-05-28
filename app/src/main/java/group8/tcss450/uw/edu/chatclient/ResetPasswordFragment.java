@@ -127,7 +127,7 @@ public class ResetPasswordFragment extends Fragment {
                 Credentials cred = new Credentials.Builder(code, password)
                         .addEmail(mEmail)
                         .build();
-                mListener.onEmailClicked(cred);
+                mListener.onCodeClicked(cred);
             }
         }
     }
@@ -163,11 +163,14 @@ public class ResetPasswordFragment extends Fragment {
     public void handleCodeFail() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_bad_code);
+        mResultMsg.setVisibility(View.VISIBLE);
     }
 
     public void handleCodeSuccess() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_success);
+        mResultMsg.setVisibility(View.VISIBLE);
+        getFragmentManager().popBackStackImmediate();
     }
 
     @Override

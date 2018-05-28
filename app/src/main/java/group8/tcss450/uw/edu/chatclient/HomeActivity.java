@@ -146,7 +146,7 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.addDrawerListener(mToggle);
         mToggle.syncState();
 
-;
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

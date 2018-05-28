@@ -119,7 +119,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
 
         mResultView = (TextView) findViewById(R.id.weatherResultView);
 
-
         mSubmitButton = (Button) findViewById(R.id.weatherSubmitButton);
         mSubmitButton.setOnClickListener(this::onSubmitClick);
 
@@ -134,7 +133,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         LatLng latLng = new LatLng(mLat, mLng);
         mGoogleMap.addMarker(new MarkerOptions().
                 position(latLng).
-                title("Marker in Tacoma"));
+                title("You are here"));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
         mGoogleMap.setOnMapClickListener(this);
     }
@@ -150,7 +149,7 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
                     .position(latLng)
                     .draggable(true));
         }
-
+        //This feels weird to me
         //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
     }
 
@@ -172,7 +171,6 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         Spinner spinner = (Spinner) parent;
@@ -181,7 +179,11 @@ public class WeatherMapActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**
+     * Determines what is selected in the spinner set and sends the appropriate AsyncTask
+     *
+     * @author Eric Harty - hartye@uw.edu
+     */
     public void onSubmitClick(View view) {
         CheckBox save = (CheckBox) findViewById(R.id.weatherCheckBox);
         String lat;

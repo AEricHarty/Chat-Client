@@ -232,6 +232,7 @@ public class SignInActivity extends AppCompatActivity implements
             if (success) {
                 resetFragment.handleCodeSuccess();
             } else {
+                Log.d("Password Reset Error: ", result);
                 resetFragment.handleCodeFail();
             }
         } catch (JSONException e) {
