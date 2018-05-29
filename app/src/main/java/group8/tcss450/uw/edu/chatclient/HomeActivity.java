@@ -544,13 +544,12 @@ public class HomeActivity extends AppCompatActivity implements
                     findFragmentByTag(getString(R.string.home_info_tag));
             if(homeFragment!=null){
                 homeFragment.setLocation(location);
-            }
-            if (!mWeatherChecked) {
-                getWeather();
-                mWeatherChecked = true;
+                if (!mWeatherChecked) {
+                    getWeather();
+                    mWeatherChecked = true;
+                }
             }
         }
-
     }
 
     /**Requests location updates from the FusedLocationApi.*/
@@ -693,18 +692,8 @@ public class HomeActivity extends AppCompatActivity implements
         loadFragment(new WeatherMapFragment());
     }
 
-
-
-    //todo update this method so it sends chatSessionActivity the chosen chatId.
     @Override
     public void onChatSelected(String chatName, int chatId) {
-//        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
-//        Bundle b = new Bundle();
-//        b.putString("chatName", chatName);
-//        b.putInt("chatId", chatId);
-//        intent.putExtras(b);
-//        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
         mCurrentChatId = chatId;
         loadFragment(new ChatWindowFragment());
     }
@@ -777,7 +766,6 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     public void addMenuItemBadge(int id, String msg) {
-
 
         if(id == R.id.nav_pending_connections) {
 
