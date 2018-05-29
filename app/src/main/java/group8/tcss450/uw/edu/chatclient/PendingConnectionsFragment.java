@@ -398,7 +398,7 @@ public class PendingConnectionsFragment extends Fragment {
                             itemDenyButton.setEnabled(false);
                             itemAcceptButton.setEnabled(false);
                         } else {
-                            if(resultsJSON.getBoolean("pending") == false) {
+                            if(resultsJSON.getBoolean("pending")== false) {
                                 Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
                                 itemDenyButton.setEnabled(false);
                                 itemAcceptButton.setEnabled(false);
