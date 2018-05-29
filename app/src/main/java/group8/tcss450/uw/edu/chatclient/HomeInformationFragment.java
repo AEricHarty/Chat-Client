@@ -43,15 +43,19 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
     }
 
     public void setWeather(String weather) {
-        mWeatherView.setText(weather);
-        mWeatherButton.setEnabled(true);
+        if(mView!= null){
+            mWeatherView.setText(weather);
+            mWeatherButton.setEnabled(true);
+        }
     }
 
     public void setLocation(Location location) {
-        TextView text = (TextView) mView.findViewById(R.id.homeInfoLocation);
-        String loc = String.format(getString(R.string.home_info_location_msg),
-                location.getLatitude(), location.getLongitude());
-        text.setText(loc);
+        if(mView!= null){
+            TextView text = (TextView) mView.findViewById(R.id.homeInfoLocation);
+            String loc = String.format(getString(R.string.home_info_location_msg),
+                    location.getLatitude(), location.getLongitude());
+            text.setText(loc);
+        }
     }
 
     /**@author Eric Harty - hartye@uw.edu*/
