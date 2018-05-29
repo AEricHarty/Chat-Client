@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
@@ -329,6 +330,9 @@ public class HomeActivity extends AppCompatActivity implements
 
     // Loads the fragments
     public void loadFragment(Fragment frag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(frag.getTag(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.HomeContainer, frag)
@@ -696,6 +700,10 @@ public class HomeActivity extends AppCompatActivity implements
     public void onChatSelected(String chatName, int chatId) {
         mCurrentChatId = chatId;
         loadFragment(new ChatWindowFragment());
+    }
+
+    public int getCurrentChatId() {
+        return mCurrentChatId;
     }
 
     @Override

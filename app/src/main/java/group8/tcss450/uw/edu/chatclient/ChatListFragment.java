@@ -305,6 +305,7 @@ public class ChatListFragment extends Fragment {
                 public void onClick(View v) {
                     mListener.onChatSelected(currentItem.getName(),
                             currentItem.getId());
+                    System.out.println("GOes into OnCHatSelected?");
                 }
             });
 

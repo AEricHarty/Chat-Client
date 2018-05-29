@@ -343,6 +343,12 @@ public class PendingConnectionsFragment extends Fragment {
                         if (success) {
                             itemDenyButton.setEnabled(false);
                             itemAcceptButton.setEnabled(false);
+                        }  else {
+                            if(resultsJSON.getBoolean("pending") == false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemDenyButton.setEnabled(false);
+                                itemAcceptButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String
@@ -391,6 +397,12 @@ public class PendingConnectionsFragment extends Fragment {
                         if (success) {
                             itemDenyButton.setEnabled(false);
                             itemAcceptButton.setEnabled(false);
+                        } else {
+                            if(resultsJSON.getBoolean("pending")== false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemDenyButton.setEnabled(false);
+                                itemAcceptButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String
