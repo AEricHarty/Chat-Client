@@ -52,7 +52,7 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
-        v.findViewById(R.id.chatOptionsButton).setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.chatOptionsImageButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ChatInnerFragment nextFrag= new ChatInnerFragment();

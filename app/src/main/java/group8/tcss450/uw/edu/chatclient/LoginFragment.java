@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import group8.tcss450.uw.edu.chatclient.model.Credentials;
@@ -25,6 +26,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private OnLoginFragmentInteractionListener mListener;
     private View mView;
+    private ProgressBar mProgressBar;
+    private Button mLoginButton;
+    private Button mResetButton;
+    private Button mRegisterButton;
 
     public LoginFragment() {
     }
@@ -35,14 +40,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         mView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        Button b = (Button) mView.findViewById(R.id.loginButton);
-        b.setOnClickListener(this);
+        mLoginButton = (Button) mView.findViewById(R.id.loginButton);
+        mLoginButton.setOnClickListener(this);
 
-        b = (Button) mView.findViewById(R.id.registerButton);
-        b.setOnClickListener(this::onRegisterClick);
+        mRegisterButton = (Button) mView.findViewById(R.id.registerButton);
+        mRegisterButton.setOnClickListener(this::onRegisterClick);
 
-        b = (Button) mView.findViewById(R.id.resetPasswordButton);
-        b.setOnClickListener(this::onResetPasswordClick);
+        mResetButton = (Button) mView.findViewById(R.id.resetPasswordButton);
+        mResetButton.setOnClickListener(this::onResetPasswordClick);
+
+        mProgressBar = (ProgressBar) mView.findViewById(R.id.loginProgressBar);
+        mProgressBar.setVisibility(View.GONE);
 
         return mView;
     }
@@ -84,6 +92,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 mListener.onLoginAttempt(cred);
             }
         }
+    }
+
+    /**@author Eric Harty - hartye@uw.edu*/
+    public void loginClicked() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mLoginButton.setEnabled(false);
+        mResetButton.setEnabled(false);
+        mRegisterButton.setEnabled(false);
+    }
+
+    /**@author Eric Harty - hartye@uw.edu*/
+    public void loginDone() {
+        mProgressBar.setVisibility(View.GONE);
+        mLoginButton.setEnabled(true);
+        mResetButton.setEnabled(true);
+        mRegisterButton.setEnabled(true);
     }
 
     /**@author Eric Harty - hartye@uw.edu*/

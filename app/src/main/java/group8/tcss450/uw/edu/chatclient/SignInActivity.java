@@ -95,13 +95,17 @@ public class SignInActivity extends AppCompatActivity implements
         JSONObject msg = cred.asJSONObject();
         mCredentials = cred;
         //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPreExecute(this::handleLoginPre)
                 .onPostExecute(this::handleLoginOnPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
+    }
+
+    private void handleLoginPre() {
+        LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().
+                findFragmentByTag(getString(R.string.keys_fragment_login));
+        loginFragment.loginClicked();
     }
 
     /**
@@ -118,11 +122,9 @@ public class SignInActivity extends AppCompatActivity implements
                 loadHome();
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                /*LoginFragment frag =
-                        (LoginFragment) getSupportFragmentManager()
-                                .findFragmentByTag(
-                                        getString(R.string.keys_fragment_login));
-                frag.setError("Log in unsuccessful");*/
+                LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().
+                        findFragmentByTag(getString(R.string.keys_fragment_login));
+                loginFragment.loginDone();
                 TextView fail = (TextView) findViewById(R.id.loginFailMsg);
                 fail.setVisibility(View.VISIBLE);
             }

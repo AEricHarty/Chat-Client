@@ -2,6 +2,7 @@
     <string name="app_name">Chat</string>
 
     <string name="login_prompt">Please log in or register</string>
+    <string name="login_prompt_2">If you\'ve forgotten your password please reset</string>
     <string name="success_announcement">Login Successful</string>
     <string name="login_failed_msg">Login failed: check email and password or register</string>
     <string name="welcome_announcement">Welcome!</string>
