@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 
 /**
- * information fragment from the nagivation drawer
+ * information fragment from the navigation drawer
  *
  * @author Eric Harty - hartye@uw.edu
  */

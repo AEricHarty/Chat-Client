@@ -1,15 +1,10 @@
 package group8.tcss450.uw.edu.chatclient;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -54,7 +44,7 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, AdapterView.OnItemSelectedListener{
 
-    private static final String TAG = "WeatherMapActivity ERROR->";
+    private static final String TAG = "WeatherMapFragment ERROR->";
     private GoogleMap mGoogleMap;
     private double mLat, mLng;
     private Marker mMarker;
