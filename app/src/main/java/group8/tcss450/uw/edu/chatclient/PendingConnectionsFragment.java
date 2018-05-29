@@ -494,6 +494,11 @@ public class PendingConnectionsFragment extends Fragment {
                         boolean success = resultsJSON.getBoolean("success");
                         if (success) {
                             itemButton.setEnabled(false);
+                        } else {
+                            if(resultsJSON.getBoolean("pending")== false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String
