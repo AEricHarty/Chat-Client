@@ -13,25 +13,30 @@
         android:id="@+id/chatInnerAddChatMemberButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="69dp"
         android:text="@string/chat_inner_fragment_add"
-        app:layout_constraintBaseline_toBaselineOf="@+id/chatInnerAddToChatInputEditText"
-        app:layout_constraintStart_toEndOf="@+id/chatInnerAddToChatInputEditText" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chatInnerAddToChatInputEditText"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/chatInnerAddConnectionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
         android:text="@string/chat_inner_fragment_send"
         app:layout_constraintBaseline_toBaselineOf="@+id/chatInnerAddConectionInputEditText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/chatInnerAddConectionInputEditText" />
 
     <Button
         android:id="@+id/chatInnerLeaveChatButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="46dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginTop="33dp"
         android:text="@string/chat_inner_fragment_leave_chat"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,25 +44,25 @@
 
     <EditText
         android:id="@+id/chatInnerAddToChatInputEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="68dp"
         android:ems="10"
         android:hint="@string/chat_inner_fragment_add_to_chat"
         android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/chatInnerAddChatMemberButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/chatInnerAddConectionInputEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="31dp"
         android:ems="10"
         android:hint="@string/chat_inner_fragment_add_stranger"
         android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/chatInnerAddConnectionButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chatInnerAddToChatInputEditText" />
 
