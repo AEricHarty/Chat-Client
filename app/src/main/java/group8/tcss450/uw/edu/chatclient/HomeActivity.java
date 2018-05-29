@@ -90,6 +90,7 @@ public class HomeActivity extends AppCompatActivity implements
     public double mLat, mLng;
 
     public String mUsername;
+    public int mCurrentChatId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -702,6 +703,7 @@ public class HomeActivity extends AppCompatActivity implements
 //        intent.putExtras(b);
 //        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
 //        startActivity(intent);
+        mCurrentChatId = chatId;
         loadFragment(new ChatWindowFragment());
     }
 

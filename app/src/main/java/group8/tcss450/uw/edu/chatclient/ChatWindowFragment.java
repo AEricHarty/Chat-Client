@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,13 +77,12 @@ public class ChatWindowFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_chat_window, container, false);
         setHasOptionsMenu(true);
 
-
         v.findViewById(R.id.chatOptionsImageButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ChatInnerFragment nextFrag= new ChatInnerFragment();
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.HomeActivityLayout, nextFrag)
+                        .replace(((ViewGroup)(getView().getParent())).getId(), nextFrag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -135,8 +136,10 @@ public class ChatWindowFragment extends Fragment {
             mUsername = prefs.getString("username", "");
         }
 
-        bundle = this.getActivity().getIntent().getExtras();
-        int chatId = bundle.getInt("chatId");
+//        bundle = this.getActivity().getIntent().getExtras();
+//        int chatId = bundle.getInt("chatId");
+        HomeActivity homeAcivity = (HomeActivity) getActivity();
+        int chatId = homeAcivity.mCurrentChatId;
         String stringChatId = Integer.toString(chatId);
 
         System.out.println("bundle chatid is: " + bundle.getInt("chatId"));

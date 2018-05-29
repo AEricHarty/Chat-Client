@@ -164,8 +164,10 @@ public class ChatInnerFragment extends Fragment {
     private void endOfLeaveChatTask(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            Intent myintent = new Intent(getActivity(), HomeActivity.class);
-            startActivity(myintent);
+//            Intent myintent = new Intent(getActivity(), HomeActivity.class);
+//            startActivity(myintent);
+            getFragmentManager().popBackStack();
+            getFragmentManager().popBackStackImmediate();
         } catch (JSONException e) {
             e.printStackTrace();
         }
