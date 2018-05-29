@@ -709,6 +709,10 @@ public class HomeActivity extends AppCompatActivity implements
         loadFragment(new ChatWindowFragment());
     }
 
+    public int getCurrentChatId() {
+        return mCurrentChatId;
+    }
+
     @Override
     public void onInviteAttempt(String userName, String friendName, String friendEmail) {
         Uri uri = new Uri.Builder()

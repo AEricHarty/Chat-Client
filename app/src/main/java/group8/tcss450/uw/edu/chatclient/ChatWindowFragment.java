@@ -61,6 +61,8 @@ public class ChatWindowFragment extends Fragment {
 
     ScrollView mScrollView;
 
+    private int mChatId;
+
     private TextView mOutputTextView;
     private ListenManager mListenManager;
 
@@ -93,6 +95,8 @@ public class ChatWindowFragment extends Fragment {
 
         HomeActivity homeAcivity = (HomeActivity) getActivity();
         mUsername = homeAcivity.mUsername;
+
+        System.out.println("username in ChatWindow Fragment is: " + mUsername);
 
         mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
@@ -139,10 +143,10 @@ public class ChatWindowFragment extends Fragment {
 //        bundle = this.getActivity().getIntent().getExtras();
 //        int chatId = bundle.getInt("chatId");
         HomeActivity homeAcivity = (HomeActivity) getActivity();
-        int chatId = homeAcivity.mCurrentChatId;
-        String stringChatId = Integer.toString(chatId);
+        mChatId = homeAcivity.getCurrentChatId();
+        String stringChatId = Integer.toString(mChatId);
 
-        System.out.println("bundle chatid is: " + bundle.getInt("chatId"));
+        System.out.println("bundle chatid in ChatWindowsFragment is: " + mChatId);
 
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         mSendUrl = new Uri.Builder()
@@ -220,7 +224,7 @@ public class ChatWindowFragment extends Fragment {
         String msg = ((EditText) getView().findViewById(R.id.chatInputEditText))
                 .getText().toString();
 
-        int chatId = bundle.getInt("chatId");
+
 
 
         try {
@@ -228,7 +232,7 @@ public class ChatWindowFragment extends Fragment {
             messageJson.put(getString(R.string.keys_json_message), msg);
 
 
-            messageJson.put(getString(R.string.keys_chatId), chatId);
+            messageJson.put(getString(R.string.keys_chatId), mChatId);
 
             // make it so that it sends messages to the chat that you are in, not always global id
             //messageJson.put(getString(R.string.keys_json_chat_id), 1);
