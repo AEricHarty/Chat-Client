@@ -66,40 +66,25 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/chatAddChatMemberButton"
+        android:id="@+id/chatGoHomeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:text="@string/chat_add__chat_member"
+        android:text="@string/chat_go_home"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/chatAddConnectionButton"
+        android:id="@+id/chatOptionsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/chat_add_stranger"
-        app:layout_constraintStart_toEndOf="@+id/chatAddChatMemberButton"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/chatLeaveChatButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/chat_leave_chat"
+        android:text="@string/chat_options"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/chatGoHomeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/chat_go_home"
-        app:layout_constraintStart_toStartOf="@+id/chatAddConnectionButton"
+        app:layout_constraintStart_toEndOf="@+id/chatGoHomeButton"
         app:layout_constraintTop_toTopOf="parent" />
 
 
