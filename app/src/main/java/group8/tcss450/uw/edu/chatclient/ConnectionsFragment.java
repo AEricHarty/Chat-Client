@@ -176,15 +176,17 @@ public class ConnectionsFragment extends Fragment {
             ((EditText) getView().findViewById(R.id.inputChatName))
                         .setText("");
 
-            Intent intent = new Intent(getActivity(), ChatSessionActivity.class);
-            startActivity(intent);
-
-            Bundle b = new Bundle();
-            b.putInt("chatId", chatId);
-            intent.putExtras(b);
-
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            HomeActivity homeAcivity = (HomeActivity) getActivity();
+            homeAcivity.loadFragment(new ChatWindowFragment());
+//            Intent intent = new Intent(getActivity(), ChatSessionActivity.class);
+//            startActivity(intent);
+//
+//            Bundle b = new Bundle();
+//            b.putInt("chatId", chatId);
+//            intent.putExtras(b);
+//
+//            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(intent);
 
 
         } catch (JSONException e) {

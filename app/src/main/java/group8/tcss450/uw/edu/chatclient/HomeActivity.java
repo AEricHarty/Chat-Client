@@ -89,7 +89,7 @@ public class HomeActivity extends AppCompatActivity implements
 
     public double mLat, mLng;
 
-    private String userName;
+    public String mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,7 +162,7 @@ public class HomeActivity extends AppCompatActivity implements
         editor.putBoolean(getString(R.string.keys_sp_on),true);
         editor.apply();
         Intent intent = getIntent();
-        userName = intent.getStringExtra("username");
+        mUsername = intent.getStringExtra("username");
 
         //Ask for location permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -327,7 +327,7 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     // Loads the fragments
-    private void loadFragment(Fragment frag) {
+    public void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.HomeContainer, frag)
@@ -695,16 +695,14 @@ public class HomeActivity extends AppCompatActivity implements
     //todo update this method so it sends chatSessionActivity the chosen chatId.
     @Override
     public void onChatSelected(String chatName, int chatId) {
-
-        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
-
-        Bundle b = new Bundle();
-        b.putString("chatName", chatName);
-        b.putInt("chatId", chatId);
-        intent.putExtras(b);
-
-        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+//        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
+//        Bundle b = new Bundle();
+//        b.putString("chatName", chatName);
+//        b.putInt("chatId", chatId);
+//        intent.putExtras(b);
+//        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+        loadFragment(new ChatWindowFragment());
     }
 
     @Override

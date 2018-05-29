@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    tools:context=".ChatFragment"
+    tools:context=".ChatWindowFragment"
     tools:layout_editor_absoluteY="81dp">
 
     <ScrollView

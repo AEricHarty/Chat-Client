@@ -1,26 +1,31 @@
 package group8.tcss450.uw.edu.chatclient;
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import group8.tcss450.uw.edu.chatclient.utils.ListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
@@ -28,8 +33,26 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 /**
  * A simple {@link Fragment} subclass.
+ *
+ * @author Eric Harty - hartye@uw.edu
+ * @author Phu Lam Pham
+ *
  */
-public class ChatFragment extends Fragment {
+public class ChatWindowFragment extends Fragment {
+
+    /* Adapter for populating the chat messages. */
+    private ChatWindowFragment.ChatArrayAdapter chatArrayAdapter;
+    /* The list of chat messages. */
+    private ListView listView;
+    /* User's input text message */
+    private EditText chatText;
+    /* The send message button */
+    private Button buttonSend;
+
+    /* MIGHT CHANGE LATER
+       For now use to find left or right display messages.
+    */
+    private boolean side = false;
 
     private String mUsername;
     private String mSendUrl;
@@ -41,14 +64,15 @@ public class ChatFragment extends Fragment {
 
     private Bundle bundle;
 
-    public ChatFragment() {
+    public ChatWindowFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_chat, container, false);
+        View v = inflater.inflate(R.layout.fragment_chat_window, container, false);
         setHasOptionsMenu(true);
 
 
@@ -57,7 +81,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 ChatInnerFragment nextFrag= new ChatInnerFragment();
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.chatSessionActivityLayout, nextFrag)
+                        .replace(R.id.HomeActivityLayout, nextFrag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -66,24 +90,34 @@ public class ChatFragment extends Fragment {
         v.findViewById(R.id.chatSendButton).setOnClickListener(this::sendMessage);
         mOutputTextView = (TextView) v.findViewById(R.id.chatOutputTextView);
 
-
+        HomeActivity homeAcivity = (HomeActivity) getActivity();
+        mUsername = homeAcivity.mUsername;
 
         mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
-        Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
-        home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e("inChatFragmentOnCLick", "Go Home!");
-                Bundle b= new Bundle();
-                b.putString("username", mUsername);
-                Intent myintent = new Intent(getActivity(), HomeActivity.class);
-                myintent.putExtras(b);
-                startActivity(myintent);
-            }
-        });
+//        Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
+//        home.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.e("inChatFragmentOnCLick", "Go Home!");
+//                Bundle b= new Bundle();
+//                b.putString("username", mUsername);
+//                Intent myintent = new Intent(getActivity(), HomeActivity.class);
+//                myintent.putExtras(b);
+//                startActivity(myintent);
+//            }
+//        });
 
         return v;
+    }
+
+
+    // Right now is alternating between left and right Later on based on who is sending, display accordingly
+    private boolean sendChatMessage() {
+        chatArrayAdapter.add(new ChatWindowFragment.ChatMessage(side, chatText.getText().toString()));
+        chatText.setText("");
+        side = !side;
+        return true;
     }
 
     @Override
@@ -253,6 +287,64 @@ public class ChatFragment extends Fragment {
                 }
 
             });
+        }
+    }
+
+    public class ChatMessage {
+        public boolean left;
+        public String message;
+
+        public ChatMessage(boolean left, String message) {
+            super();
+            this.left = left;
+            this.message = message;
+        }
+    }
+
+    class ChatArrayAdapter extends ArrayAdapter<ChatWindowFragment.ChatMessage> {
+
+        private TextView chatText;
+        private List<ChatWindowFragment.ChatMessage> chatMessageList = new ArrayList<ChatWindowFragment.ChatMessage>();
+        private Context context;
+
+        @Override
+        public void add(ChatWindowFragment.ChatMessage object) {
+            chatMessageList.add(object);
+            super.add(object);
+        }
+
+        public ChatArrayAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.context = context;
+        }
+
+        public int getCount() {
+            return this.chatMessageList.size();
+        }
+
+        public ChatWindowFragment.ChatMessage getItem(int index) {
+            return this.chatMessageList.get(index);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ChatWindowFragment.ChatMessage chatMessageObj = getItem(position);
+            View row = convertView;
+            LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (chatMessageObj.left) {
+                row = inflater.inflate(R.layout.chat_right, parent, false);
+            }else{
+                row = inflater.inflate(R.layout.chat_left, parent, false);
+            }
+
+            // For now display time, use it later to display user name and time
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date date = new Date();
+
+            chatText = (TextView) row.findViewById(R.id.senderInfo);
+            chatText.setText(formatter.format(date));
+            chatText = (TextView) row.findViewById(R.id.message);
+            chatText.setText(chatMessageObj.message);
+            return row;
         }
     }
 }
