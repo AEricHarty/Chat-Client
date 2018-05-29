@@ -33,6 +33,8 @@ public class ChatInnerFragment extends Fragment {
     private String mUsername;
     private Bundle bundle;
 
+    private int mChatId;
+
     public ChatInnerFragment() {
         // Required empty public constructor
     }
@@ -69,10 +71,11 @@ public class ChatInnerFragment extends Fragment {
             mUsername = prefs.getString("username", "");
         }
 
-        bundle = this.getActivity().getIntent().getExtras();
-        int chatId = bundle.getInt("chatId");
 
-        System.out.println("chatId in Inner fragment is: " + chatId);
+        HomeActivity homeAcivity = (HomeActivity) getActivity();
+        mChatId = homeAcivity.getCurrentChatId();
+
+        System.out.println("chatId in Inner fragment is: " + mChatId);
 
         System.out.println("Username in inner Fragment is: " + mUsername);
 
@@ -101,7 +104,7 @@ public class ChatInnerFragment extends Fragment {
     private void addToChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
-        int chatId = bundle.getInt("chatId");
+
 
         String userToAdd = ((EditText) getView().findViewById(R.id.chatInnerAddToChatInputEditText))
                 .getText().toString();
@@ -109,7 +112,7 @@ public class ChatInnerFragment extends Fragment {
         try {
             messageJson.put(getString(R.string.keys_json_username), userToAdd);
 
-            messageJson.put(getString(R.string.keys_chatId), chatId);
+            messageJson.put(getString(R.string.keys_chatId), mChatId);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -141,12 +144,12 @@ public class ChatInnerFragment extends Fragment {
     private void leaveChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
-        int chatId = bundle.getInt("chatId");
+
 
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
 
-            messageJson.put(getString(R.string.keys_chatId), chatId);
+            messageJson.put(getString(R.string.keys_chatId), mChatId);
 
         } catch (JSONException e) {
             e.printStackTrace();
