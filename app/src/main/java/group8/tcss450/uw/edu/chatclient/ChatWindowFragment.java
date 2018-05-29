@@ -96,6 +96,8 @@ public class ChatWindowFragment extends Fragment {
         HomeActivity homeAcivity = (HomeActivity) getActivity();
         mUsername = homeAcivity.mUsername;
 
+        System.out.println("username in ChatWindow Fragment is: " + mUsername);
+
         mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
 //        Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
