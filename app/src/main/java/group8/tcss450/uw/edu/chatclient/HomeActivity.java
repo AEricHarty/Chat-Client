@@ -542,7 +542,9 @@ public class HomeActivity extends AppCompatActivity implements
             Log.d(TAG, mCurrentLocation.toString());
             HomeInformationFragment homeFragment = (HomeInformationFragment) getSupportFragmentManager().
                     findFragmentByTag(getString(R.string.home_info_tag));
-            homeFragment.setLocation(location);
+            if(homeFragment!=null){
+                homeFragment.setLocation(location);
+            }
             if (!mWeatherChecked) {
                 getWeather();
                 mWeatherChecked = true;
