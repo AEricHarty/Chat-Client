@@ -42,6 +42,7 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
         return mView;
     }
 
+    /**Called by HomeActivity to set the weather after it's retrieved*/
     public void setWeather(String weather) {
         if(mView!= null){
             mWeatherView.setText(weather);
@@ -49,7 +50,9 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    /**Called by HomeActivity to set the location after it's retrieved*/
     public void setLocation(Location location) {
+        //If this fragment isn't inflated when the location changed then don't crash
         if(mView!= null){
             TextView text = (TextView) mView.findViewById(R.id.homeInfoLocation);
             String loc = String.format(getString(R.string.home_info_location_msg),
@@ -58,7 +61,6 @@ public class HomeInformationFragment extends Fragment implements View.OnClickLis
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     @Override
     public void onClick(View view) {
         if (mListener != null) {

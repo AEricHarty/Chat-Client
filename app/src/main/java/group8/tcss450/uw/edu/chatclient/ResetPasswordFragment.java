@@ -31,7 +31,6 @@ public class ResetPasswordFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View mView;
     private String mEmail;
-    private EditText mEmailView;
     private ProgressBar mProgressBar;
     private EditText mCodeView;
     private EditText mPassView;
@@ -51,7 +50,6 @@ public class ResetPasswordFragment extends Fragment {
 
         mProgressBar = (ProgressBar) mView.findViewById(R.id.resetPasswordProgressBar);
         mProgressBar.setVisibility(View.GONE);
-        mEmailView = (EditText) mView.findViewById(R.id.resetEmailEditText);
         mCodeView = (EditText) mView.findViewById(R.id.resetCodeEditText);
         mCodeView.setVisibility(View.GONE);
         mPassView = (EditText) mView.findViewById(R.id.resetPasswordEditText);
@@ -70,7 +68,7 @@ public class ResetPasswordFragment extends Fragment {
         return mView;
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**onClick for the first/email button that submits the email to be sent to*/
     public void onEmailClick(View view) {
         if (mListener != null) {
             EditText emailText = (EditText) mView.findViewById(R.id.resetEmailEditText);
@@ -92,7 +90,7 @@ public class ResetPasswordFragment extends Fragment {
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**onClick for the second/code button that submits the code and password*/
     public void onCodeClick(View view) {
         if (mListener != null) {
             boolean good = true;
@@ -132,6 +130,7 @@ public class ResetPasswordFragment extends Fragment {
         }
     }
 
+    /**Starts the progress bar and disables buttons*/
     public void handleProgressStart() {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         mProgressBar.setProgress(0);
@@ -139,7 +138,7 @@ public class ResetPasswordFragment extends Fragment {
         mSubmitCodeButton.setEnabled(false);
     }
 
-
+    /**Handle failure on the first post*/
     public void handleEmailFail() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_failed);
@@ -147,6 +146,7 @@ public class ResetPasswordFragment extends Fragment {
         mSubmitButton.setEnabled(true);
     }
 
+    /**Handle success on the first post*/
     public void handleEmailSuccess() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_code);
@@ -160,12 +160,14 @@ public class ResetPasswordFragment extends Fragment {
         mCodeView.setVisibility(View.VISIBLE);
     }
 
+    /**Handle failure on the second post*/
     public void handleCodeFail() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_bad_code);
         mResultMsg.setVisibility(View.VISIBLE);
     }
 
+    /**Handle success on the second post*/
     public void handleCodeSuccess() {
         mProgressBar.setVisibility(ProgressBar.GONE);
         mResultMsg.setText(R.string.reset_message_success);

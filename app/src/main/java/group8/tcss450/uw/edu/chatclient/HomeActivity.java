@@ -87,7 +87,6 @@ public class HomeActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     public Location mCurrentLocation;
     private boolean mWeatherChecked = false;
-
     public double mLat, mLng;
 
     public String mUsername;
@@ -652,8 +651,6 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     /**
-     * @author Eric Harty - hartye@uw.edu
-     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param jsonResult the JSON formatted String response from the web service
@@ -687,10 +684,7 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Transitions to the WeatherMapFragment.
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Transitions to the WeatherMapFragment.*/
     @Override
     public void onMoreWeatherClicked() {
         loadFragment(new WeatherMapFragment());

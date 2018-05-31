@@ -55,11 +55,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         return mView;
     }
 
-    /**
-     * Performs client side checks on login information, if they pass fires onLoginAttempt.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Performs client side checks on login information, if they pass fires onLoginAttempt.*/
     @Override
     public void onClick(View view) {
         if (mListener != null) {
@@ -94,7 +90,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**Handles the preExecute view disabling*/
     public void loginClicked() {
         mProgressBar.setVisibility(View.VISIBLE);
         mLoginButton.setEnabled(false);
@@ -102,7 +98,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         mRegisterButton.setEnabled(false);
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**Handles the postExecute view enabling*/
     public void loginDone() {
         mProgressBar.setVisibility(View.GONE);
         mLoginButton.setEnabled(true);
@@ -110,14 +106,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         mRegisterButton.setEnabled(true);
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     public void onRegisterClick(View view) {
         if (mListener != null) {
             mListener.onRegisterClicked();
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     public void onResetPasswordClick(View view) {
         if (mListener != null) {
             mListener.onResetPasswordClicked();
