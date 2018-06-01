@@ -79,6 +79,7 @@ public class ContactsIntentService extends IntentService {
         pendingIntent.cancel();
     }
 
+    //This method checks the webserice to see if there are any new connection requests.
     private boolean checkWebService(boolean isInForeground) {
         boolean isEmptyReply = false;
         //check webservice in background
@@ -127,6 +128,11 @@ public class ContactsIntentService extends IntentService {
 
         return true;
     }
+
+    /*
+        This method puts a notification in the notification bar of the device which will load the
+        pendingConnectionsFragment when pressed.
+     */
 
     private void buildNotification (String s) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)

@@ -55,6 +55,7 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 /**
  * Home activity after logging in
  *
+ * @author Lloyd Brooks - lloydb3@uw.edu
  * @author Jin Byoun - jinito@uw.edu
  * @author Eric Harty - hartye@uw.edu added weather and location services
  */
@@ -767,6 +768,9 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
+
+
+    //Used to add a notification badge to the hamburger button
     public void addMenuItemBadge(int id, String msg) {
 
         if(id == R.id.nav_pending_connections) {

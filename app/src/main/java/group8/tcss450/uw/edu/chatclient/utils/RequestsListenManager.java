@@ -156,7 +156,7 @@ public class RequestsListenManager {
     }
 
     /**
-     * Does the work!
+     * Listens for new connections requests.
      */
     private class ListenForRequests implements Runnable {
 

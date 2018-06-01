@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-
 /**
  * Fragment for app settings.
  * including color theme selection.
+ *
  * @author LLoyd Brooks
  * @version 5/2/2018
  */
@@ -87,32 +87,7 @@ public class SettingsFragment extends Fragment{
     }
 
 
-//    public void selectColors(View view) {
-//        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        // Check which radio button was clicked
-//        switch(view.getId()) {
-//            case R.id.blueOrangeRadio:
-//                if (checked)
-//                    // set theme to blue and orange
-//                    break;
-//            case R.id.greenAmberRadio:
-//                if (checked)
-//                    // set theme to green and amber
-//                    break;
-//            case R.id.redBlueRadio:
-//                if (checked)
-//                    //set theme to red and blue
-//                    break;
-//            case R.id.brownPinkRadio:
-//                if(checked)
-//                    //set theme to brown and pink.
-//                    break;
-//        }
-//    }
-
-
+    //Call back interface to be used by the implementing activity to apply the selected color theme to the app.
     public interface OnSettingsInteractionListener {
         void onSettingsInteraction(int theme);
     }
