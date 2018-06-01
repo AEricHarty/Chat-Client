@@ -17,15 +17,22 @@ import java.util.regex.Pattern;
 import group8.tcss450.uw.edu.chatclient.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
+ * Fragment for inviting and sending email to friend.
+ *
+ * @author Phu Lam
  */
 public class InviteFragment extends Fragment {
+    // The user's username
     private String mUserName;
+    // The text input of the friend's name
     private EditText mFriendName;
+    // The text input of the friend's email
     private EditText mFriendEmail;
+    // The send button
     private Button sendButton;
+    // Listener for the fragment's interaction
     private InviteFragmentInteractionListener mListener;
+    // The fragment's name
     private static final String TAG = "InviteFragment";
 
     public InviteFragment() {
@@ -51,6 +58,9 @@ public class InviteFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Handle actions when send button is clicked
+     */
     private void onClick(View view) {
         String friendName = mFriendName.getText().toString();
         String friendEmail = mFriendEmail.getText().toString();
@@ -92,6 +102,9 @@ public class InviteFragment extends Fragment {
         }
     }
 
+    /**
+     * Interface to implement appropriate action when getting contacts for InviteFragment.
+     */
     public interface InviteFragmentInteractionListener {
         void onInviteAttempt(String userName, String friendName, String friendEmail);
     }

@@ -34,18 +34,25 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment for searching for new contacts.
+ *
+ * @author Phu Lam
  */
 public class SearchNewConnectionFragment extends Fragment {
 
-    private String mUsername;
-    private String mSendUrl;
+    // The list of searched contacts
     public ArrayList<SearchConnectionListItem> data = new ArrayList<SearchConnectionListItem>();
+    // The input containing search keyword
     private EditText searchContactTextView;
+    // The search button
     private Button searchContactButton;
+    // The view for searched contacts
     private ListView searchContactList;
+    // Listener for the fragment's interaction
     private SearchContactFragmentInteractionListener mListener;
+    // The user's username
     private String userName;
+    // The adapter for searched contact list.
     protected SearchConnectionAdapter adapter;
 
     public SearchNewConnectionFragment() {
@@ -69,23 +76,9 @@ public class SearchNewConnectionFragment extends Fragment {
         ProgressBar searchConnectionProgrsesBar = (ProgressBar) v.findViewById(R.id.searchConnectionProgressBar);
         searchConnectionProgrsesBar.setVisibility(View.GONE);
 
-        adapter= new SearchConnectionAdapter(v.getContext(), data);
-
+        adapter = new SearchConnectionAdapter(v.getContext(), data);
 
         searchContactList.setAdapter(adapter);
-        searchContactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "List item was clicked at " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
-        SharedPreferences prefs =
-                this.getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-
-
-
 
         return v;
     }
@@ -112,6 +105,9 @@ public class SearchNewConnectionFragment extends Fragment {
         }
     }
 
+    /**
+     * Handle actions when search button is clicked.
+     */
     private void onClick(View view) {
         if (mListener != null) {
             String keyword = searchContactTextView.getText().toString();
@@ -123,9 +119,15 @@ public class SearchNewConnectionFragment extends Fragment {
         }
     }
 
+    /**
+     * Data structure representing a connection found in searched contact list
+     */
     public static class SearchConnectionListItem{
+        // The connection's name (first + last)
         private String name;
+        // The connection's email
         private String email;
+        // The connection's username
         private String username;
 
         public SearchConnectionListItem(String first, String last, String username, String email) {
@@ -135,8 +137,13 @@ public class SearchNewConnectionFragment extends Fragment {
         }
     }
 
+    /**
+     * Custom adapter for searched contact list.
+     */
     public class SearchConnectionAdapter extends ArrayAdapter<SearchConnectionListItem> {
+        // The context where the adapter is at.
         private Context mContext;
+        // The list of searched connections
         private List<SearchConnectionListItem> mList = new ArrayList<>();
 
         public SearchConnectionAdapter(Context context, ArrayList<SearchConnectionListItem> list) {
@@ -165,6 +172,9 @@ public class SearchNewConnectionFragment extends Fragment {
             Button itemButton = (Button) listItem.findViewById(R.id.contactListItemAddButton);
             itemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
+                /**
+                 * Create an asynchronous call to webservice to add this connection
+                 */
                 public void onClick(View v) {
                     Uri uri = new Uri.Builder()
                             .scheme("https")
@@ -191,6 +201,10 @@ public class SearchNewConnectionFragment extends Fragment {
                     Log.e("ASYNCT_TASK_ERROR", result);
                 }
 
+                /**
+                 * Handles UI updates after receiving result from webservice.
+                 * @param result
+                 */
                 private void handleAddContact(String result) {
                     try {
                         JSONObject resultsJSON = new JSONObject(result);
@@ -213,47 +227,10 @@ public class SearchNewConnectionFragment extends Fragment {
         }
     }
 
-    private void sendRequest(final View theButton, String newUsername) {
-        Log.e("test1", "gets to sendRequest");
-        JSONObject messageJson = new JSONObject();
-
-        try {
-            messageJson.put(getString(R.string.keys_json_current_username), mUsername);
-            messageJson.put(getString(R.string.keys_json_connection_username), newUsername);
-            //messageJson.put(getString(R.string.keys_json_connection_verification), 0);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(mSendUrl, messageJson)
-                .onPostExecute(this::endOfSendRequestTask)
-                .onCancelled(this::handleError)
-                .build().execute();
-    }
-    private void handleError(final String msg) {
-        Log.e("new Connections ERROR!!!", msg.toString());
-    }
-
-    private void endOfSendRequestTask(final String result) {
-        Log.e("test2", "gets to endofSendRequestTask");
-        try {
-            JSONObject res = new JSONObject(result);
-            Log.e("test", "gets to try part of endofSendRequestTask");
-            if(res.get(getString(R.string.keys_json_success)).toString()
-                    .equals(getString(R.string.keys_json_success_value_true))) {
-                ((EditText) getView().findViewById(R.id.newConnectionUsernameInputEditText))
-                        .setText("");
-                Log.e("test3", "gets to success, should make toast");
-                Toast.makeText(getActivity(),"Connection Request Sent!",Toast.LENGTH_SHORT).show();
-            }
-        } catch (JSONException e) {
-            Log.e("test4", "does not get to success");
-            e.printStackTrace();
-
-        }
-    }
-
+    /**
+     * Interface to implement appropriate action when getting contacts for SearchNewConnectionFragment.
+     */
     public interface SearchContactFragmentInteractionListener {
         void onSearchAttempt(String userName, String keyword, ArrayList<SearchConnectionListItem> data, SearchConnectionAdapter adapter);
     }
-
 }

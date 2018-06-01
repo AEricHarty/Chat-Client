@@ -42,18 +42,27 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment that displays the user's contact list.
+ *
+ * @author Phu Lam
  */
-
 public class ConnectionsFragment extends Fragment {
 
+    // The view of list of connections/contacts
     private ListView connectionList;
+    // The adapter for connection list
     private ConnectionsAdapter connectionAdapter;
+    // The connection list data structure
     private ArrayList<Connection> connectionListData = new ArrayList<>();
+    // The view of the search box
     private SearchView searchView;
+    // The user's username
     private String userName;
+    // Listener for the fragment's interaction
     private ConnectionsFragmentInteractionListener mListener;
+    // The list of currently selected contacts
     private HashSet<Connection> currentSelectedConnections = new HashSet<>();
+    // The URL of end point for getting contacts
     private String mCreateChatUrl;
 
     public ConnectionsFragment() {
@@ -66,6 +75,8 @@ public class ConnectionsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_connections, container, false);
+
+        // Grab the user's username passed from SignIn Activity
         Bundle b = this.getActivity().getIntent().getExtras();
         if(b != null) {
             userName = b.getString("username");
@@ -80,12 +91,9 @@ public class ConnectionsFragment extends Fragment {
                 .build()
                 .toString();
 
-
+        // Initialize views of the fragment and their respective onClick/adapter functions.
         connectionList = (ListView) v.findViewById(R.id.connectionList);
-
         connectionAdapter = new ConnectionsAdapter(v.getContext(), connectionListData);
-
-        // Here, you set the data in your ListView
         connectionList.setAdapter(connectionAdapter);
         searchView=(SearchView) v.findViewById(R.id.searchBox);
         searchView.setIconified(false);
@@ -117,9 +125,10 @@ public class ConnectionsFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-
+    /**
+     * Create an asynchronous call to webservice to create a new chat.
+     */
     private void createChat(final View theButton) {
-
         JSONObject messageJson = new JSONObject();
         JSONArray arrayJson = new JSONArray();
         String chatName = ((EditText) getView().findViewById(R.id.inputChatName))
@@ -163,12 +172,20 @@ public class ConnectionsFragment extends Fragment {
 
 
     }
+
+    /**
+     * Handle error when asynchronous call failed.
+     * @param msg the error message
+     */
     private void handleError(final String msg) {
         Log.e("new chat creation from checks ERROR!!!", msg.toString());
     }
 
+    /**
+     * Handle the end of the asynchronous call and update UI accordingly.
+     * @param result
+     */
     private void endOfCreateChatTask(final String result) {
-
         try {
             JSONObject res = new JSONObject(result);
             int chatId = res.getInt("chatId");
@@ -179,21 +196,8 @@ public class ConnectionsFragment extends Fragment {
             HomeActivity homeActivity = (HomeActivity) getActivity();
             homeActivity.mCurrentChatId = chatId;
             homeActivity.loadFragment(new ChatWindowFragment());
-//            Intent intent = new Intent(getActivity(), ChatSessionActivity.class);
-//            startActivity(intent);
-//
-//            Bundle b = new Bundle();
-//            b.putInt("chatId", chatId);
-//            intent.putExtras(b);
-//
-//            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK|android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startActivity(intent);
-
-
         } catch (JSONException e) {
-
             e.printStackTrace();
-
         }
     }
 
@@ -214,11 +218,21 @@ public class ConnectionsFragment extends Fragment {
         }
     }
 
+    /**
+     * Data structure class representing a contact/connection.
+     *
+     * @author Phu Lam
+     */
     public static class Connection {
+        // The connection's userId
         private String userId;
+        // The connection's first name
         private String firstName;
+        // The connection's last name
         private String lastName;
+        // The connection's email
         private String email;
+        // The connection's username
         public String userName;
 
         public Connection(String userId, String firstName, String lastName, String email, String userName) {
@@ -230,6 +244,12 @@ public class ConnectionsFragment extends Fragment {
         }
     }
 
+    /**
+     * Custom adapter that handles the creating of each connection's UI, their data,
+     * and filtering functionality.
+     *
+     * @author Phu Lam
+     */
     public class ConnectionsAdapter extends ArrayAdapter<Connection> {
         private Context mContext;
         private List<Connection> mList = new ArrayList<Connection>();
@@ -274,19 +294,27 @@ public class ConnectionsFragment extends Fragment {
             return listItem;
         }
 
+        /**
+         * Return the size of current connection list (dynamically with filtering)
+         */
         public int getCount() {
             return mFilterList.size();
         }
 
+        /**
+         * Return an item in the connection list (dynamically with filtering)
+         * @param position the index of the item
+         * @return the item
+         */
         public Connection getItem(int position) {
             return mFilterList.get(position);
         }
 
-        public long getItemId(int position) {
-            return position;
-        }
-
         @Override
+        /**
+         * Custom getFilter() method that to help better filter the list that works
+         * with our Connection data structure.
+         */
         public Filter getFilter() {
             return new Filter() {
                 protected FilterResults performFiltering(CharSequence constraint) {
@@ -316,30 +344,11 @@ public class ConnectionsFragment extends Fragment {
             };
         }
 
-//        public void filter(String charText) {
-//            charText = charText.toLowerCase();
-//
-//            System.out.println(mList.toString());
-//            System.out.println(mFilterList.toString());
-//
-//            mList.clear();
-//            if (charText.length() == 0) {
-//                mList.addAll(mFilterList);
-//            } else {
-//                for (Connection c : mFilterList) {
-//                    if ((c.firstName + " " + c.lastName.toLowerCase()).contains(charText)) {
-//                        mList.add(c);
-//                    }
-//                }
-//            }
-//
-//            System.out.println(mList.toString());
-//            System.out.println(mFilterList.toString());
-//            connectionAdapter.notifyDataSetChanged();
-//        }
-
     }
 
+    /**
+     * Interface to implement appropriate action when getting contacts for ConnectionFragment.
+     */
     public interface ConnectionsFragmentInteractionListener {
         void onGetContactsAttempt(String userName, ArrayList<Connection> data, ConnectionsAdapter adapter);
     }

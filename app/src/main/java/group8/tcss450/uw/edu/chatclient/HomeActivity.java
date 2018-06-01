@@ -58,6 +58,7 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
  * @author Lloyd Brooks - lloydb3@uw.edu
  * @author Jin Byoun - jinito@uw.edu
  * @author Eric Harty - hartye@uw.edu added weather and location services
+ * @author Phu Lam - added search contacts, contact list, and invite to app functionalities.
  */
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnSettingsInteractionListener,
@@ -68,11 +69,15 @@ public class HomeActivity extends AppCompatActivity implements
         ChatListFragment.ChatListFragmentInteractionListener,
         InviteFragment.InviteFragmentInteractionListener {
 
+    // The list of connections when searched
     private ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> searchContactList;
+    // The contact list of the user
     private ArrayList<ConnectionsFragment.Connection> connectionList;
 
     private DataUpdateReceiver mDataUpdateReceiver;
+    // The adapter for search contact list
     private SearchNewConnectionFragment.SearchConnectionAdapter searchConnectionAdapter;
+    // The adapter for contact list
     private ConnectionsFragment.ConnectionsAdapter connectionsAdapter;
 
     private ActionBarDrawerToggle mToggle;
@@ -354,6 +359,9 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
+    /**
+     * Start an asynchronous call to webservice to search for contact(s)
+     */
     public void onSearchAttempt(String username, String keyword,
                                 ArrayList<SearchNewConnectionFragment.SearchConnectionListItem> data,
                                 SearchNewConnectionFragment.SearchConnectionAdapter adapter) {
@@ -374,26 +382,26 @@ public class HomeActivity extends AppCompatActivity implements
         } catch (JSONException e) {
             Log.wtf("VERIFICATION", "Error creating JSON: " + e.getMessage());
         }
-//        mCredentials = cred;
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
+
         searchContactList.clear();
         ProgressBar searchConnectionProgrsesBar = (ProgressBar) findViewById(R.id.searchConnectionProgressBar);
         searchConnectionProgrsesBar.setVisibility(View.VISIBLE);
+
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleSearchContact)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
     }
 
+    /**
+     * Handle the result after webservice responded to search contact call.
+     * @param result the result
+     */
     private void handleSearchContact(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                // System.out.println(resultsJSON);
                 populateSearchContactResult(resultsJSON);
             }
         } catch (JSONException e) {
@@ -405,6 +413,10 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Display the results of the search for contacts.
+     * @param resultsJSON
+     */
     private void populateSearchContactResult(JSONObject resultsJSON) {
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
@@ -429,6 +441,9 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
+    /**
+     * Start an asynchronous call to webservice to get the user's contact list.
+     */
     public void onGetContactsAttempt(String username, ArrayList<ConnectionsFragment.Connection> data,
                                      ConnectionsFragment.ConnectionsAdapter adapter) {
         this.connectionsAdapter = adapter;
@@ -458,6 +473,10 @@ public class HomeActivity extends AppCompatActivity implements
 
     }
 
+    /**
+     * Handle actions upon receiving result from webservice for getting contacts.
+     * @param result
+     */
     private void handleGetContacts(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
@@ -475,6 +494,11 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Update connection list in ConnectionFragment after receiving a successful result
+     * from websevice.
+     * @param resultsJSON the JSON result
+     */
     private void populateGetContactsResult(JSONObject resultsJSON) {
         try {
             JSONArray array = resultsJSON.getJSONArray("message");
@@ -702,13 +726,15 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
+    /**
+     * Start an asynchronous call to webservice.
+     */
     public void onInviteAttempt(String userName, String friendName, String friendEmail) {
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_invite))
                 .build();
-
 
         JSONObject msg = new JSONObject();
         try {
@@ -730,11 +756,13 @@ public class HomeActivity extends AppCompatActivity implements
                 .build().execute();
     }
 
+    /**
+     * Handles UI changes after receiving result from webservice for invitation action.
+     * @param result the result from webservice
+     */
     private void handleInvitationPost(String result) {
         EditText friendName = (EditText) findViewById(R.id.friendName);
         EditText friendEmail = (EditText) findViewById(R.id.friendEmail);
-
-
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");

@@ -19,14 +19,20 @@ import java.util.regex.Pattern;
  * A simple {@link Fragment} subclass.
  *
  *  @author Eric Harty - hartye@uw.edu
+ *  @author Phu Lam
  */
 public class RegisterResultFragment extends Fragment {
-
+    // Listener for the fragment's interaction
     private OnVerifyFragmentInteractionListener mListener;
+    // The verify button
     private Button verifyButton;
+    // The resend button
     private Button resendButton;
+    // The view that holds the user's input verification code
     private EditText codeInput;
+    // The user's username
     private String userName;
+    // The user's email
     private String email;
 
     public RegisterResultFragment() {
@@ -42,16 +48,19 @@ public class RegisterResultFragment extends Fragment {
         resendButton = (Button) v.findViewById(R.id.resendVerificationButton);
         codeInput = (EditText) v.findViewById(R.id.verificationCodeInput);
 
-
+        // Retrieve the user's information from previous fragment, which can only be register fragment
         if(getArguments() != null){
             boolean success = getArguments().getBoolean("result");
+
             userName = getArguments().getString("username");
             email = getArguments().getString("email");
+
             TextView resultMsg = (TextView) v.findViewById(R.id.resultDisplayMsg);
             TextView enterCodeMessage = (TextView) v.findViewById(R.id.enterCodeMessage);
+
+
             if(success){
                 resultMsg.setText(String.format(getString(R.string.register_verify), email));
-//                resultMsg.setText(getString(R.string.register_succeed_msg));
                 verifyButton.setVisibility(View.VISIBLE);
                 resendButton.setVisibility(View.VISIBLE);
                 codeInput.setVisibility(View.VISIBLE);
@@ -71,12 +80,18 @@ public class RegisterResultFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Handles actions when resend button is clicked.
+     */
     private void onClickResend(View view) {
         if (mListener != null) {
             mListener.onResendCode(userName, email);
         }
     }
 
+    /**
+     * Handle actions when verify button is clicked.
+     */
     private void onClick(View view) {
         if (mListener != null) {
 
@@ -119,6 +134,9 @@ public class RegisterResultFragment extends Fragment {
         mListener = null;
     }
 
+    /**
+     * Interface to implement appropriate action when getting contacts for RegisterResultFragment.
+     */
     public interface OnVerifyFragmentInteractionListener {
         void onVerifyAttempt(String userName, String userEmail, String code);
         void onResendCode(String userName, String userEmail);
