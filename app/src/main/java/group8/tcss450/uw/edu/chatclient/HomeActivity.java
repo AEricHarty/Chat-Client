@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
@@ -54,6 +55,7 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 /**
  * Home activity after logging in
  *
+ * @author Lloyd Brooks - lloydb3@uw.edu
  * @author Jin Byoun - jinito@uw.edu
  * @author Eric Harty - hartye@uw.edu added weather and location services
  */
@@ -86,7 +88,6 @@ public class HomeActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     public Location mCurrentLocation;
     private boolean mWeatherChecked = false;
-
     public double mLat, mLng;
 
     public String mUsername;
@@ -329,6 +330,9 @@ public class HomeActivity extends AppCompatActivity implements
 
     // Loads the fragments
     public void loadFragment(Fragment frag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(frag.getTag(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.HomeContainer, frag)
@@ -544,13 +548,12 @@ public class HomeActivity extends AppCompatActivity implements
                     findFragmentByTag(getString(R.string.home_info_tag));
             if(homeFragment!=null){
                 homeFragment.setLocation(location);
-            }
-            if (!mWeatherChecked) {
-                getWeather();
-                mWeatherChecked = true;
+                if (!mWeatherChecked) {
+                    getWeather();
+                    mWeatherChecked = true;
+                }
             }
         }
-
     }
 
     /**Requests location updates from the FusedLocationApi.*/
@@ -649,8 +652,6 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     /**
-     * @author Eric Harty - hartye@uw.edu
-     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param jsonResult the JSON formatted String response from the web service
@@ -684,27 +685,14 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Transitions to the WeatherMapFragment.
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Transitions to the WeatherMapFragment.*/
     @Override
     public void onMoreWeatherClicked() {
         loadFragment(new WeatherMapFragment());
     }
 
-
-
-    //todo update this method so it sends chatSessionActivity the chosen chatId.
     @Override
     public void onChatSelected(String chatName, int chatId) {
-//        android.content.Intent intent = new android.content.Intent(this, ChatSessionActivity.class);
-//        Bundle b = new Bundle();
-//        b.putString("chatName", chatName);
-//        b.putInt("chatId", chatId);
-//        intent.putExtras(b);
-//        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
         mCurrentChatId = chatId;
         loadFragment(new ChatWindowFragment());
     }
@@ -780,8 +768,10 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
-    public void addMenuItemBadge(int id, String msg) {
 
+
+    //Used to add a notification badge to the hamburger button
+    public void addMenuItemBadge(int id, String msg) {
 
         if(id == R.id.nav_pending_connections) {
 

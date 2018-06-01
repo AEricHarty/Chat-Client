@@ -103,7 +103,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         return mView;
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -117,7 +116,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         mGoogleMap.setOnMapClickListener(this);
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
     @Override
     public void onMapClick(LatLng latLng) {
         Log.d("LAT/LONG", latLng.toString());
@@ -132,7 +130,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**Used by both spinners, determines which was selected and updates field*/
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = (String) parent.getAdapter().getItem(position);
@@ -158,11 +156,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    /**
-     * Determines what is selected in the spinner set and sends the appropriate AsyncTask
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Determines what is selected in the spinner set and sends the appropriate AsyncTask*/
     public void onSubmitClick(View view) {
         getLocation();
         CheckBox save = (CheckBox) mView.findViewById(R.id.weatherCheckBox);
@@ -222,11 +216,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    /**
-     * Confirms the ZIP is 5 digits before sending.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Confirms the ZIP is 5 digits before sending.*/
     public void checkZIP() {
         CheckBox save = (CheckBox) mView.findViewById(R.id.weatherCheckBox);
         String zip = (mZIPView.getText().toString());
@@ -244,7 +234,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**Saves the location currently selected for use by Saved choice.*/
     public void saveLocation(String key) {
         SharedPreferences prefs =
                 getContext().getSharedPreferences(
@@ -255,26 +245,19 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .apply();
     }
 
-    /**@author Eric Harty - hartye@uw.edu*/
+    /**Callback to check HomeActivities current location.*/
     public void getLocation() {
         HomeActivity home = (HomeActivity) getActivity();
         mCurrentLocation = home.mCurrentLocation;
     }
 
-    /**
-     * @author Eric Harty - hartye@uw.edu
-     */
     private void handleWeatherPre() {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         mProgressBar.setProgress(0);
         mSubmitButton.setEnabled(false);
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send to weather service.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to get current weather.*/
     public void getCurrentWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
@@ -294,11 +277,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .build().execute();
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send to weather service.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to get tomorrow's weather.*/
     public void getNextWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
@@ -319,11 +298,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
                 .build().execute();
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send to weather service.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to get the next week's weather.*/
     public void getFiveWeather(String location) {
         //build the web service URL
         Uri uri = new Uri.Builder()
@@ -345,8 +320,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     /**
-     * @author Eric Harty - hartye@uw.edu
-     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param jsonResult the JSON formatted String response from the web service
@@ -383,8 +356,6 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     /**
-     * @author Eric Harty - hartye@uw.edu
-     *
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
      * @param jsonResult the JSON formatted String response from the web service

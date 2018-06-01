@@ -82,6 +82,7 @@ public class MessagesIntentService extends IntentService {
         pendingIntent.cancel();
     }
 
+    //This method checks the web service for any new messages.
     private boolean checkWebService(boolean isInForeground) {
         boolean isEmptyReply = false;
         //check webservice in background
@@ -130,6 +131,10 @@ public class MessagesIntentService extends IntentService {
         return true;
     }
 
+    /*
+        This method puts a notification in the notification bar on the device and loads the
+        ChatListFragment when pressed.
+     */
     private void buildNotification (String s) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_menu_message)

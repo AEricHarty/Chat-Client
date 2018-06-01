@@ -131,7 +131,7 @@ public class ChatListenManager {
     }
 
     /**
-     * Does the work!
+     * This method hits the end point for connection requests and checks for any new requests.
      */
     private class ListenForRequests implements Runnable {
 
@@ -143,26 +143,20 @@ public class ChatListenManager {
             //go out and ask for new messages
             response = new StringBuilder();
             try {
-                Log.d(TAG, "entering try catch for run()");
                 String getURL = mURL;
 
                 URL urlObject = new URL(getURL);
                 urlConnection = (HttpURLConnection) urlObject.openConnection();
-                Log.d(TAG, "Established connection with url: " + getURL);
                 InputStream content = urlConnection.getInputStream();
-                Log.d(TAG, "created InputStream");
                 BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
                 String s;
 
-                Log.d(TAG, "parsing response");
                 while ((s = buffer.readLine()) != null) {
                     response.append(s);
                 }
-                Log.d(TAG, "building JSON out of result");
                 JSONObject messages = new JSONObject(response.toString());
 
                 //here is where we "publish" the message that we received.
-                Log.d(TAG, "taking specified action");
                 mActionToTake.accept(messages);
 
                 //get and store the last date.

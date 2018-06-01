@@ -34,6 +34,11 @@ import group8.tcss450.uw.edu.chatclient.utils.ListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.RequestsListenManager;
 import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
+/**
+ * The fragment used to display and handle pending connection requests
+ *
+ * @author Lloyd Brooks - lloydb3@uw.edu
+ */
 public class PendingConnectionsFragment extends Fragment {
     private static final String TAG = "PendingConnectionsFragment";
 
@@ -131,7 +136,15 @@ public class PendingConnectionsFragment extends Fragment {
     }
 
 
+    // This method handles any errors that may happen when the listen manager is running.
+    public void handleExceptionsInListener(Exception e) {
+        Log.e("LISTEN ERROR!!", e.getMessage());
+    }
 
+    /*
+        This method is used to start the listener for incoming requests and
+        update the incoming request time stamp.
+     */
     public void findIncomingRequests() {
 
         //build the web service URL
@@ -168,10 +181,8 @@ public class PendingConnectionsFragment extends Fragment {
         }
     }
 
-    public void handleExceptionsInListener(Exception e) {
-        Log.e("LISTEN ERROR!!", e.getMessage());
-    }
 
+    //This method parses the results of findIncomingRequests() and adds them to the list to be displayed.
     private void populateIncomingRequestsResult(JSONObject resultsJSON) {
         getActivity().runOnUiThread(() -> {
 
@@ -200,6 +211,10 @@ public class PendingConnectionsFragment extends Fragment {
         });
     }
 
+    /*
+        This method is used to start the listener for outgoing requests and
+        update the outgoijng request time stamp.
+     */
     public void findOutgoingRequests() {
 
         //build the web service URL
@@ -234,6 +249,7 @@ public class PendingConnectionsFragment extends Fragment {
         }
     }
 
+    //This method parses the results of findOutgoingRequests() and adds them to the list to be displayed.
     private void populateOutgoingRequestsResult(JSONObject resultsJSON) {
         getActivity().runOnUiThread(() -> {
             try {
@@ -262,7 +278,7 @@ public class PendingConnectionsFragment extends Fragment {
 
     //***************************************************Inner Classes **********************************
 
-    //Adapter and item for incoming requests:
+    //Adapter item for incoming requests:
     public static class IncomingRequestListItem{
         private String name;
         private String email;
@@ -275,6 +291,7 @@ public class PendingConnectionsFragment extends Fragment {
         }
     }
 
+    //Adapter using IncomingRequestListItems
     public class IncomingRequestAdapter extends ArrayAdapter<IncomingRequestListItem> {
         private Context mContext;
         private List<IncomingRequestListItem> mList = new ArrayList<>();
@@ -343,6 +360,12 @@ public class PendingConnectionsFragment extends Fragment {
                         if (success) {
                             itemDenyButton.setEnabled(false);
                             itemAcceptButton.setEnabled(false);
+                        }  else {
+                            if(resultsJSON.getBoolean("pending") == false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemDenyButton.setEnabled(false);
+                                itemAcceptButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String
@@ -391,6 +414,12 @@ public class PendingConnectionsFragment extends Fragment {
                         if (success) {
                             itemDenyButton.setEnabled(false);
                             itemAcceptButton.setEnabled(false);
+                        } else {
+                            if(resultsJSON.getBoolean("pending")== false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemDenyButton.setEnabled(false);
+                                itemAcceptButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String
@@ -406,7 +435,7 @@ public class PendingConnectionsFragment extends Fragment {
         }
     }
 
-    //Adapter and item for outgoing requests:
+    //Adapter item for outgoing requests:
     public static class OutgoingRequestListItem{
         private String name;
         private String email;
@@ -419,6 +448,7 @@ public class PendingConnectionsFragment extends Fragment {
         }
     }
 
+    //Adapter using OutgoingRequestListItems
     public class OutgoingRequestAdapter extends ArrayAdapter<OutgoingRequestListItem> {
         private Context mContext;
         private List<OutgoingRequestListItem> mList = new ArrayList<>();
@@ -482,6 +512,11 @@ public class PendingConnectionsFragment extends Fragment {
                         boolean success = resultsJSON.getBoolean("success");
                         if (success) {
                             itemButton.setEnabled(false);
+                        } else {
+                            if(resultsJSON.getBoolean("pending")== false) {
+                                Toast.makeText(getActivity(), resultsJSON.getString("message"), Toast.LENGTH_SHORT).show();
+                                itemButton.setEnabled(false);
+                            }
                         }
                     } catch (JSONException e) {
                         //It appears that the web service didn’t return a JSON formatted String

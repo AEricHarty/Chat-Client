@@ -78,11 +78,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send Login post.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to send Login post.*/
     @Override
     public void onLoginAttempt(Credentials cred) {
         //build the web service URL
@@ -137,11 +133,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send first reset_password post.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to send first reset_password post.*/
     @Override
     public void onEmailClicked(Credentials cred) {
         //build the web service URL
@@ -194,10 +186,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send second reset_password post.
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to send second reset_password post.*/
     @Override
     public void onCodeClicked(Credentials cred) {
         //build the web service URL
@@ -244,11 +233,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Transitions to the registerFragment.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Transitions to the registerFragment.*/
     @Override
     public void onRegisterClicked() {
         RegisterFragment registerFragment = new RegisterFragment();
@@ -259,11 +244,7 @@ public class SignInActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-    /**
-     * Transitions to the ResetPasswordFragment.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Transitions to the ResetPasswordFragment.*/
     @Override
     public void onResetPasswordClicked() {
         ResetPasswordFragment resetFragment = new ResetPasswordFragment();
@@ -274,11 +255,7 @@ public class SignInActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-    /**
-     * Builds JSON and starts new AsyncTask to send Registration post.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Builds JSON and starts new AsyncTask to send Registration post.*/
     @Override
     public void onRegisterAttempt(Credentials cred) {
         //build the web service URL
@@ -300,11 +277,7 @@ public class SignInActivity extends AppCompatActivity implements
                 .build().execute();
     }
 
-    /**
-     * Checks if Stay Logged In is selected and saves to SharedPreferences if needed.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Checks if Stay Logged In is selected and saves to SharedPreferences if needed.*/
     private void checkStayLoggedIn() {
         if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
             SharedPreferences prefs =
@@ -324,11 +297,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Transitions to the HomeActivity.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     */
+    /**Transitions to the HomeActivity.*/
     public void loadHome() {
         Intent intent = new Intent(this, HomeActivity.class);
         Bundle b = new Bundle();
@@ -367,13 +336,7 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Loads the RegisterResultFragment.
-     *
-     * @author Eric Harty - hartye@uw.edu
-     *
-     * @modified Phu-Lam Pham - ppham95@uw.edu
-     */
+    /**Loads the RegisterResultFragment.*/
     public void loadRegisterResult(boolean success) {
         //getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 

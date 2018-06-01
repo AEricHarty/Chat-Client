@@ -176,8 +176,9 @@ public class ConnectionsFragment extends Fragment {
             ((EditText) getView().findViewById(R.id.inputChatName))
                         .setText("");
 
-            HomeActivity homeAcivity = (HomeActivity) getActivity();
-            homeAcivity.loadFragment(new ChatWindowFragment());
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.mCurrentChatId = chatId;
+            homeActivity.loadFragment(new ChatWindowFragment());
 //            Intent intent = new Intent(getActivity(), ChatSessionActivity.class);
 //            startActivity(intent);
 //
