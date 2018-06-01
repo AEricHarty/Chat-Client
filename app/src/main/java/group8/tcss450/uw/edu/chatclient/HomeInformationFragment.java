@@ -15,6 +15,7 @@ import android.widget.TextView;
 /**
  * information fragment from the navigation drawer
  *
+ * @author Jin Byoun - jinito@uw.edu
  * @author Eric Harty - hartye@uw.edu
  */
 public class HomeInformationFragment extends Fragment implements View.OnClickListener{

@@ -46,6 +46,8 @@ public class NewConnectionFragment extends Fragment {
         return v;
     }
 
+
+    // sends the connection request
     private void sendRequest(final View theButton) {
         Log.e("test1", "gets to sendRequest");
         JSONObject messageJson = new JSONObject();

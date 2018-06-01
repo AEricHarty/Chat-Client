@@ -34,8 +34,9 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * contains the chat session with messages
  *
+ * @author Jin Byoun - jinito@uw.edu
  * @author Eric Harty - hartye@uw.edu
  * @author Phu Lam Pham
  *
@@ -100,24 +101,13 @@ public class ChatWindowFragment extends Fragment {
 
         mScrollView = (ScrollView) v.findViewById(R.id.chatOutputScrollView);
 
-//        Button home = (Button) v.findViewById(R.id.chatGoHomeButton);
-//        home.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.e("inChatFragmentOnCLick", "Go Home!");
-//                Bundle b= new Bundle();
-//                b.putString("username", mUsername);
-//                Intent myintent = new Intent(getActivity(), HomeActivity.class);
-//                myintent.putExtras(b);
-//                startActivity(myintent);
-//            }
-//        });
+
 
         return v;
     }
 
 
-    // Right now is alternating between left and right Later on based on who is sending, display accordingly
+    // sends messages to the chat
     private boolean sendChatMessage() {
         chatArrayAdapter.add(new ChatWindowFragment.ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
@@ -167,25 +157,7 @@ public class ChatWindowFragment extends Fragment {
 
 
 
-        /*
-        if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
-            //ignore all of the seen messages. You may want to store these messages locally
-            mListenManager = new ListenManager.Builder(retrieve.toString(),
-                    this::publishProgress)
-                    .setTimeStamp(prefs.getString(getString(R.string.keys_prefs_time_stamp),
-                            "0"))
-                    .setExceptionHandler(this::handleError)
-                    .setDelay(1000)
-                    .build();
-        } else {
-            //no record of a saved timestamp. must be a first time login
-            mListenManager = new ListenManager.Builder(retrieve.toString(),
-                    this::publishProgress)
-                    .setExceptionHandler(this::handleError)
-                    .setDelay(1000)
-                    .build();
-        }
-        */
+
 
         mListenManager = new ListenManager.Builder(retrieve.toString(),
                 this::publishProgress)

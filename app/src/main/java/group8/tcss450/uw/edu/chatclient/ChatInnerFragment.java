@@ -22,7 +22,9 @@ import group8.tcss450.uw.edu.chatclient.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Extra settings fragment for chat, including leave, adding to chat, and adding a new connection
+ *
+ * @author Jin Byoun - jinito@uw.edu
  */
 public class ChatInnerFragment extends Fragment {
 
@@ -38,6 +40,7 @@ public class ChatInnerFragment extends Fragment {
     public ChatInnerFragment() {
         // Required empty public constructor
     }
+
 
 
     @Override
@@ -101,6 +104,8 @@ public class ChatInnerFragment extends Fragment {
                 .toString();
     }
 
+
+    // adds user to a chat
     private void addToChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
@@ -141,6 +146,8 @@ public class ChatInnerFragment extends Fragment {
         }
     }
 
+
+    // leaves the current user's session
     private void leaveChat(final View theButton) {
         JSONObject messageJson = new JSONObject();
 
@@ -176,6 +183,7 @@ public class ChatInnerFragment extends Fragment {
         }
     }
 
+    // adds a new connection from chat
     private void addStranger(final View theButton) {
 
         JSONObject messageJson = new JSONObject();
